@@ -139,7 +139,7 @@ __recovery/
 
 *.delphilsp.json
 # Keep the DELPHI release data
-#**/Win64/Release/*.dcu
+**/Win64/Release/**
 **/Win32/Release/**
 **/Win64/Debug/**
 **/Win32/Debug/**

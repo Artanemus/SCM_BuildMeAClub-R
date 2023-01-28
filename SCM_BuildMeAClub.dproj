@@ -4,8 +4,8 @@
         <ProjectVersion>19.2</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
-        <Platform Condition="'$(Platform)'==''">Win64</Platform>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
         <MainSource>SCM_BuildMeAClub.dpr</MainSource>
@@ -90,6 +90,9 @@
         <BT_BuildType>Debug</BT_BuildType>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <Icon_MainIcon>SCM_BuildMeAClub.ico</Icon_MainIcon>
+        <VerInfo_IncludeVerInfo>false</VerInfo_IncludeVerInfo>
+        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Artanemus;FileDescription=$(MSBuildProjectName);FileVersion=1.1.1.0;InternalName=BMAC;LegalCopyright=Copyright (c) 2019-2022 Artanemus;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.1;Comments=Build SwimClubMeet on MS SQL</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -129,6 +132,8 @@
         <VerInfo_Keys>CompanyName=Artanemus;FileDescription=$(MSBuildProjectName);FileVersion=1.2.0.0;InternalName=BMAC;LegalCopyright=Copyright (c) 2019-2022 Artanemus;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.2;Comments=Build the SwimClubMeet database on MS SQL</VerInfo_Keys>
         <Icon_MainIcon>SCM_BuildMeAClub.ico</Icon_MainIcon>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
+        <VerInfo_IncludeVerInfo>false</VerInfo_IncludeVerInfo>
+        <VerInfo_Release>1</VerInfo_Release>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
