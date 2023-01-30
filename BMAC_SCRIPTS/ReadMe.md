@@ -4,7 +4,7 @@ This folder contains sub-folders for each version of the SwimClubMeet SQL databa
 
 ## Sub folder format rules
 
-This folder contains T-SQL scripts that are compatible with MS SQL EXPRESS version 2017 and up.
+All T-SQL scripts are compatible with MS SQL EXPRESS version 2017 and up.
 
 BuildMeAClub.exe sorts and then runs these scripts. Sorting is alphanumerically.
 
@@ -14,7 +14,7 @@ Included in the folder is a script written to create the internal SwimClubMeet t
 This script will assign the DBVersion, Major and Minor fields, to reflect the current SCM DB build version.
 Typically this script is the last script to run.
 
-The following example creates a SwimClubMeet 1.5 database. SCMSystemID must equal 1. The field 'Minor' isn't being used by SCM and should be set to 0.  
+> The following example creates a SwimClubMeet 1.5.0 database. SCMSystemID must equal 1.  
 
 ~~~,T-SQL
 USE [SwimClubMeet]
@@ -34,10 +34,33 @@ SET IDENTITY_INSERT [dbo].[SCMSystem] OFF
 GO
 ~~~
 
-## Inno deployment
+---
+## VERSION NOTES
 
-The Inno installation will locate these scripts in the BMAC utilities directory.
+### v1.6.0
 
-~~~, Inno
-Source: "{#GITHUB}{#MySCM_BMAC_SQLPath}*"; DestDir: "{app}\Utilities\SQL\"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: util
+- Additional fields added.
+- Performance improvements to scalar functions
+- Additional scalar functions added.
+- SCMSystem values (1,1,6,0)
+
+### v1.5.1
+
+- Fix scalar function. `dbo.IsMemberNominated.UserDefinedFunction.sql`
+- Renumbering of some files.
+- SCMSystem values (1,1,5,1)
+
+### v1.5
+
+Release version.
+
+- SCMSystem values (1,1,5,0)
+
+---
+## INNO deployment
+
+The INNO installation will place these scripts in the BMAC directory. Which is typically located at: `C:\Program Files\Artanemus\BuildMeAClub\SQL`
+
+~~~, INNO
+Source: "{#GITHUB}{#MyBMACSQLPath}*"; DestDir: "{app}\Utilities\SQL\"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: util
 ~~~
