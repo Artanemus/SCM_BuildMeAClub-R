@@ -47,12 +47,13 @@ GO
 ### v1.5.1
 
 - Fix scalar function. `dbo.IsMemberNominated.UserDefinedFunction.sql`
-- Renumbering of some files.
+- New field SwimClubMeet.dbo.Member.IsSwimmer.
+- New default IsArchived, IsActive, IsSwimmer.
 - SCMSystem values (1,1,5,1)
 
-### v1.5
+### v1.5.0
 
-Release version.
+Release version. Pushed to GitHub as `SCM_BuilMeAClub_x64_v1.1.0.0.exe` 
 
 - SCMSystem values (1,1,5,0)
 

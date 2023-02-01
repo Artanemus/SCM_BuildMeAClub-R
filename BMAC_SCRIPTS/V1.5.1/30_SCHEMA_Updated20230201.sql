@@ -358,8 +358,9 @@ CREATE TABLE [dbo].[Member](
 	[FirstName] [nvarchar](128) NULL,
 	[LastName] [nvarchar](128) NULL,
 	[DOB] [datetime] NULL,
-	[IsActive] [bit] NULL,
-	[IsArchived] [bit] NULL,
+	[IsArchived] [bit] DEFAULT 0,
+	[IsActive] [bit] DEFAULT 1,
+	[IsSwimmer] [bit] DEFAULT 1,
 	[Email] [nvarchar](256) NULL,
 	[EnableEmailOut] [bit] NULL,
 	[GenderID] [int] NULL,
@@ -370,7 +371,6 @@ CREATE TABLE [dbo].[Member](
 	[EnableEmailNomineeForm] [bit] NULL,
 	[EnableEmailSessionReport] [bit] NULL,
 	[HouseID] [int] NULL,
-	[IsSwimmer] [bit] NULL,
  CONSTRAINT [PK_Member] PRIMARY KEY NONCLUSTERED 
 (
 	[MemberID] ASC
