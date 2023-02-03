@@ -795,8 +795,9 @@ ALTER TABLE [dbo].[Entrant] ADD  DEFAULT ((0)) FOR [IsDisqualified]
 GO
 ALTER TABLE [dbo].[Entrant] ADD  DEFAULT ((0)) FOR [IsScratched]
 GO
-ALTER TABLE [dbo].[Member] ADD  CONSTRAINT [DF__Member__IsActive__2A4B4B5E]  DEFAULT ((1)) FOR [IsActive]
-GO
+-- A DEFAULT was assigned on creation of table.
+-- ALTER TABLE [dbo].[Member] ADD  CONSTRAINT [DF__Member__IsActive__2A4B4B5E]  DEFAULT ((1)) FOR [IsActive]
+-- GO
 ALTER TABLE [dbo].[Member] ADD  CONSTRAINT [DF__Member__EnableEm__2B3F6F97]  DEFAULT ((0)) FOR [EnableEmailOut]
 GO
 ALTER TABLE [dbo].[MembershipType] ADD  CONSTRAINT [DF__Membershi__IsSwi__2E1BDC42]  DEFAULT ((1)) FOR [IsSwimmer]
@@ -1035,14 +1036,4 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[TeamSplit] CHECK CONSTRAINT [FK_TeamEntrant_TeamSplit]
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'While IsShortCourse will determine the generic pool standard - ie the course length. Short Course (SC),  Long Course (LC)
-LengthOfPool allows for more options in filtering of the qualify table.
-An example.
-If the tblSwimClub->LengthOfPool value is 33m and Qualify->LengthOfPool is 33m then it can pull these records under the guise of the generic pool standard.
-If these values don''t exist then the pool length that matches the generic pool standard is used. towit Short Course (SC) 25m,  Long Course (LC) 50m' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Qualify', @level2type=N'COLUMN',@level2name=N'LengthOfPool'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Qualifying Times:
-For a swimmer to compete in an event of said distance and stroke they must have swum the stoke in a (shorter) distance within a given time.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Qualify'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Allows for AlphaNumerical membership number. Once enabled Member.MembershipNum is ignored.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'SwimClub', @level2type=N'COLUMN',@level2name=N'EnableMembershipStr'
-GO
+
