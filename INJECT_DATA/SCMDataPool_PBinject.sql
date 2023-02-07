@@ -14,7 +14,7 @@ PRINT N'Calculate personal bests for all members in DataPool';
 -- Drop the table if it already exists
 IF OBJECT_ID('tempDB..#MemPB', 'U') IS NOT NULL
 DROP TABLE #MemPB
-GO
+;
 -- Create the temporary table from a physical table called 'TableName' in schema 'dbo' in database 'SCMDataPool'
 SELECT MemberID, 
     FirstName,
@@ -57,7 +57,7 @@ WHERE IsSwimmer = 1;
 /* 
 -- DEBUG TEST OUTPUT
 SELECT #MemPB.FR25, Member.MemberID FROM Member
-LEFT JOIN #MemPB ON Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE fr25 is not null; 
 */
 
@@ -84,7 +84,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.FR25, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.FR25 is not null;
 
 -- 50m Freestyle
@@ -104,7 +104,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.FR50, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.FR50 is not null;
 
 -- 100m Freestyle
@@ -124,7 +124,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.FR100, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.FR100 is not null;
 
 -- 200m Freestyle
@@ -144,7 +144,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.FR200, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.FR200 is not null;
 
 -- 400m Freestyle
@@ -164,7 +164,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.FR400, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.FR400 is not null;
 
 -- *************************************
@@ -187,7 +187,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BR25, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BR25 is not null;
 
 
@@ -208,7 +208,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BR50, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BR50 is not null;
 
 
@@ -229,7 +229,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BR100, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BR100 is not null;
 
 -- 200m Breaststroke
@@ -249,7 +249,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BR200, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BR200 is not null;
 
 -- 400m Breaststroke
@@ -269,7 +269,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BR400, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BR400 is not null;
 
 
@@ -293,7 +293,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BA25, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BA25 is not null;
 
 
@@ -314,7 +314,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BA50, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BA50 is not null;
 
 
@@ -335,7 +335,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BA100, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BA100 is not null;
 
 -- 200m backstroke
@@ -355,7 +355,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BA200, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BA200 is not null;
 
 -- 400m backstroke
@@ -375,7 +375,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BA400, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BA400 is not null;
 
 
@@ -400,7 +400,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BU25, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BU25 is not null;
 
 
@@ -421,7 +421,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BU50, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BU50 is not null;
 
 
@@ -442,7 +442,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BU100, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BU100 is not null;
 
 -- 200m butterfly
@@ -462,7 +462,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BU200, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BU200 is not null;
 
 -- 400m butterfly
@@ -482,7 +482,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.BU400, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.BU400 is not null;
 
 
@@ -509,7 +509,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.ME25, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.ME25 is not null;
 
 
@@ -530,7 +530,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.ME50, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.ME50 is not null;
  */
 
@@ -551,7 +551,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.ME100, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.ME100 is not null;
 
 -- 200m medley
@@ -571,7 +571,7 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.ME200, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.ME200 is not null;
 
 -- 400m medley
@@ -591,8 +591,29 @@ INSERT INTO [SwimClubMeet].[dbo].[Nominee]
     ,[MemberID]
 )
 SELECT  #MemPB.ME400, @EventID, [SwimClubMeet].[dbo].Member.MemberID FROM [SwimClubMeet].[dbo].Member
-LEFT JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
+INNER JOIN #MemPB ON [SwimClubMeet].[dbo].Member.Firstname COLLATE DATABASE_DEFAULT = #MemPB.FirstName  COLLATE DATABASE_DEFAULT AND [SwimClubMeet].[dbo].Member.Lastname COLLATE DATABASE_DEFAULT = #MemPB.LastName 
 WHERE #MemPB.ME400 is not null;
+
+-- Update rows in table '[Nominee]' in schema '[dbo]'
+-- INITIALIZE PREDICTIVE DATA
+
+/* 
+DECLARE @myTime TIME(7) = '00:00:00';
+
+UPDATE [dbo].[Nominee]
+SET
+    [TTB] = @myTime,
+    [PB] = @myTime,
+    AutoBuildFlag = 0
+    -- Add more columns and values here
+FROM [dbo].[Nominee]
+INNER JOIN [Event] ON [dbo].[Nominee].EventID = [Event].EventID 
+INNER JOIN [Session] ON [Event].SessionID = [Session].SessionID   
+WHERE [Session].SessionID = @SessionID; 
+
+*/
+
+
 
 
 

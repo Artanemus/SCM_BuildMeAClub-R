@@ -2,17 +2,17 @@ USE SwimClubMeet
 GO
 
 INSERT INTO [SwimClubMeet].[dbo].[Member]
-           ([MembershipNum]
+           (
+--       [MembershipNum]
 --      ,[MembershipStr]
 --      ,[MembershipDue]
-           ,[FirstName]
+           [FirstName]
            ,[LastName]
            ,[DOB]
            ,[IsActive]
            ,[IsArchived]
-           ,[Email]
+--      ,[Email]
 --      ,[EnableEmailOut]
-           ,[EnableEmailOut]
            ,[GenderID]
            ,[SwimClubID]
 --      ,[MembershipTypeID]
@@ -23,18 +23,14 @@ INSERT INTO [SwimClubMeet].[dbo].[Member]
 --      ,[HouseID]
            ,[IsSwimmer])
      SELECT
-           
-		   SCMDataPool.dbo.Member.MembershipNum
-           ,SCMDataPool.dbo.Member.FirstName
+           SCMDataPool.dbo.Member.FirstName
            ,SCMDataPool.dbo.Member.LastName
            ,SCMDataPool.dbo.Member.DOB
-           ,SCMDataPool.dbo.Member.IsActive
-           ,SCMDataPool.dbo.Member.IsArchived
-           ,SCMDataPool.dbo.Member.Email
-           ,SCMDataPool.dbo.Member.EnableEmailOut
+           , CASE WHEN (SCMDataPool.dbo.Member.IsActive = 1) THEN 1 ELSE 0 END
+           , CASE WHEN (SCMDataPool.dbo.Member.IsArchived = 1) THEN 1 ELSE 0 END
            ,SCMDataPool.dbo.Member.GenderID
            ,SCMDataPool.dbo.Member.SwimClubID
-           ,SCMDataPool.dbo.Member.IsSwimmer 
+           , CASE WHEN (SCMDataPool.dbo.Member.IsSwimmer = 1) THEN 1 ELSE 0 END
 
 		FROM SCMDataPool.dbo.Member
 GO
