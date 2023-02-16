@@ -1,4 +1,158 @@
-USE SwimClubMeet;
+USE SwimClubMeet
+GO
+
+-- ****************************************
+-- A very basic test to see if a SwimClubMeet database exists.
+-- ****************************************
+
+IF NOT EXISTS (SELECT SwimClubID FROM SwimClub WHERE SwimClubID = 1)
+RETURN;
+
+/*
+    METHOD:
+    CREATE an empty SwimClubMeet database.
+    RESTORE a previous SwimClubMeet database with has members and racetimes. 
+    Name this database as SCMDataPool.
+
+    THEN:
+    1.INJECT Members into the empty SwimClubMeet database.
+    2.CREATE a Session dated 2000/01/01
+    3.CREATE every type of swimming Event in the new Session.
+    4.NEXT 
+        IF MEMBER HAS SWUM the EVENT - INJECT a Nominee record and assign Nominee.SeedDate with the member's Personal Best.
+
+    FINALLY:
+    RUN the core application. 
+    IN PREFERENCES.SYSTEM enable seeding.
+    SELECT Session 2000/01/01 and auto-build all event.
+    DISABLE seeding.
+
+    WRAPPING UP:
+    The new SwimClubMeet has seed data. 
+*/
+
+INSERT INTO [SwimClubMeet].[dbo].[Member]
+           (
+       [MembershipNum]
+--      ,[MembershipStr]
+--      ,[MembershipDue]
+           ,[FirstName]
+           ,[LastName]
+           ,[DOB]
+           ,[IsActive]
+           ,[IsArchived]
+--      ,[Email]
+--      ,[EnableEmailOut]
+           ,[GenderID]
+           ,[SwimClubID]
+--      ,[MembershipTypeID]
+--      ,[CreatedOn]
+--      ,[ArchivedOn]
+--      ,[EnableEmailNomineeForm]
+--      ,[EnableEmailSessionReport]
+--      ,[HouseID]
+           ,[IsSwimmer])
+     SELECT
+        SCMDataPool.dbo.MembershipNum
+           ,SCMDataPool.dbo.Member.FirstName
+           ,SCMDataPool.dbo.Member.LastName
+           ,SCMDataPool.dbo.Member.DOB
+           , CASE WHEN (SCMDataPool.dbo.Member.IsActive = 1) THEN 1 ELSE 0 END
+           , CASE WHEN (SCMDataPool.dbo.Member.IsArchived = 1) THEN 1 ELSE 0 END
+           ,SCMDataPool.dbo.Member.GenderID
+           ,SCMDataPool.dbo.Member.SwimClubID
+           , CASE WHEN (SCMDataPool.dbo.Member.IsSwimmer = 1) THEN 1 ELSE 0 END
+
+		FROM SCMDataPool.dbo.Member
+GO
+
+-- ****************************************
+-- BUILD THE SESSION 2000/01/01
+-- ****************************************
+
+DECLARE @SessionID AS INT;
+DECLARE @EventNum AS INT;
+
+INSERT INTO [SwimClubMeet].[dbo].[Session]
+(
+		 [Caption]
+		,[SessionStart]
+		,[ClosedDT]
+		,[SwimClubID]
+		,[SessionStatusID]
+)
+VALUES
+(
+		 'Members Personal Best seed-data'
+		,'2000-01-01 20:00'
+		,'2000-01-01 20:30'
+		,1
+		,1
+);
+
+-- ****************************************
+-- GET THE NEWLY CREATED SESSION
+-- ****************************************
+
+SET @SessionID = (IDENT_CURRENT('Session'));
+
+-- ****************************************
+-- CREATE EVERY TYPE OF SWIMMING EVENT
+-- ****************************************
+
+INSERT INTO [SwimClubMeet].[dbo].[Event]
+(
+		 [EventNum]
+		,[Caption]
+		,[ClosedDT]
+		,[SessionID]
+		,[EventTypeID]
+		,[StrokeID]
+		,[DistanceID]
+		,[EventStatusID]
+)
+VALUES
+    -- Freestyle 
+    (1,'Seed-event for Personal Bests',NULL,@SessionID,1,1,1,1),
+    (2,'Seed-event for Personal Bests',NULL,@SessionID,1,1,2,1),
+    (3,'Seed-event for Personal Bests',NULL,@SessionID,1,1,3,1),
+    (4,'Seed-event for Personal Bests',NULL,@SessionID,1,1,4,1),
+    (5,'Seed-event for Personal Bests',NULL,@SessionID,1,1,5,1),
+    (6,'Seed-event for Personal Bests',NULL,@SessionID,1,1,6,1),
+    -- Breaststroke
+    (7,'Seed-event for Personal Bests',NULL,@SessionID,1,2,1,1),
+    (8,'Seed-event for Personal Bests',NULL,@SessionID,1,2,2,1),
+    (9,'Seed-event for Personal Bests',NULL,@SessionID,1,2,3,1),
+    (10,'Seed-event for Personal Bests',NULL,@SessionID,1,2,4,1),
+    (11,'Seed-event for Personal Bests',NULL,@SessionID,1,2,5,1),
+    (12,'Seed-event for Personal Bests',NULL,@SessionID,1,2,6,1),
+    -- Backstroke
+    (13,'Seed-event for Personal Bests',NULL,@SessionID,1,3,1,1),
+    (14,'Seed-event for Personal Bests',NULL,@SessionID,1,3,2,1),
+    (15,'Seed-event for Personal Bests',NULL,@SessionID,1,3,3,1),
+    (16,'Seed-event for Personal Bests',NULL,@SessionID,1,3,4,1),
+    (17,'Seed-event for Personal Bests',NULL,@SessionID,1,3,5,1),
+    (18,'Seed-event for Personal Bests',NULL,@SessionID,1,3,6,1),
+    -- Butterfly
+    (19,'Seed-event for Personal Bests',NULL,@SessionID,1,4,1,1),
+    (20,'Seed-event for Personal Bests',NULL,@SessionID,1,4,2,1),
+    (21,'Seed-event for Personal Bests',NULL,@SessionID,1,4,3,1),
+    (22,'Seed-event for Personal Bests',NULL,@SessionID,1,4,4,1),
+    (23,'Seed-event for Personal Bests',NULL,@SessionID,1,4,5,1),
+    (24,'Seed-event for Personal Bests',NULL,@SessionID,1,4,6,1),
+    -- Medley
+    (25,'Seed-event for Personal Bests',NULL,@SessionID,1,5,1,1), -- 25m Medley Nah!
+    (26,'Seed-event for Personal Bests',NULL,@SessionID,1,5,2,1), -- 50m Medley Nah!
+    (27,'Seed-event for Personal Bests',NULL,@SessionID,1,5,3,1),
+    (28,'Seed-event for Personal Bests',NULL,@SessionID,1,5,4,1),
+    (29,'Seed-event for Personal Bests',NULL,@SessionID,1,5,5,1),
+    (30,'Seed-event for Personal Bests',NULL,@SessionID,1,5,6,1);
+    
+    GO
+
+-- ****************************************
+-- NOTE: After GO STATEMENT PARAMS MUST BE RE-DECLARED.
+-- ****************************************
 
 DECLARE @SessionID AS INT;
 
@@ -63,7 +217,7 @@ WHERE fr25 is not null;
 
 
 /*
-    nominate memer to event
+    nominate member to event
 */
 DECLARE @EventID AS INT;
 
@@ -612,6 +766,13 @@ INNER JOIN [Session] ON [Event].SessionID = [Session].SessionID
 WHERE [Session].SessionID = @SessionID; 
 
 */
+
+GO
+
+
+
+
+
 
 
 

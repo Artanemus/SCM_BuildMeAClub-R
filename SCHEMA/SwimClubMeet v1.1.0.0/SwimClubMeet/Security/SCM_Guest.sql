@@ -1,0 +1,4 @@
+CREATE ROLE [SCM_Guest]
+    AUTHORIZATION [dbo];
+GO
+
