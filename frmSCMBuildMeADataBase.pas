@@ -14,7 +14,8 @@ uses
 
   FireDAC.Stan.Consts, System.IOUtils, System.Types, Registry, Vcl.ComCtrls,
   System.UITypes, FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase,
-  FireDAC.Phys.MSSQL, System.Actions, Vcl.ActnList;
+  FireDAC.Phys.MSSQL, System.Actions, Vcl.ActnList, Vcl.BaseImageCollection,
+  Vcl.ImageCollection, Vcl.VirtualImage;
 
 type
   TSCMBuildMeADataBase = class(TForm)
@@ -45,6 +46,9 @@ type
     GroupBox1: TGroupBox;
     actnBMAC: TAction;
     qryDBExists: TFDQuery;
+    ImageCollection1: TImageCollection;
+    VirtualImage1: TVirtualImage;
+    vimgPassed: TVirtualImage;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure actnConnectExecute(Sender: TObject);
@@ -57,16 +61,37 @@ type
   private const
     SCMCONFIGFILENAME = 'SCMConfig.ini';
 
+    // ---------------------------------------------------------
+    // NEW SCMSystem UPDATE VALUES
+    // ---------------------------------------------------------
+    OUT_Model = 1;
+    OUT_Version = 1;
+    OUT_Major = 5;
+    OUT_Minor = 1;
+
+
   private
-    { Private declarations }
+    // ---------------------------------------------------------
+    // VALUES AFTER READ OF SCMSystem
+    // ---------------------------------------------------------
+    FDBModel: Integer;
     FDBVersion: Integer;
     FDBMajor: Integer;
     FDBMinor: Integer;
     FSQLPath: String;
 
+    // Version Control Display Strings
+    FDBVerCtrlStr: string;
+    FDBVerCtrlStrVerbose: string;
+
+    fBMACScriptSubPath: String;
+
     // Flags that building is finalised or can't proceed.
     // Once set - btnBMAC is not long visible. User may only exit.
     BuildDone: Boolean;
+
+    // builds the full sub-path of "\BMAC_SCRIPTS\"
+    function BuildBMACScriptSubPath(): String;
 
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
@@ -77,7 +102,7 @@ type
       RunMinimized: Boolean = false; Log: Boolean = false): Boolean;
 
     procedure GetFileList(filePath, fileMask: String; var sl: TStringList);
-    procedure GetSCM_DB_Version(var DBVersion, Major, Minor: Integer);
+    procedure GetSCM_DB_Version();
     procedure LoadConfigData;
     procedure SaveConfigData;
 
@@ -97,6 +122,7 @@ const
   logOutFn = '\Documents\SCM_BuildMeAClub.log';
   SectionName = 'SCM_BuildMeAClub';
   logOutFnTmp = '\Documents\SCM_BuildMeAClub.tmp';
+  defUpdateScriptsRootPath = 'BMAC_SCRIPTS\'; // No prefix delimeter.
 
 implementation
 
@@ -254,7 +280,7 @@ procedure TSCMBuildMeADataBase.FormCreate(Sender: TObject);
 begin
   BuildDone := false; // clear BMAC critical error flag
   // Display the Major.Minor.Release.Build version details
-  Caption := 'SCM BuildMeAClub Version ' + utilVersion.FileVersion;
+  Caption := 'SCM BuildMeAClub SCMSystem 1.1.5.1';
   // Prepare the display
   GroupBox1.Visible := true;
   btnConnect.Visible := true;
@@ -262,8 +288,19 @@ begin
   btnBMAC.Visible := false;
   btnDisconnect.Visible := false;
   LoadConfigData;
+  // green 'tick' checkbox
+  vimgPassed.Visible := False;
+
   // Memo already populated with useful user info... indicate ready...
   Memo1.Lines.Add('READY ...');
+  // init DB version control
+  FDBVersion := 0;
+  FDBMajor := 0;
+  FDBMinor := 0;
+  FDBVerCtrlStr := '';
+  FDBVerCtrlStrVerbose := '';
+
+  fBMACScriptSubPath := BuildBMACScriptSubPath;
 
 end;
 
@@ -292,30 +329,41 @@ begin
     sl.Add(fn);
 end;
 
-procedure TSCMBuildMeADataBase.GetSCM_DB_Version(var DBVersion, Major,
-  Minor: Integer);
+procedure TSCMBuildMeADataBase.GetSCM_DB_Version();
 var
   fld: TField;
 begin
-  DBVersion := 0;
-  Major := 0;
-  Minor := 0;
+  FDBModel := 0;
+  FDBVersion := 0;
+  FDBMajor := 0;
+  FDBMinor := 0;
+  FDBVerCtrlStr := '';
+  FDBVerCtrlStrVerbose := '';
   if scmConnection.Connected then
   begin
-    qryVersion.Active := true;
+    // opening and closing a query performs a full refresh.
+    qryVersion.Close;
+    qryVersion.Open;
     if qryVersion.Active then
     begin
-      DBVersion := qryVersion.FieldByName('DBVersion').AsInteger;
+      FDBModel := qryVersion.FieldByName('SCMSystemID').AsInteger;
+      FDBVersion := qryVersion.FieldByName('DBVersion').AsInteger;
       fld := qryVersion.FieldByName('Major');
       if Assigned(fld) then
       begin
-        Major := fld.AsInteger;
+        FDBMajor := fld.AsInteger;
       end;
       fld := qryVersion.FieldByName('Minor');
       if Assigned(fld) then
       begin
-        Minor := fld.AsInteger;
+        FDBMinor := fld.AsInteger;
       end;
+      // DISPLAY STRINGS
+      FDBVerCtrlStr := IntToStr(FDBModel) + '.' + IntToStr(FDBVersion) + '.' +
+        IntToStr(FDBMajor) + '.' + IntToStr(FDBMinor) + '.';
+      FDBVerCtrlStrVerbose := 'Base: ' + IntToStr(FDBModel) + ' Version: ' +
+        IntToStr(FDBVersion) + ' Major: ' + IntToStr(FDBMajor) + ' Minor: ' +
+        IntToStr(FDBMinor)
     end;
   end;
 
@@ -459,6 +507,13 @@ begin
   Close;
 end;
 
+function TSCMBuildMeADataBase.BuildBMACScriptSubPath: String;
+begin
+  Result := defUpdateScriptsRootPath + 'v' + IntToStr(OUT_Model) + '.' +
+    IntToStr(OUT_Version) + '.' + IntToStr(OUT_Major) + '.' +
+    IntToStr(OUT_Minor) + '\';
+end;
+
 procedure TSCMBuildMeADataBase.actnConnectExecute(Sender: TObject);
 begin
   if edtServerName.Text = '' then
@@ -592,11 +647,19 @@ begin
   end;
 
   // BUILD ME A CLUB USES ONLY THE FOLDER WITHIN IT'S EXE PATH
-  // Typically C:\Program Files (x86)\Artanemus\SwimClubMeet\Utilities\SQL\
-  // Extract method will include trailing backslash
-  // INNO is responsible for filling this folder with the most up-todate
-  // SQL scripts - to build the latest version
-  FSQLPath := ExtractFilePath(Application.ExeName) + 'SQL\';
+  // INNO is responsible for creating this folder
+  // ---------------------------------------------------------------
+  // Does the DEFAULT BMAC_SCRIPTS\VERSION folder
+  //        (containing SQL files) exist?
+  // ---------------------------------------------------------------
+{$IFDEF DEBUG}
+    FSQLPath := TPath.GetDocumentsPath + '\GitHub\SCM_BuildMeAClub-R\' +
+      fBMACScriptSubPath;
+{$ELSE}
+    // up to and including the colon or backslash .... SAFE
+    FSQLPath := ExtractFilePath(Application.ExeName) + fBMACScriptSubPath;
+{$IFEND}
+
   // DOES PATH EXISTS?
   if not System.SysUtils.DirectoryExists(FSQLPath, true) then
   begin
@@ -673,16 +736,17 @@ begin
     Memo1.Lines.Add(sLineBreak + 'FINISHED');
     if errCount = 0 then
     begin
+      // green 'tick' checkbox
+      vimgPassed.Visible := True;
+
       Memo1.Lines.Add('ExecuteProcess completed without errors.' + sLineBreak);
       Memo1.Lines.Add
         ('You should check SCM_BuildMeAClub.log to ensure that sqlcmd.exe also reported no errors.'
         + sLineBreak);
       // * Version number of SwimClubMeet DataBase *
       // Only read this table if not errors reported.
-      GetSCM_DB_Version(FDBVersion, FDBMajor, FDBMinor);
-      s := 'SwimClubMeet database build info ... Version: ' +
-        IntToStr(FDBVersion) + ' Major: ' + IntToStr(FDBMajor) + ' Minor: ' +
-        IntToStr(FDBMinor);
+      GetSCM_DB_Version;
+      s := 'SwimClubMeet database version control ' + FDBVerCtrlStr;
       Memo1.Lines.Add(s);
     end
     else
