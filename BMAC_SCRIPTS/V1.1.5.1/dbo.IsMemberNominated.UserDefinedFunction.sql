@@ -1,3 +1,6 @@
+USE [SwimClubMeet]
+GO
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -7,7 +10,7 @@ GO
 -- Create date: 25/05/2022
 -- Description:	Is the member nominated for the event
 -- =============================================
-CREATE OR ALTER FUNCTION [dbo].[IsMemberNominated]
+CREATE FUNCTION [dbo].[IsMemberNominated]
 (
     -- Add the parameters for the function here
     @MemberID INT

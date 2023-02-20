@@ -1,0 +1,6 @@
+CREATE USER [scmAdmin] WITHOUT LOGIN
+    WITH DEFAULT_SCHEMA = [scmAdmin];
+
+
+GO
+
