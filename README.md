@@ -29,7 +29,7 @@ The 'Build Me A Club' button will not be visible until a connection to the datab
 
 BMAC will not overwrite an existing SwimClubMeet database.
 
-You would only ever need to run this application once. After a successful build the application can be removed. (Hence the reason, 'no icon on the desktop'😃)
+You would only ever need to run this application once. After a successful build the application can be removed. 😃
 
 > Use Windows **Apps and Features** to remove the application.
 
@@ -43,4 +43,20 @@ A server side log file is also produced. This will be located in your documents 
 
 ---
 
-![ScreenShot of BMAC after logging in.](ASSETS/BuildMeAClub%20Screenshot%202022-09-08%20090322.JPG)
+![ScreenShot of BMAC after logging in.](ASSETS/Screenshot%20BMAC%20MainForm.JPG)
+
+## VERSION NOTES
+
+### v1.1.5.1
+
+- Fix scalar function. `dbo.IsMemberNominated.UserDefinedFunction.sql`.
+- New field SwimClubMeet.dbo.Member.IsSwimmer.
+- New default IsArchived, IsActive, IsSwimmer.
+- SCMSystem values (1,1,5,1).
+
+### v1.1.5.0
+
+Release version. Pushed to GitHub as `SCM_BuilMeAClub_x64_v1.1.0.0.exe`.
+
+- SCMSystem values (1,1,5,0).
+
