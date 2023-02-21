@@ -155,4 +155,8 @@ __astcache/
 # **/ASSETS/**
 
 
+# MS SSMS workspaces
+**/.vs/**
+
+
 
