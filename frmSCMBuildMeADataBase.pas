@@ -106,8 +106,8 @@ type
     procedure LoadConfigData;
     procedure SaveConfigData;
 
-    procedure SimpleLoadSettingString(Section, Name: String; var Value: String);
-    procedure SimpleSaveSettingString(Section, Name, Value: String);
+    procedure SimpleLoadSettingString(ASection, AName: String; var AValue: String);
+    procedure SimpleSaveSettingString(ASection, AName, AValue: String);
     procedure SimpleMakeTemporyFDConnection(Server, User, Password: String;
       OsAuthent: Boolean);
 
@@ -373,29 +373,30 @@ end;
 
 procedure TSCMBuildMeADataBase.LoadConfigData;
 var
-  Section: string;
+  ASection: string;
   Server: string;
   User: string;
   Password: string;
-  Value: string;
+  AValue: string;
+  AName: string;
 
 begin
-  Section := SectionName;
-  Name := 'Server';
-  SimpleLoadSettingString(Section, Name, Server);
+  ASection := SectionName;
+  AName := 'Server';
+  SimpleLoadSettingString(ASection, AName, Server);
   if Server.IsEmpty then
     edtServerName.Text := 'localHost\SQLEXPRESS'
   else
     edtServerName.Text := Server;
-  Name := 'User';
-  SimpleLoadSettingString(Section, Name, User);
+  AName := 'User';
+  SimpleLoadSettingString(ASection, AName, User);
   edtUser.Text := User;
-  Name := 'Password';
-  SimpleLoadSettingString(Section, Name, Password);
+  AName := 'Password';
+  SimpleLoadSettingString(ASection, AName, Password);
   edtPassword.Text := Password;
-  Name := 'OSAuthent';
-  SimpleLoadSettingString(Section, Name, Value);
-  if (Pos('y', Value) <> 0) or (Pos('Y', Value) <> 0) then
+  AName := 'OSAuthent';
+  SimpleLoadSettingString(ASection, AName, AValue);
+  if (Pos('y', AValue) <> 0) or (Pos('Y', AValue) <> 0) then
     chkbUseOSAuthentication.Checked := true
   else
     chkbUseOSAuthentication.Checked := false;
@@ -403,28 +404,27 @@ end;
 
 procedure TSCMBuildMeADataBase.SaveConfigData;
 var
-  Section, Name, Value: String;
+  ASection, AName, AValue: String;
 begin
   begin
-    Section := SectionName;
-    Name := 'Server';
-    SimpleSaveSettingString(Section, Name, edtServerName.Text);
-    Name := 'User';
-    SimpleSaveSettingString(Section, Name, edtUser.Text);
-    Name := 'Password';
-    SimpleSaveSettingString(Section, Name, edtPassword.Text);
-    Name := 'OSAuthent';
+    ASection := SectionName;
+    AName := 'Server';
+    SimpleSaveSettingString(ASection, AName, edtServerName.Text);
+    AName := 'User';
+    SimpleSaveSettingString(ASection, AName, edtUser.Text);
+    AName := 'Password';
+    SimpleSaveSettingString(ASection, AName, edtPassword.Text);
+    AName := 'OSAuthent';
     if chkbUseOSAuthentication.Checked = true then
-      Value := 'Yes'
+      AValue := 'Yes'
     else
-      Value := 'No';
-    SimpleSaveSettingString(Section, Name, Value);
+      AValue := 'No';
+    SimpleSaveSettingString(ASection, AName, AValue);
   end
 
 end;
 
-procedure TSCMBuildMeADataBase.SimpleLoadSettingString(Section, Name: String;
-  var Value: String);
+procedure TSCMBuildMeADataBase.SimpleLoadSettingString(ASection, AName: String; var AValue: String);
 var
   ini: TIniFile;
 begin
@@ -436,7 +436,7 @@ begin
   ini := TIniFile.Create(TPath.GetDocumentsPath + PathDelim +
     SCMCONFIGFILENAME);
   try
-    Value := ini.ReadString(Section, Name, '');
+    AValue := ini.ReadString(ASection, AName, '');
   finally
     ini.Free;
   end;
@@ -483,15 +483,14 @@ begin
     SaveConfigData;
 end;
 
-procedure TSCMBuildMeADataBase.SimpleSaveSettingString(Section, Name,
-  Value: String);
+procedure TSCMBuildMeADataBase.SimpleSaveSettingString(ASection, AName, AValue: String);
 var
   ini: TIniFile;
 begin
   ini := TIniFile.Create(TPath.GetDocumentsPath + PathDelim +
     SCMCONFIGFILENAME);
   try
-    ini.WriteString(Section, Name, Value);
+    ini.WriteString(ASection, AName, AValue);
   finally
     ini.Free;
   end;
