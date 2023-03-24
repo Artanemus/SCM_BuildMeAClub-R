@@ -458,7 +458,9 @@ begin
   if (scmConnection.Connected) then
     scmConnection.Connected := false;
 
+  // REQUIRED for multi-login attempts
   scmConnection.Params.Clear();
+
   scmConnection.Params.Add('Server=' + Server);
   scmConnection.Params.Add('DriverID=MSSQL');
   // NOTE SwimClubMeet doesn't exist - so we must connect to root.
