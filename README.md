@@ -17,6 +17,20 @@ If you are interested in following a developer's blog and track my progress then
 
 ---
 
+#### 31.05.2023
+
+Just some quick notes on the BMAC_SCRIPTS folder. In future builds there will be a single SQL script for each database version. A script can be dragged into MSSQL Server Management Studio and executed to create the database. OR you can run the SCM_BuildMeAClub application. The reason for a single script? Just trying to be better organized😉. As of the date given, I'm still preparing (and testing) these new scripts. Keep a watch on the folder and look for some new release builds for SCM_BuildMeAClub.
+
+v1.1.5.2 Introduces club logos and scheduling of events. (And some other "bits and bobs".)
+
+v1.1.5.3 Introduces FINA's disqualification codes.
+
+v2.0.0.0 Introduces some major changes. Multi-Club support, new member's schema, team events (relays) and session export. (To various formats.) Will I build an SCM_Update app for this version? I don't know - what are your thoughts?
+
+It takes time to build good, solid, well performing databases 😋.
+
+---
+
 ### USING BMAC
 
 After install, by default an icon isn't placed on the desktop. Type **build** in the windows search bar to discover it. Else navigate to the **Artanemus** folder on the start bar. (All SCM applications and utilities are located in this folder.)
