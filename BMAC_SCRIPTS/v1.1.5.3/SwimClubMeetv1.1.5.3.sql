@@ -1,9 +1,10 @@
 /*
  * ER/Studio Data Architect SQL Code Generation
- * Project :      SwimClubMeet_v1.1.5.2.DM1
- * Author :       Artanemus
+ * Company :      Ambrosia
+ * Project :      SwimClubMeet_v1.1.5.3.DM1
+ * Author :       Ben Ambrose
  *
- * Date Created : Wednesday, May 31, 2023 12:10:56
+ * Date Created : Thursday, June 01, 2023 12:52:31
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -44,6 +45,7 @@ CREATE TABLE ContactNum(
     ContactNumTypeID    int             NULL,
     MemberID            int             NULL,
     IsArchived          bit             DEFAULT 0 NOT NULL,
+    CreatedOn           datetime        NULL,
     CONSTRAINT PK_ContactNum PRIMARY KEY CLUSTERED (ContactNumID)
 )
 GO
@@ -103,6 +105,60 @@ GO
 GRANT SELECT ON ContactNumType TO SCM_Guest
 GO
 GRANT SELECT ON ContactNumType TO SCM_Administrator
+GO
+
+/* 
+ * TABLE: DisqualifyCode 
+ */
+
+CREATE TABLE DisqualifyCode(
+    DisqualifyCodeID    int              IDENTITY(1,1),
+    Caption             nvarchar(128)    NULL,
+    ABREV               nvarchar(16)     NULL,
+    DisqualifyTypeID    int              NULL,
+    CONSTRAINT PK_DisqualifyCode PRIMARY KEY CLUSTERED (DisqualifyCodeID)
+)
+GO
+
+
+
+IF OBJECT_ID('DisqualifyCode') IS NOT NULL
+    PRINT '<<< CREATED TABLE DisqualifyCode >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE DisqualifyCode >>>'
+GO
+
+GRANT SELECT ON DisqualifyCode TO SCM_Marshall
+GO
+GRANT SELECT ON DisqualifyCode TO SCM_Guest
+GO
+GRANT SELECT ON DisqualifyCode TO SCM_Administrator
+GO
+
+/* 
+ * TABLE: DisqualifyType 
+ */
+
+CREATE TABLE DisqualifyType(
+    DisqualifyTypeID    int              IDENTITY(1,1),
+    Caption             nvarchar(128)    NULL,
+    CONSTRAINT PK_DisqualifyType PRIMARY KEY CLUSTERED (DisqualifyTypeID)
+)
+GO
+
+
+
+IF OBJECT_ID('DisqualifyType') IS NOT NULL
+    PRINT '<<< CREATED TABLE DisqualifyType >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE DisqualifyType >>>'
+GO
+
+GRANT SELECT ON DisqualifyType TO SCM_Guest
+GO
+GRANT SELECT ON DisqualifyType TO SCM_Marshall
+GO
+GRANT SELECT ON DisqualifyType TO SCM_Administrator
 GO
 
 /* 
@@ -291,6 +347,8 @@ INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (1, N'Individual')
 GO
 INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (2, N'Team')
 GO
+INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (3, N'Swim-O-Thon')
+GO
 SET IDENTITY_INSERT [dbo].[EventType] OFF
 GO
 
@@ -340,13 +398,14 @@ GO
  */
 
 CREATE TABLE HeatIndividual(
-    HeatID          int              IDENTITY(1,1),
-    HeatNum         int              NULL,
-    Caption         nvarchar(128)    NULL,
-    ClosedDT        datetime         NULL,
-    EventID         int              NULL,
-    HeatTypeID      int              NULL,
-    HeatStatusID    int              NULL,
+    HeatID              int              IDENTITY(1,1),
+    HeatNum             int              NULL,
+    Caption             nvarchar(128)    NULL,
+    ClosedDT            datetime         NULL,
+    EventID             int              NULL,
+    HeatTypeID          int              NULL,
+    HeatStatusID        int              NULL,
+    DisqualifyCodeID    int              NULL,
     CONSTRAINT PK_HeatIndividual PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -419,13 +478,14 @@ GO
  */
 
 CREATE TABLE HeatTeam(
-    HeatID          int              IDENTITY(1,1),
-    HeatNum         int              NULL,
-    Caption         nvarchar(128)    NULL,
-    ClosedDT        datetime         NULL,
-    EventID         int              NULL,
-    HeatTypeID      int              NULL,
-    HeatStatusID    int              NULL,
+    HeatID              int              IDENTITY(1,1),
+    HeatNum             int              NULL,
+    Caption             nvarchar(128)    NULL,
+    ClosedDT            datetime         NULL,
+    EventID             int              NULL,
+    HeatTypeID          int              NULL,
+    HeatStatusID        int              NULL,
+    DisqualifyCodeID    int              NULL,
     CONSTRAINT PK_HeatTeam PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -500,13 +560,15 @@ GO
  */
 
 CREATE TABLE House(
-    HouseID     int              IDENTITY(1,1),
-    Caption     nvarchar(128)    NULL,
-    Motto       nvarchar(128)    NULL,
-    Color       int              NULL,
-    LogoDir     varchar(max)     NULL,
-    LogoImg     image            NULL,
-    LogoType    nvarchar(5)      NULL,
+    HouseID       int              IDENTITY(1,1),
+    Caption       nvarchar(128)    NULL,
+    Motto         nvarchar(128)    NULL,
+    Color         int              NULL,
+    LogoDir       varchar(max)     NULL,
+    LogoImg       image            NULL,
+    LogoType      nvarchar(5)      NULL,
+    IsArchived    bit              NOT NULL,
+    CreatedOn     datetime         NULL,
     CONSTRAINT PK_House PRIMARY KEY CLUSTERED (HouseID)
 )
 GO
@@ -675,8 +737,6 @@ GO
 INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (3, N'Junior Dolphin 7 & Under', N'Junior Dolphin 7 and Under', 1, 1, 1, 7)
 GO
 INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (4, N'Junior Dolphin 8 Year Old', N'Junior Dolphin 8 Year Old', 1, 2, 8, 8)
-GO
-INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (5, N'Parent', N'For anyone involved in the club who is not competing, such as parents, volunteers, coaches and teachers. ', 0, 5, NULL, NULL)
 GO
 SET IDENTITY_INSERT [dbo].[MembershipType] OFF
 GO
@@ -850,13 +910,15 @@ INSERT INTO [dbo].[SCMSystem](
 ,[Minor]      -- MINOR RELEASE NUMBER
 )
 VALUES
-(1 ,1, 5, 2)
+(1 ,1, 5, 3)
 GO
 SET IDENTITY_INSERT [dbo].[SCMSystem] OFF
 
 GRANT SELECT ON SCMSystem TO SCM_Marshall
 GO
 GRANT SELECT ON SCMSystem TO SCM_Administrator
+GO
+GRANT SELECT ON SCMSystem TO SCM_Guest
 GO
 
 /* 
@@ -1039,7 +1101,7 @@ SET IDENTITY_INSERT [dbo].[SessionStatus] ON
 GO
 INSERT [dbo].[SessionStatus] ([SessionStatusID], [Caption]) VALUES (1, N'Open')
 GO
-INSERT [dbo].[SessionStatus] ([SessionStatusID], [Caption]) VALUES (2, N'Closed')
+INSERT [dbo].[SessionStatus] ([SessionStatusID], [Caption]) VALUES (2, N'Locked')
 GO
 SET IDENTITY_INSERT [dbo].[SessionStatus] OFF
 GO
@@ -1129,24 +1191,25 @@ GO
  */
 
 CREATE TABLE SwimClub(
-    SwimClubID             int              IDENTITY(1,1),
-    NickName               nvarchar(128)    NULL,
-    Caption                nvarchar(128)    NULL,
-    Email                  nvarchar(128)    NULL,
-    ContactNum             nvarchar(30)     NULL,
-    WebSite                nvarchar(256)    NULL,
-    HeatAlgorithm          int              NULL,
-    EnableTeamEvents       bit              DEFAULT 0 NULL,
-    EnableSwimOThon        bit              DEFAULT 0 NULL,
-    EnableExtHeatTypes     bit              DEFAULT 0 NULL,
-    EnableMembershipStr    bit              DEFAULT 0 NULL,
-    NumOfLanes             int              DEFAULT 8 NULL,
-    LenOfPool              int              DEFAULT 25 NULL,
-    StartOfSwimSeason      datetime         NULL,
-    CreatedOn              datetime         NULL,
-    LogoDir                varchar(max)     NULL,
-    LogoImg                image            NULL,
-    LogoType               nvarchar(5)      NULL,
+    SwimClubID                      int              IDENTITY(1,1),
+    NickName                        nvarchar(128)    NULL,
+    Caption                         nvarchar(128)    NULL,
+    Email                           nvarchar(128)    NULL,
+    ContactNum                      nvarchar(30)     NULL,
+    WebSite                         nvarchar(256)    NULL,
+    HeatAlgorithm                   int              NULL,
+    EnableTeamEvents                bit              DEFAULT 0 NULL,
+    EnableSwimOThon                 bit              DEFAULT 0 NULL,
+    EnableExtHeatTypes              bit              DEFAULT 0 NULL,
+    EnableMembershipStr             bit              DEFAULT 0 NULL,
+    EnableSimpleDisqualification    bit              DEFAULT 1 NOT NULL,
+    NumOfLanes                      int              DEFAULT 8 NULL,
+    LenOfPool                       int              DEFAULT 25 NULL,
+    StartOfSwimSeason               datetime         NULL,
+    CreatedOn                       datetime         NULL,
+    LogoDir                         varchar(max)     NULL,
+    LogoImg                         image            NULL,
+    LogoType                        nvarchar(5)      NULL,
     CONSTRAINT PK_SwimClub PRIMARY KEY NONCLUSTERED (SwimClubID)
 )
 GO
@@ -1172,6 +1235,8 @@ INSERT [dbo].[SwimClub] (
 	,[EnableTeamEvents]
 	,[EnableSwimOThon]
 	,[EnableExtHeatTypes]
+	,[EnableMemberShipStr]
+	,[EnableSimpleDisqualification]
 	,[NumOfLanes]
 	,[LenOfPool]
 	)
@@ -1186,6 +1251,8 @@ VALUES (
 	,0
 	,0
 	,0
+	,0
+	,1
 	,8
 	,25
 	)
@@ -1315,14 +1382,24 @@ GO
  * TABLE: ContactNum 
  */
 
-ALTER TABLE ContactNum ADD CONSTRAINT FK_ContactNumType_ContactNum 
+ALTER TABLE ContactNum ADD CONSTRAINT ContactNumTypeContactNum 
     FOREIGN KEY (ContactNumTypeID)
     REFERENCES ContactNumType(ContactNumTypeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE ContactNum ADD CONSTRAINT FK_Member_ContactNum 
+ALTER TABLE ContactNum ADD CONSTRAINT MemberContactNum 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE CASCADE
+GO
+
+
+/* 
+ * TABLE: DisqualifyCode 
+ */
+
+ALTER TABLE DisqualifyCode ADD CONSTRAINT DisqualifyTypeDisqualifyCode 
+    FOREIGN KEY (DisqualifyTypeID)
+    REFERENCES DisqualifyType(DisqualifyTypeID)
 GO
 
 
@@ -1330,12 +1407,12 @@ GO
  * TABLE: Entrant 
  */
 
-ALTER TABLE Entrant ADD CONSTRAINT FK_HeatIndividual_Entrant 
+ALTER TABLE Entrant ADD CONSTRAINT HeatIndividualEntrant 
     FOREIGN KEY (HeatID)
     REFERENCES HeatIndividual(HeatID) ON DELETE CASCADE
 GO
 
-ALTER TABLE Entrant ADD CONSTRAINT FK_Member_Entrant 
+ALTER TABLE Entrant ADD CONSTRAINT MemberEntrant 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE SET NULL  NOT FOR REPLICATION
 GO
@@ -1345,27 +1422,27 @@ GO
  * TABLE: Event 
  */
 
-ALTER TABLE Event ADD CONSTRAINT FK_Distance_Event 
+ALTER TABLE Event ADD CONSTRAINT DistanceEvent 
     FOREIGN KEY (DistanceID)
     REFERENCES Distance(DistanceID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_EventStatus_Event 
+ALTER TABLE Event ADD CONSTRAINT EventStatusEvent 
     FOREIGN KEY (EventStatusID)
     REFERENCES EventStatus(EventStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_EventType_Event 
+ALTER TABLE Event ADD CONSTRAINT EventTypeEvent 
     FOREIGN KEY (EventTypeID)
     REFERENCES EventType(EventTypeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_Session_Event 
+ALTER TABLE Event ADD CONSTRAINT SessionEvent 
     FOREIGN KEY (SessionID)
     REFERENCES Session(SessionID) ON DELETE CASCADE
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_Stroke_Event 
+ALTER TABLE Event ADD CONSTRAINT StrokeEvent 
     FOREIGN KEY (StrokeID)
     REFERENCES Stroke(StrokeID) ON DELETE SET NULL
 GO
@@ -1375,17 +1452,22 @@ GO
  * TABLE: HeatIndividual 
  */
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT FK_Event_HeatIndividual 
+ALTER TABLE HeatIndividual ADD CONSTRAINT DisqualifyCodeHeatIndividual 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
+
+ALTER TABLE HeatIndividual ADD CONSTRAINT EventHeatIndividual 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT FK_HeatStatus_HeatIndividual 
+ALTER TABLE HeatIndividual ADD CONSTRAINT HeatStatusHeatIndividual 
     FOREIGN KEY (HeatStatusID)
     REFERENCES HeatStatus(HeatStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT FK_HeatType_HeatIndividual 
+ALTER TABLE HeatIndividual ADD CONSTRAINT HeatTypeHeatIndividual 
     FOREIGN KEY (HeatTypeID)
     REFERENCES HeatType(HeatTypeID) ON DELETE SET NULL
 GO
@@ -1395,17 +1477,22 @@ GO
  * TABLE: HeatTeam 
  */
 
-ALTER TABLE HeatTeam ADD CONSTRAINT FK_Event_HeatTeam 
+ALTER TABLE HeatTeam ADD CONSTRAINT DisqualifyCodeHeatTeam 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
+
+ALTER TABLE HeatTeam ADD CONSTRAINT EventHeatTeam 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
-ALTER TABLE HeatTeam ADD CONSTRAINT FK_HeatStatus_HeatTeam 
+ALTER TABLE HeatTeam ADD CONSTRAINT HeatStatusHeatTeam 
     FOREIGN KEY (HeatStatusID)
     REFERENCES HeatStatus(HeatStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE HeatTeam ADD CONSTRAINT FK_HeatType_HeatTeam 
+ALTER TABLE HeatTeam ADD CONSTRAINT HeatTypeHeatTeam 
     FOREIGN KEY (HeatTypeID)
     REFERENCES HeatType(HeatTypeID) ON DELETE SET NULL
 GO
@@ -1415,22 +1502,22 @@ GO
  * TABLE: Member 
  */
 
-ALTER TABLE Member ADD CONSTRAINT FK_Gender_Member 
+ALTER TABLE Member ADD CONSTRAINT GenderMember 
     FOREIGN KEY (GenderID)
     REFERENCES Gender(GenderID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT FK_House_Member 
+ALTER TABLE Member ADD CONSTRAINT HouseMember 
     FOREIGN KEY (HouseID)
     REFERENCES House(HouseID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT FK_MembershipType_Member 
+ALTER TABLE Member ADD CONSTRAINT MembershipTypeMember 
     FOREIGN KEY (MembershipTypeID)
     REFERENCES MembershipType(MembershipTypeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT FK_SwimClub_Member 
+ALTER TABLE Member ADD CONSTRAINT SwimClubMember 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE SET NULL
 GO
@@ -1440,12 +1527,12 @@ GO
  * TABLE: Nominee 
  */
 
-ALTER TABLE Nominee ADD CONSTRAINT FK_Event_Nominee 
+ALTER TABLE Nominee ADD CONSTRAINT EventNominee 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
-ALTER TABLE Nominee ADD CONSTRAINT FK_Member_Nominee 
+ALTER TABLE Nominee ADD CONSTRAINT MemberNominee 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE SET NULL
 GO
@@ -1455,22 +1542,22 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Distance_Quali4 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali4 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Distance_Qualify 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQualify 
     FOREIGN KEY (TrialDistID)
     REFERENCES Distance(DistanceID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Gender_Qualify 
+ALTER TABLE Qualify ADD CONSTRAINT GenderQualify 
     FOREIGN KEY (GenderID)
     REFERENCES Gender(GenderID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Stroke_Qualify 
+ALTER TABLE Qualify ADD CONSTRAINT StrokeQualify 
     FOREIGN KEY (StrokeID)
     REFERENCES Stroke(StrokeID) ON DELETE SET NULL
 GO
@@ -1480,12 +1567,12 @@ GO
  * TABLE: ScoreDivision 
  */
 
-ALTER TABLE ScoreDivision ADD CONSTRAINT FK_Gender_ScoreDivision 
+ALTER TABLE ScoreDivision ADD CONSTRAINT GenderScoreDivision 
     FOREIGN KEY (GenderID)
     REFERENCES Gender(GenderID)
 GO
 
-ALTER TABLE ScoreDivision ADD CONSTRAINT FK_SwimClub_ScoreDivision 
+ALTER TABLE ScoreDivision ADD CONSTRAINT SwimClubScoreDivision 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
 GO
@@ -1495,7 +1582,7 @@ GO
  * TABLE: ScorePoints 
  */
 
-ALTER TABLE ScorePoints ADD CONSTRAINT FK_SwimClub_ScorePoints 
+ALTER TABLE ScorePoints ADD CONSTRAINT SwimClubScorePoints 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE CASCADE
 GO
@@ -1505,12 +1592,12 @@ GO
  * TABLE: Session 
  */
 
-ALTER TABLE Session ADD CONSTRAINT FK_SessionStatus_Session 
+ALTER TABLE Session ADD CONSTRAINT SessionStatusSession 
     FOREIGN KEY (SessionStatusID)
     REFERENCES SessionStatus(SessionStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Session ADD CONSTRAINT FK_SwimClub_Session 
+ALTER TABLE Session ADD CONSTRAINT SwimClubSession 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE CASCADE
 GO
@@ -1520,7 +1607,7 @@ GO
  * TABLE: Split 
  */
 
-ALTER TABLE Split ADD CONSTRAINT FK_Entrant_Split 
+ALTER TABLE Split ADD CONSTRAINT EntrantSplit 
     FOREIGN KEY (EntrantID)
     REFERENCES Entrant(EntrantID) ON DELETE CASCADE
 GO
@@ -1530,7 +1617,7 @@ GO
  * TABLE: Team 
  */
 
-ALTER TABLE Team ADD CONSTRAINT FK_HeatTeam_Team 
+ALTER TABLE Team ADD CONSTRAINT HeatTeamTeam 
     FOREIGN KEY (HeatID)
     REFERENCES HeatTeam(HeatID) ON DELETE CASCADE
 GO
@@ -1540,17 +1627,17 @@ GO
  * TABLE: TeamEntrant 
  */
 
-ALTER TABLE TeamEntrant ADD CONSTRAINT FK_Member_TeamEntrant 
+ALTER TABLE TeamEntrant ADD CONSTRAINT MemberTeamEntrant 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE SET NULL
 GO
 
-ALTER TABLE TeamEntrant ADD CONSTRAINT FK_Stroke_TeamEntrant 
+ALTER TABLE TeamEntrant ADD CONSTRAINT StrokeTeamEntrant 
     FOREIGN KEY (StrokeID)
     REFERENCES Stroke(StrokeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE TeamEntrant ADD CONSTRAINT FK_Team_TeamEntrant 
+ALTER TABLE TeamEntrant ADD CONSTRAINT TeamTeamEntrant 
     FOREIGN KEY (TeamID)
     REFERENCES Team(TeamID) ON DELETE CASCADE
 GO
@@ -1560,7 +1647,7 @@ GO
  * TABLE: TeamSplit 
  */
 
-ALTER TABLE TeamSplit ADD CONSTRAINT FK_TeamEntrant_TeamSplit 
+ALTER TABLE TeamSplit ADD CONSTRAINT TeamEntrantTeamSplit 
     FOREIGN KEY (TeamEntrantID)
     REFERENCES TeamEntrant(TeamEntrantID) ON DELETE CASCADE
 GO
@@ -1870,11 +1957,11 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION EntrantScore >>>'
 GO
 
-GRANT EXECUTE ON EntrantScore TO SCM_Marshall
+GRANT EXECUTE ON EntrantScore TO SCM_Administrator
 GO
 GRANT EXECUTE ON EntrantScore TO SCM_Guest
 GO
-GRANT EXECUTE ON EntrantScore TO SCM_Administrator
+GRANT EXECUTE ON EntrantScore TO SCM_Marshall
 GO
 
 
