@@ -21,7 +21,7 @@ If you are interested in following a developer's blog and track my progress then
 
 Just some quick notes on the BMAC_SCRIPTS folder. In future builds there will be a single SQL script for each database version. (02/06/23 Keep a watch on the folder and look for some new release builds for SCM_BuildMeAClub.)
 
-I've done a little work on the repo's wiki. Her you'll find some info on the versions and other bits.
+I've done a little work on the repo's wiki. Here you'll find some info on the versions and other bits.
 
 It takes time to build a solid, well performing database 😋. I reach out to users - do you want to sponsor me?
 
