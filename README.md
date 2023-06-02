@@ -21,15 +21,9 @@ If you are interested in following a developer's blog and track my progress then
 
 Just some quick notes on the BMAC_SCRIPTS folder. In future builds there will be a single SQL script for each database version. (02/06/23 Keep a watch on the folder and look for some new release builds for SCM_BuildMeAClub.)
 
-v1.1.5.2 Introduces club logos, scheduling of events and FINA's disqualification codes. (And some other "bits and bobs".)
+I've done a little work on the repo's wiki. Her you'll find some info on the versions and other bits.
 
-v1.1.5.3 Introduces teamed events.
-
-v2.0.0.0 Introduces some major changes. Multi-Club support, new member's schema and session export. (To various formats.) 
-
-It takes time to build a solid, well performing databases 😋.
-
-You'll find more info in the Wiki.
+It takes time to build a solid, well performing database 😋. I reach out to users - do you want to sponsor me?
 
 ---
 
