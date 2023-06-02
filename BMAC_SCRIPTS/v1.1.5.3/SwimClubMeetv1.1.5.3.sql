@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Thursday, June 01, 2023 12:52:31
+ * Date Created : Friday, June 02, 2023 12:48:52
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -347,8 +347,6 @@ INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (1, N'Individual')
 GO
 INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (2, N'Team')
 GO
-INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (3, N'Swim-O-Thon')
-GO
 SET IDENTITY_INSERT [dbo].[EventType] OFF
 GO
 
@@ -673,7 +671,6 @@ CREATE TABLE Member(
     EnableEmailOut              bit              DEFAULT 0 NULL,
     GenderID                    int              NULL,
     SwimClubID                  int              NULL,
-    MembershipTypeID            int              NULL,
     CreatedOn                   datetime         NULL,
     ArchivedOn                  datetime         NULL,
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
@@ -703,55 +700,6 @@ GO
 GRANT SELECT ON Member TO SCM_Guest
 GO
 GRANT DELETE ON Member TO SCM_Administrator
-GO
-
-/* 
- * TABLE: MembershipType 
- */
-
-CREATE TABLE MembershipType(
-    MembershipTypeID    int              IDENTITY(1,1),
-    Caption             nvarchar(64)     NULL,
-    LongCaption         nvarchar(128)    NULL,
-    IsSwimmer           bit              DEFAULT 1 NULL,
-    Sort                int              NULL,
-    AgeFrom             int              NULL,
-    AgeTo               int              NULL,
-    CONSTRAINT PK_MembershipType PRIMARY KEY NONCLUSTERED (MembershipTypeID)
-)
-GO
-
-
-
-IF OBJECT_ID('MembershipType') IS NOT NULL
-    PRINT '<<< CREATED TABLE MembershipType >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE MembershipType >>>'
-GO
-SET IDENTITY_INSERT [dbo].[MembershipType] ON 
-GO
-INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (1, N'Competitive Swimmer 9 years+', N'Competitive Swimmer 9 years and over.', 1, 3, 9, NULL)
-GO
-INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (2, N'Casual Swimmer 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ', 1, 4, 9, NULL)
-GO
-INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (3, N'Junior Dolphin 7 & Under', N'Junior Dolphin 7 and Under', 1, 1, 1, 7)
-GO
-INSERT [dbo].[MembershipType] ([MembershipTypeID], [Caption], [LongCaption], [IsSwimmer], [Sort], [AgeFrom], [AgeTo]) VALUES (4, N'Junior Dolphin 8 Year Old', N'Junior Dolphin 8 Year Old', 1, 2, 8, 8)
-GO
-SET IDENTITY_INSERT [dbo].[MembershipType] OFF
-GO
-
-GRANT INSERT ON MembershipType TO SCM_Administrator
-GO
-GRANT SELECT ON MembershipType TO SCM_Administrator
-GO
-GRANT UPDATE ON MembershipType TO SCM_Administrator
-GO
-GRANT SELECT ON MembershipType TO SCM_Marshall
-GO
-GRANT SELECT ON MembershipType TO SCM_Guest
-GO
-GRANT DELETE ON MembershipType TO SCM_Administrator
 GO
 
 /* 
@@ -1269,6 +1217,51 @@ GRANT SELECT ON SwimClub TO SCM_Marshall
 GO
 
 /* 
+ * TABLE: SwimmerClass 
+ */
+
+CREATE TABLE SwimmerClass(
+    SwimmerClassID    int              IDENTITY(1,1),
+    Caption           nvarchar(64)     NULL,
+    LongCaption       nvarchar(128)    NULL,
+    AgeFrom           int              NULL,
+    AgeTo             int              NULL,
+    CONSTRAINT PK_MembershipType PRIMARY KEY NONCLUSTERED (SwimmerClassID)
+)
+GO
+
+
+
+IF OBJECT_ID('SwimmerClass') IS NOT NULL
+    PRINT '<<< CREATED TABLE SwimmerClass >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE SwimmerClass >>>'
+GO
+SET IDENTITY_INSERT [dbo].[SwimmerClass] ON 
+GO
+INSERT [dbo].[SwimmerClass] ([SwimmerClassID], [Caption], [LongCaption], [AgeFrom], [AgeTo]) VALUES 
+(1, N'Competitive Swimmer 9 years+', N'Competitive Swimmer 9 years and over.', 9, NULL)
+,(2, N'Casual Swimmer 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ', 9, NULL)
+,(3, N'Junior Dolphin 7 & Under', N'Junior Dolphin 7 and Under', 1, 7)
+,(4, N'Junior Dolphin 8 Year Old', N'Junior Dolphin 8 Year Old', 8, 8)
+GO
+SET IDENTITY_INSERT [dbo].[SwimmerClass] OFF
+GO
+
+GRANT INSERT ON SwimmerClass TO SCM_Administrator
+GO
+GRANT SELECT ON SwimmerClass TO SCM_Administrator
+GO
+GRANT UPDATE ON SwimmerClass TO SCM_Administrator
+GO
+GRANT SELECT ON SwimmerClass TO SCM_Marshall
+GO
+GRANT SELECT ON SwimmerClass TO SCM_Guest
+GO
+GRANT DELETE ON SwimmerClass TO SCM_Administrator
+GO
+
+/* 
  * TABLE: Team 
  */
 
@@ -1512,11 +1505,6 @@ ALTER TABLE Member ADD CONSTRAINT HouseMember
     REFERENCES House(HouseID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT MembershipTypeMember 
-    FOREIGN KEY (MembershipTypeID)
-    REFERENCES MembershipType(MembershipTypeID) ON DELETE SET NULL
-GO
-
 ALTER TABLE Member ADD CONSTRAINT SwimClubMember 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE SET NULL
@@ -1657,9 +1645,6 @@ GO
  * FUNCTION: ABSEventPlace 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[ABSEventPlace]    Script Date: 20/11/2020 12:40:49 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1747,9 +1732,6 @@ GO
 /* 
  * FUNCTION: ABSHeatPlace 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[ABSHeatPlace]    Script Date: 20/11/2020 12:41:05 PM ******/
 SET ANSI_NULLS ON
@@ -1840,9 +1822,6 @@ GO
  * FUNCTION: EntrantCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[EntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1900,9 +1879,6 @@ GO
 /* 
  * FUNCTION: EntrantScore 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[EntrantScore]    Script Date: 28/08/22 4:13:31 PM ******/
 SET ANSI_NULLS ON
@@ -1969,9 +1945,6 @@ GO
  * FUNCTION: HeatCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[HeatCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2032,50 +2005,50 @@ GO
  * FUNCTION: IsMemberNominated 
  */
 
-USE [SwimClubMeet]
-GO
-
-/****** Object:  UserDefinedFunction [dbo].[IsMemberNominated]    Script Date: 26/05/22 11:28:58 AM ******/
+/****** Object:  UserDefinedFunction [dbo].[IsMemberNominated]    Script Date: 04/02/23 9:29:06 AM ******/
 SET ANSI_NULLS ON
 GO
-
 SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
 -- Author:		Ben Ambrose
--- Create date: 25/05/2022
+-- Create date: 04/02/2023
 -- Description:	Is the member nominated for the event
 -- =============================================
-CREATE FUNCTION [IsMemberNominated] 
+CREATE FUNCTION [IsMemberNominated]
 (
-	-- Add the parameters for the function here
-	@MemberID int
-	,@EventID int
+    -- Add the parameters for the function here
+    @MemberID INT
+  , @EventID INT
 )
-RETURNS Bit
+RETURNS BIT
 AS
 BEGIN
-	-- Declare the return variable here
-	DECLARE @Result Bit
+    -- Declare the return variable here
+    DECLARE @Result BIT;
+    DECLARE @Count AS INTEGER;
 
-	-- Add the T-SQL statements to compute the return value here
-    SELECT @Result = (
-            SELECT CASE 
-                    WHEN [NomineeID] IS NOT NULL
-                        THEN 0
-                    ELSE 1
-                    END
-            FROM Nominee
-            WHERE MemberID = @MemberID AND EventID = @EventID
-            )
+    SELECT @Count =
+    (
+        SELECT COUNT(dbo.nominee.NomineeID) AS NOM
+        FROM Nominee
+        WHERE memberid = @MemberID
+              AND EventID = @EventID
+    );
 
-	-- Return the result of the function
-	RETURN @Result
+    IF @Count = 0
+        SELECT @Result = 0;
+    ELSE
+        SELECT @Result = 1;
+
+    -- Return the result of the function
+    RETURN @Result
 
 END
-GO
 
+
+GO
 IF OBJECT_ID('IsMemberNominated') IS NOT NULL
     PRINT '<<< CREATED FUNCTION IsMemberNominated >>>'
 ELSE
@@ -2093,9 +2066,6 @@ GO
 /* 
  * FUNCTION: IsMemberQualified 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[IsMemberQualified]    Script Date: 26/05/22 11:29:28 AM ******/
 SET ANSI_NULLS ON
@@ -2201,9 +2171,6 @@ GO
  * FUNCTION: IsPoolShortCourse 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[IsPoolShortCourse]    Script Date: 4/10/2020 9:25:38 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -2270,9 +2237,6 @@ GO
  * FUNCTION: NomineeCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[NomineeCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2332,9 +2296,6 @@ GO
 /* 
  * FUNCTION: PersonalBest 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[PersonalBest]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2411,9 +2372,6 @@ GO
  * FUNCTION: RaceTimeDIFF 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[RaceTimeDIFF]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2462,20 +2420,17 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION RaceTimeDIFF >>>'
 GO
 
+GRANT EXECUTE ON RaceTimeDIFF TO SCM_Administrator
+GO
 GRANT EXECUTE ON RaceTimeDIFF TO SCM_Marshall
 GO
 GRANT EXECUTE ON RaceTimeDIFF TO SCM_Guest
-GO
-GRANT EXECUTE ON RaceTimeDIFF TO SCM_Administrator
 GO
 
 
 /* 
  * FUNCTION: RELEventPlace 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[RELEventPlace]    Script Date: 20/11/2020 12:41:46 PM ******/
 SET ANSI_NULLS ON
@@ -2581,9 +2536,6 @@ GO
  * FUNCTION: RELHeatPlace 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[RELHeatPlace]    Script Date: 20/11/2020 12:41:52 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2675,20 +2627,17 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION RELHeatPlace >>>'
 GO
 
-GRANT EXECUTE ON RELHeatPlace TO SCM_Marshall
-GO
 GRANT EXECUTE ON RELHeatPlace TO SCM_Guest
 GO
 GRANT EXECUTE ON RELHeatPlace TO SCM_Administrator
+GO
+GRANT EXECUTE ON RELHeatPlace TO SCM_Marshall
 GO
 
 
 /* 
  * FUNCTION: SessionEntrantCount 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[SessionEntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2748,9 +2697,6 @@ GO
  * FUNCTION: SessionNomineeCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SessionNomineeCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS OFF
 GO
@@ -2807,9 +2753,6 @@ GO
  * FUNCTION: SwimmerAge 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SwimmerAge]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2863,9 +2806,6 @@ GO
 /* 
  * FUNCTION: SwimmerGenderToString 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[SwimmerGenderToString]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS OFF
@@ -2927,9 +2867,6 @@ GO
  * FUNCTION: SwimTimeToMilliseconds 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SwimTimeToMilliseconds]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2984,9 +2921,6 @@ GO
 /* 
  * FUNCTION: SwimTimeToString 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[SwimTimeToString]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3050,9 +2984,6 @@ GO
 /* 
  * FUNCTION: TimeToBeat 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3134,9 +3065,6 @@ GO
  * FUNCTION: TimeToBeat_1 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_1]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -3211,9 +3139,6 @@ GO
 /* 
  * FUNCTION: TimeToBeat_2 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_2]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3303,8 +3228,6 @@ GO
  * FUNCTION: TimeToBeat_DEFAULT 
  */
 
-USE [SwimClubMeet]
-GO
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_DEFAULT]    Script Date: 5/03/2022 2:04:09 PM ******/
 SET ANSI_NULLS ON
 GO

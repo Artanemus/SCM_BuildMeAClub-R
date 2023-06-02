@@ -3,7 +3,7 @@
  * Project :      SwimClubMeet_v1.1.5.2.DM1
  * Author :       Artanemus
  *
- * Date Created : Thursday, June 01, 2023 11:21:43
+ * Date Created : Friday, June 02, 2023 12:46:33
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -103,6 +103,152 @@ GO
 GRANT SELECT ON ContactNumType TO SCM_Guest
 GO
 GRANT SELECT ON ContactNumType TO SCM_Administrator
+GO
+
+/* 
+ * TABLE: DisqualifyCode 
+ */
+
+CREATE TABLE DisqualifyCode(
+    DisqualifyCodeID    int              IDENTITY(1,1),
+    Caption             nvarchar(128)    NULL,
+    ABREV               nvarchar(16)     NULL,
+    DisqualifyTypeID    int              NULL,
+    CONSTRAINT PK_DisqualifyCode PRIMARY KEY CLUSTERED (DisqualifyCodeID)
+)
+GO
+
+
+
+IF OBJECT_ID('DisqualifyCode') IS NOT NULL
+    PRINT '<<< CREATED TABLE DisqualifyCode >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE DisqualifyCode >>>'
+GO
+SET IDENTITY_INSERT  [dbo].[DisqualifyCode] ON;
+
+-- Insert rows into tableN'DisqualifyCodeCodes'
+INSERT INTO DisqualifyCode
+( -- columns to insert data into
+ [DisqualifyCodeID], [Caption], [ABREV], [DisqualifyTypeID]
+)
+VALUES
+(1,N'False start', N'GA', 1),
+(2,N'Delay of meet', N'GB', 1),
+(3,N'Unsportsmanlike manner', N'GC', 1),
+(4,N'Interference with another swimmer', N'GD', 1),
+(5,N'Did not swim stroke specified', N'GE', 1),
+(6,N'Did not swim distance specified', N'GF', 1),
+(7,N'Did not finish in same lane', N'GG', 1),
+(8,N'Standing on bottom during any stroke but freestyle', N'GH', 1),
+(9,N'Swimmer swam in wrong lane', N'GI', 1),
+(10,N'Swimmer made use of aids', N'GJ', 1),
+(11,N'Swimmer did not finish', N'GK', 1),
+(12,N'Pulled on lane ropes', N'GL', 1),
+(13,N'Use of not FINA approved swim suit', N'GM', 1),
+(14,N'Use of more than one swim suit', N'GN', 1),
+(15,N'Use of tape on the body', N'GO', 1),
+
+-- Freestyle
+(16, N'No touch at turn or finish', N'FrA' ,2),
+(17, N'Swam under water more than 15 meters after start or turn', N'FrB' ,2),
+(18, N'Walked on pool bottom and/or pushed off bottom', N'FrC' ,2),
+
+-- Backstroke
+(19, N'Toes over the gutter', N'BaA' ,3),
+(20, N'Head did not break surface by 15 meters after start or turn', N'BaB' ,3),
+(21, N'Shoulders past vertical', N'BaC' ,3),
+(22, N'No touch at turn and/or finish', N'BaD' ,3),
+(23, N'Not on back off wall', N'BaE' ,3),
+(24, N'Did not finish on back', N'BaF' ,3),
+(25, N'Past vertical at turn: non continuous turning action', N'BaG' ,3),
+(26, N'Past vertical at turn: independent kicks', N'BaH' ,3),
+(27, N'Past vertical at turn: independent strokes', N'BaI' ,3),
+(28, N'Sub-merged at the finish', N'BaJ' ,3),
+
+-- Breaststroke
+(29, N'Head did not break surface before hands turned inside at widest part of second stroke', N'BrA' ,4),
+(30, N'Head did not break surface of water during each complete stroke cycle', N'BrB' ,4),
+(31, N'Arm movements not always simultaneous and in horizontal plane', N'BrC' ,4),
+(32, N'Leg Movements not always simultaneous and in horizontal plane', N'BrD' ,4),
+(33, N'Hands not pushed forward on, under or over water', N'BrE' ,4),
+
+-- BUTTERFLY 
+ 
+(34, N'Head did not break surface 15 meters after start or turn', N'BfA' ,5),
+(35 , N'More than one arm pull under water after start or turn', N'BfB' ,5), 
+(36 , N'Not toward breast off the wall', N'BfC' ,5), 
+(37 , N'Did not bring arms forward and/or backward simultaneously', N'BfD' ,5),
+(38 , N'Did not bring arms forward over water', N'BfE' ,5), 
+(39, N'Did not execute movement of both feet in same way', N'BfF' ,5), 
+(40, N'Touch was not made with both hands separated and simultaneously at turn and/or finish', N'BfG' ,5), 
+(41, N'No touch at turn and/or finish', N'BfH' ,5),
+(42, N'Arm movements did not continue throughout race', N'BfI' ,5),
+(43, N'More than one breaststroke kick per arm pull', N'BfJ' ,5),
+
+-- Individual Medley
+(44, N'Freestyle swum as backstroke, breaststroke or butterfly', N'IMA' ,6),
+(45, N'Not swum in right order', N'IMB' ,6),
+(46, N'Stroke infraction - use stroke codes', N'IMC' ,6),
+
+-- Relay
+(47, N'Early swimmer take-off # (RA#)', N'RA#' ,7),
+(48, N'Medley not swum in right order', N'RB' ,7),
+(49, N'Changed order of swimmers',N'RC',7),
+(50, N'Non listed swimmer swam',N'RD',7),
+(51, N'Stroke infraction - use stroke codes and swimmer',N'RE',7),
+(52, N'Swimmer other than the swimmer designated to swim entered race area before finished',N'Rf',7)
+
+GO
+
+SET IDENTITY_INSERT [dbo].[DisqualifyCode]  OFF;
+
+GRANT SELECT ON DisqualifyCode TO SCM_Guest
+GO
+GRANT SELECT ON DisqualifyCode TO SCM_Administrator
+GO
+GRANT SELECT ON DisqualifyCode TO SCM_Marshall
+GO
+
+/* 
+ * TABLE: DisqualifyType 
+ */
+
+CREATE TABLE DisqualifyType(
+    DisqualifyTypeID    int              IDENTITY(1,1),
+    Caption             nvarchar(128)    NULL,
+    CONSTRAINT PK_DisqualifyType PRIMARY KEY CLUSTERED (DisqualifyTypeID)
+)
+GO
+
+
+
+IF OBJECT_ID('DisqualifyType') IS NOT NULL
+    PRINT '<<< CREATED TABLE DisqualifyType >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE DisqualifyType >>>'
+GO
+SET IDENTITY_INSERT  [dbo].[DisqualifyType] ON;
+INSERT INTO DisqualifyType
+(
+[DisqualifyTypeID], [Caption]
+)
+VALUES
+(1, N'General')
+,(2, N'Freestyle')
+,(3, N'Backstroke')
+,(4, N'Breaststroke')
+,(5, N'Butterfly')
+,(6, N'Individual Medley')
+,(7, N'Relays')
+
+SET IDENTITY_INSERT  [dbo].[DisqualifyType] OFF;
+
+GRANT SELECT ON DisqualifyType TO SCM_Marshall
+GO
+GRANT SELECT ON DisqualifyType TO SCM_Administrator
+GO
+GRANT SELECT ON DisqualifyType TO SCM_Guest
 GO
 
 /* 
@@ -340,13 +486,14 @@ GO
  */
 
 CREATE TABLE HeatIndividual(
-    HeatID          int              IDENTITY(1,1),
-    HeatNum         int              NULL,
-    Caption         nvarchar(128)    NULL,
-    ClosedDT        datetime         NULL,
-    EventID         int              NULL,
-    HeatTypeID      int              NULL,
-    HeatStatusID    int              NULL,
+    HeatID              int              IDENTITY(1,1),
+    HeatNum             int              NULL,
+    Caption             nvarchar(128)    NULL,
+    ClosedDT            datetime         NULL,
+    EventID             int              NULL,
+    HeatTypeID          int              NULL,
+    HeatStatusID        int              NULL,
+    DisqualifyCodeID    int              NULL,
     CONSTRAINT PK_HeatIndividual PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -419,13 +566,14 @@ GO
  */
 
 CREATE TABLE HeatTeam(
-    HeatID          int              IDENTITY(1,1),
-    HeatNum         int              NULL,
-    Caption         nvarchar(128)    NULL,
-    ClosedDT        datetime         NULL,
-    EventID         int              NULL,
-    HeatTypeID      int              NULL,
-    HeatStatusID    int              NULL,
+    HeatID              int              IDENTITY(1,1),
+    HeatNum             int              NULL,
+    Caption             nvarchar(128)    NULL,
+    ClosedDT            datetime         NULL,
+    EventID             int              NULL,
+    HeatTypeID          int              NULL,
+    HeatStatusID        int              NULL,
+    DisqualifyCodeID    int              NULL,
     CONSTRAINT PK_HeatTeam PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -1317,14 +1465,24 @@ GO
  * TABLE: ContactNum 
  */
 
-ALTER TABLE ContactNum ADD CONSTRAINT FK_ContactNumType_ContactNum 
+ALTER TABLE ContactNum ADD CONSTRAINT ContactNumTypeContactNum 
     FOREIGN KEY (ContactNumTypeID)
     REFERENCES ContactNumType(ContactNumTypeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE ContactNum ADD CONSTRAINT FK_Member_ContactNum 
+ALTER TABLE ContactNum ADD CONSTRAINT MemberContactNum 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE CASCADE
+GO
+
+
+/* 
+ * TABLE: DisqualifyCode 
+ */
+
+ALTER TABLE DisqualifyCode ADD CONSTRAINT DisqualifyTypeDisqualifyCode 
+    FOREIGN KEY (DisqualifyTypeID)
+    REFERENCES DisqualifyType(DisqualifyTypeID)
 GO
 
 
@@ -1332,12 +1490,12 @@ GO
  * TABLE: Entrant 
  */
 
-ALTER TABLE Entrant ADD CONSTRAINT FK_HeatIndividual_Entrant 
+ALTER TABLE Entrant ADD CONSTRAINT HeatIndividualEntrant 
     FOREIGN KEY (HeatID)
     REFERENCES HeatIndividual(HeatID) ON DELETE CASCADE
 GO
 
-ALTER TABLE Entrant ADD CONSTRAINT FK_Member_Entrant 
+ALTER TABLE Entrant ADD CONSTRAINT MemberEntrant 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE SET NULL  NOT FOR REPLICATION
 GO
@@ -1347,27 +1505,27 @@ GO
  * TABLE: Event 
  */
 
-ALTER TABLE Event ADD CONSTRAINT FK_Distance_Event 
+ALTER TABLE Event ADD CONSTRAINT DistanceEvent 
     FOREIGN KEY (DistanceID)
     REFERENCES Distance(DistanceID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_EventStatus_Event 
+ALTER TABLE Event ADD CONSTRAINT EventStatusEvent 
     FOREIGN KEY (EventStatusID)
     REFERENCES EventStatus(EventStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_EventType_Event 
+ALTER TABLE Event ADD CONSTRAINT EventTypeEvent 
     FOREIGN KEY (EventTypeID)
     REFERENCES EventType(EventTypeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_Session_Event 
+ALTER TABLE Event ADD CONSTRAINT SessionEvent 
     FOREIGN KEY (SessionID)
     REFERENCES Session(SessionID) ON DELETE CASCADE
 GO
 
-ALTER TABLE Event ADD CONSTRAINT FK_Stroke_Event 
+ALTER TABLE Event ADD CONSTRAINT StrokeEvent 
     FOREIGN KEY (StrokeID)
     REFERENCES Stroke(StrokeID) ON DELETE SET NULL
 GO
@@ -1377,17 +1535,22 @@ GO
  * TABLE: HeatIndividual 
  */
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT FK_Event_HeatIndividual 
+ALTER TABLE HeatIndividual ADD CONSTRAINT DisqualifyCodeHeatIndividual 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
+
+ALTER TABLE HeatIndividual ADD CONSTRAINT EventHeatIndividual 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT FK_HeatStatus_HeatIndividual 
+ALTER TABLE HeatIndividual ADD CONSTRAINT HeatStatusHeatIndividual 
     FOREIGN KEY (HeatStatusID)
     REFERENCES HeatStatus(HeatStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT FK_HeatType_HeatIndividual 
+ALTER TABLE HeatIndividual ADD CONSTRAINT HeatTypeHeatIndividual 
     FOREIGN KEY (HeatTypeID)
     REFERENCES HeatType(HeatTypeID) ON DELETE SET NULL
 GO
@@ -1397,17 +1560,22 @@ GO
  * TABLE: HeatTeam 
  */
 
-ALTER TABLE HeatTeam ADD CONSTRAINT FK_Event_HeatTeam 
+ALTER TABLE HeatTeam ADD CONSTRAINT DisqualifyCodeHeatTeam 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
+
+ALTER TABLE HeatTeam ADD CONSTRAINT EventHeatTeam 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
-ALTER TABLE HeatTeam ADD CONSTRAINT FK_HeatStatus_HeatTeam 
+ALTER TABLE HeatTeam ADD CONSTRAINT HeatStatusHeatTeam 
     FOREIGN KEY (HeatStatusID)
     REFERENCES HeatStatus(HeatStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE HeatTeam ADD CONSTRAINT FK_HeatType_HeatTeam 
+ALTER TABLE HeatTeam ADD CONSTRAINT HeatTypeHeatTeam 
     FOREIGN KEY (HeatTypeID)
     REFERENCES HeatType(HeatTypeID) ON DELETE SET NULL
 GO
@@ -1417,22 +1585,22 @@ GO
  * TABLE: Member 
  */
 
-ALTER TABLE Member ADD CONSTRAINT FK_Gender_Member 
+ALTER TABLE Member ADD CONSTRAINT GenderMember 
     FOREIGN KEY (GenderID)
     REFERENCES Gender(GenderID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT FK_House_Member 
+ALTER TABLE Member ADD CONSTRAINT HouseMember 
     FOREIGN KEY (HouseID)
     REFERENCES House(HouseID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT FK_MembershipType_Member 
+ALTER TABLE Member ADD CONSTRAINT MembershipTypeMember 
     FOREIGN KEY (MembershipTypeID)
     REFERENCES MembershipType(MembershipTypeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Member ADD CONSTRAINT FK_SwimClub_Member 
+ALTER TABLE Member ADD CONSTRAINT SwimClubMember 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE SET NULL
 GO
@@ -1442,12 +1610,12 @@ GO
  * TABLE: Nominee 
  */
 
-ALTER TABLE Nominee ADD CONSTRAINT FK_Event_Nominee 
+ALTER TABLE Nominee ADD CONSTRAINT EventNominee 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
-ALTER TABLE Nominee ADD CONSTRAINT FK_Member_Nominee 
+ALTER TABLE Nominee ADD CONSTRAINT MemberNominee 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE SET NULL
 GO
@@ -1457,22 +1625,22 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Distance_Quali4 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali4 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Distance_Qualify 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQualify 
     FOREIGN KEY (TrialDistID)
     REFERENCES Distance(DistanceID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Gender_Qualify 
+ALTER TABLE Qualify ADD CONSTRAINT GenderQualify 
     FOREIGN KEY (GenderID)
     REFERENCES Gender(GenderID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT FK_Stroke_Qualify 
+ALTER TABLE Qualify ADD CONSTRAINT StrokeQualify 
     FOREIGN KEY (StrokeID)
     REFERENCES Stroke(StrokeID) ON DELETE SET NULL
 GO
@@ -1482,12 +1650,12 @@ GO
  * TABLE: ScoreDivision 
  */
 
-ALTER TABLE ScoreDivision ADD CONSTRAINT FK_Gender_ScoreDivision 
+ALTER TABLE ScoreDivision ADD CONSTRAINT GenderScoreDivision 
     FOREIGN KEY (GenderID)
     REFERENCES Gender(GenderID)
 GO
 
-ALTER TABLE ScoreDivision ADD CONSTRAINT FK_SwimClub_ScoreDivision 
+ALTER TABLE ScoreDivision ADD CONSTRAINT SwimClubScoreDivision 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
 GO
@@ -1497,7 +1665,7 @@ GO
  * TABLE: ScorePoints 
  */
 
-ALTER TABLE ScorePoints ADD CONSTRAINT FK_SwimClub_ScorePoints 
+ALTER TABLE ScorePoints ADD CONSTRAINT SwimClubScorePoints 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE CASCADE
 GO
@@ -1507,12 +1675,12 @@ GO
  * TABLE: Session 
  */
 
-ALTER TABLE Session ADD CONSTRAINT FK_SessionStatus_Session 
+ALTER TABLE Session ADD CONSTRAINT SessionStatusSession 
     FOREIGN KEY (SessionStatusID)
     REFERENCES SessionStatus(SessionStatusID) ON DELETE SET NULL
 GO
 
-ALTER TABLE Session ADD CONSTRAINT FK_SwimClub_Session 
+ALTER TABLE Session ADD CONSTRAINT SwimClubSession 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE CASCADE
 GO
@@ -1522,7 +1690,7 @@ GO
  * TABLE: Split 
  */
 
-ALTER TABLE Split ADD CONSTRAINT FK_Entrant_Split 
+ALTER TABLE Split ADD CONSTRAINT EntrantSplit 
     FOREIGN KEY (EntrantID)
     REFERENCES Entrant(EntrantID) ON DELETE CASCADE
 GO
@@ -1532,7 +1700,7 @@ GO
  * TABLE: Team 
  */
 
-ALTER TABLE Team ADD CONSTRAINT FK_HeatTeam_Team 
+ALTER TABLE Team ADD CONSTRAINT HeatTeamTeam 
     FOREIGN KEY (HeatID)
     REFERENCES HeatTeam(HeatID) ON DELETE CASCADE
 GO
@@ -1542,17 +1710,17 @@ GO
  * TABLE: TeamEntrant 
  */
 
-ALTER TABLE TeamEntrant ADD CONSTRAINT FK_Member_TeamEntrant 
+ALTER TABLE TeamEntrant ADD CONSTRAINT MemberTeamEntrant 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID) ON DELETE SET NULL
 GO
 
-ALTER TABLE TeamEntrant ADD CONSTRAINT FK_Stroke_TeamEntrant 
+ALTER TABLE TeamEntrant ADD CONSTRAINT StrokeTeamEntrant 
     FOREIGN KEY (StrokeID)
     REFERENCES Stroke(StrokeID) ON DELETE SET NULL
 GO
 
-ALTER TABLE TeamEntrant ADD CONSTRAINT FK_Team_TeamEntrant 
+ALTER TABLE TeamEntrant ADD CONSTRAINT TeamTeamEntrant 
     FOREIGN KEY (TeamID)
     REFERENCES Team(TeamID) ON DELETE CASCADE
 GO
@@ -1562,7 +1730,7 @@ GO
  * TABLE: TeamSplit 
  */
 
-ALTER TABLE TeamSplit ADD CONSTRAINT FK_TeamEntrant_TeamSplit 
+ALTER TABLE TeamSplit ADD CONSTRAINT TeamEntrantTeamSplit 
     FOREIGN KEY (TeamEntrantID)
     REFERENCES TeamEntrant(TeamEntrantID) ON DELETE CASCADE
 GO
@@ -1571,9 +1739,6 @@ GO
 /* 
  * FUNCTION: ABSEventPlace 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[ABSEventPlace]    Script Date: 20/11/2020 12:40:49 PM ******/
 SET ANSI_NULLS ON
@@ -1662,9 +1827,6 @@ GO
 /* 
  * FUNCTION: ABSHeatPlace 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[ABSHeatPlace]    Script Date: 20/11/2020 12:41:05 PM ******/
 SET ANSI_NULLS ON
@@ -1755,9 +1917,6 @@ GO
  * FUNCTION: EntrantCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[EntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1815,9 +1974,6 @@ GO
 /* 
  * FUNCTION: EntrantScore 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[EntrantScore]    Script Date: 28/08/22 4:13:31 PM ******/
 SET ANSI_NULLS ON
@@ -1884,9 +2040,6 @@ GO
  * FUNCTION: HeatCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[HeatCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1947,50 +2100,50 @@ GO
  * FUNCTION: IsMemberNominated 
  */
 
-USE [SwimClubMeet]
-GO
-
-/****** Object:  UserDefinedFunction [dbo].[IsMemberNominated]    Script Date: 26/05/22 11:28:58 AM ******/
+/****** Object:  UserDefinedFunction [dbo].[IsMemberNominated]    Script Date: 04/02/23 9:29:06 AM ******/
 SET ANSI_NULLS ON
 GO
-
 SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
 -- Author:		Ben Ambrose
--- Create date: 25/05/2022
+-- Create date: 04/02/2023
 -- Description:	Is the member nominated for the event
 -- =============================================
-CREATE FUNCTION [IsMemberNominated] 
+CREATE FUNCTION [IsMemberNominated]
 (
-	-- Add the parameters for the function here
-	@MemberID int
-	,@EventID int
+    -- Add the parameters for the function here
+    @MemberID INT
+  , @EventID INT
 )
-RETURNS Bit
+RETURNS BIT
 AS
 BEGIN
-	-- Declare the return variable here
-	DECLARE @Result Bit
+    -- Declare the return variable here
+    DECLARE @Result BIT;
+    DECLARE @Count AS INTEGER;
 
-	-- Add the T-SQL statements to compute the return value here
-    SELECT @Result = (
-            SELECT CASE 
-                    WHEN [NomineeID] IS NOT NULL
-                        THEN 0
-                    ELSE 1
-                    END
-            FROM Nominee
-            WHERE MemberID = @MemberID AND EventID = @EventID
-            )
+    SELECT @Count =
+    (
+        SELECT COUNT(dbo.nominee.NomineeID) AS NOM
+        FROM Nominee
+        WHERE memberid = @MemberID
+              AND EventID = @EventID
+    );
 
-	-- Return the result of the function
-	RETURN @Result
+    IF @Count = 0
+        SELECT @Result = 0;
+    ELSE
+        SELECT @Result = 1;
+
+    -- Return the result of the function
+    RETURN @Result
 
 END
-GO
 
+
+GO
 IF OBJECT_ID('IsMemberNominated') IS NOT NULL
     PRINT '<<< CREATED FUNCTION IsMemberNominated >>>'
 ELSE
@@ -2008,9 +2161,6 @@ GO
 /* 
  * FUNCTION: IsMemberQualified 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[IsMemberQualified]    Script Date: 26/05/22 11:29:28 AM ******/
 SET ANSI_NULLS ON
@@ -2116,9 +2266,6 @@ GO
  * FUNCTION: IsPoolShortCourse 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[IsPoolShortCourse]    Script Date: 4/10/2020 9:25:38 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -2185,9 +2332,6 @@ GO
  * FUNCTION: NomineeCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[NomineeCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2247,9 +2391,6 @@ GO
 /* 
  * FUNCTION: PersonalBest 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[PersonalBest]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2326,9 +2467,6 @@ GO
  * FUNCTION: RaceTimeDIFF 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[RaceTimeDIFF]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2388,9 +2526,6 @@ GO
 /* 
  * FUNCTION: RELEventPlace 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[RELEventPlace]    Script Date: 20/11/2020 12:41:46 PM ******/
 SET ANSI_NULLS ON
@@ -2496,9 +2631,6 @@ GO
  * FUNCTION: RELHeatPlace 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[RELHeatPlace]    Script Date: 20/11/2020 12:41:52 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2602,9 +2734,6 @@ GO
  * FUNCTION: SessionEntrantCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SessionEntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2663,9 +2792,6 @@ GO
  * FUNCTION: SessionNomineeCount 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SessionNomineeCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS OFF
 GO
@@ -2722,9 +2848,6 @@ GO
  * FUNCTION: SwimmerAge 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SwimmerAge]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2778,9 +2901,6 @@ GO
 /* 
  * FUNCTION: SwimmerGenderToString 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[SwimmerGenderToString]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS OFF
@@ -2842,9 +2962,6 @@ GO
  * FUNCTION: SwimTimeToMilliseconds 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[SwimTimeToMilliseconds]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2899,9 +3016,6 @@ GO
 /* 
  * FUNCTION: SwimTimeToString 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[SwimTimeToString]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2965,9 +3079,6 @@ GO
 /* 
  * FUNCTION: TimeToBeat 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3049,9 +3160,6 @@ GO
  * FUNCTION: TimeToBeat_1 
  */
 
-USE [SwimClubMeet]
-GO
-
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_1]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -3126,9 +3234,6 @@ GO
 /* 
  * FUNCTION: TimeToBeat_2 
  */
-
-USE [SwimClubMeet]
-GO
 
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_2]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3218,8 +3323,6 @@ GO
  * FUNCTION: TimeToBeat_DEFAULT 
  */
 
-USE [SwimClubMeet]
-GO
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_DEFAULT]    Script Date: 5/03/2022 2:04:09 PM ******/
 SET ANSI_NULLS ON
 GO
