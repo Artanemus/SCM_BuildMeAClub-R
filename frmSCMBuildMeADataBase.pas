@@ -67,7 +67,7 @@ type
     OUT_Model = 1;
     OUT_Version = 1;
     OUT_Major = 5;
-    OUT_Minor = 1;
+    OUT_Minor = 2;
 
 
   private
@@ -122,7 +122,7 @@ const
   logOutFn = '\Documents\SCM_BuildMeAClub.log';
   SectionName = 'SCM_BuildMeAClub';
   logOutFnTmp = '\Documents\SCM_BuildMeAClub.tmp';
-  defUpdateScriptsRootPath = 'BMAC_SCRIPTS\'; // No prefix delimeter.
+  defUpdateScriptsRootPath = 'SQL\'; // No prefix delimeter.
 
 implementation
 
@@ -510,9 +510,13 @@ end;
 
 function TSCMBuildMeADataBase.BuildBMACScriptSubPath: String;
 begin
-  Result := defUpdateScriptsRootPath + 'v' + IntToStr(OUT_Model) + '.' +
+  Result := defUpdateScriptsRootPath;
+  (*
+  // BSA 23/06/03
+   + 'v' + IntToStr(OUT_Model) + '.' +
     IntToStr(OUT_Version) + '.' + IntToStr(OUT_Major) + '.' +
     IntToStr(OUT_Minor) + '\';
+  *)
 end;
 
 procedure TSCMBuildMeADataBase.actnConnectExecute(Sender: TObject);
