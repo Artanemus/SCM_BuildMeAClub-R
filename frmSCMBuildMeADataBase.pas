@@ -280,7 +280,7 @@ procedure TSCMBuildMeADataBase.FormCreate(Sender: TObject);
 begin
   BuildDone := false; // clear BMAC critical error flag
   // Display the Major.Minor.Release.Build version details
-  Caption := 'SCM BuildMeAClub SCMSystem 1.1.5.1';
+  Caption := 'SCM BuildMeAClub SCMSystem 1.1.5.2';
   // Prepare the display
   GroupBox1.Visible := true;
   btnConnect.Visible := true;

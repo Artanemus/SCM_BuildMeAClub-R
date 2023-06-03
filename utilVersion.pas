@@ -12,7 +12,7 @@ type
 // Get the file version of the application.
 function GetEXEVersionData(const FileName: string): TEXEVersionData;
 function FileDescription: String; // 'An application that .... '
-function LegalCopyright: String; // 'Copyright 2019-2022'
+function LegalCopyright: String; // 'Copyright 2019-2023'
 function ProductVersion: String; // Major.Minor
 function FileVersion: String; // Major.Minor.Release.Build
 
