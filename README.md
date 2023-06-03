@@ -1,4 +1,4 @@
-# SCM_BuildMeAClub RELEASE
+﻿# SCM_BuildMeAClub RELEASE
 
 ![Hero BuildMeAClub ICON](ASSETS/SCM_BMAC_100x100.bmp)
 
