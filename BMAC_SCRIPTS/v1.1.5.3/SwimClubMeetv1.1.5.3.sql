@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Sunday, June 04, 2023 11:07:04
+ * Date Created : Monday, June 05, 2023 15:18:17
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -305,13 +305,13 @@ GO
 
 CREATE TABLE Entrant(
     EntrantID         int        IDENTITY(1,1),
-    MemberID          int        DEFAULT NULL NULL,
     Lane              int        NULL,
     RaceTime          time(7)    NULL,
     TimeToBeat        time(7)    NULL,
     PersonalBest      time(7)    NULL,
     IsDisqualified    bit        DEFAULT 0 NULL,
     IsScratched       bit        DEFAULT 0 NULL,
+    MemberID          int        DEFAULT NULL NULL,
     HeatID            int        NULL,
     CONSTRAINT PK_Entrant PRIMARY KEY NONCLUSTERED (EntrantID)
 )
@@ -353,12 +353,12 @@ CREATE TABLE Event(
     EventNum         int              NULL,
     Caption          nvarchar(128)    NULL,
     ClosedDT         datetime         NULL,
+    ScheduleDT       time(7)          NULL,
     SessionID        int              NULL,
     EventTypeID      int              NULL,
     StrokeID         int              NULL,
     DistanceID       int              NULL,
     EventStatusID    int              NULL,
-    ScheduleDT       time(7)          NULL,
     CONSTRAINT PK_Event PRIMARY KEY NONCLUSTERED (EventID)
 )
 GO
@@ -423,8 +423,10 @@ GO
  */
 
 CREATE TABLE EventType(
-    EventTypeID    int              IDENTITY(1,1),
-    Caption        nvarchar(128)    NULL,
+    EventTypeID     int              IDENTITY(1,1),
+    Caption         nvarchar(128)    NULL,
+    CaptionShort    nvarchar(16)     NULL,
+    ABREV           nvarchar(5)      NULL,
     CONSTRAINT PK_EventType PRIMARY KEY NONCLUSTERED (EventTypeID)
 )
 GO
@@ -438,9 +440,15 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[EventType] ON 
 GO
-INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (1, N'Individual')
-GO
-INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (2, N'Team')
+INSERT [dbo].[EventType] (
+[EventTypeID]
+, [Caption]
+, [CaptionShort]
+, [ABREV]
+) 
+VALUES 
+(1, N'Individual', N'Indiv', N'INDIV')
+(2, N'Team', N'Relay', N'RELAY')
 GO
 SET IDENTITY_INSERT [dbo].[EventType] OFF
 GO
@@ -750,6 +758,45 @@ GRANT DELETE ON House TO SCM_Administrator
 GO
 
 /* 
+ * TABLE: HRType 
+ */
+
+CREATE TABLE HRType(
+    HRTypeID    int              IDENTITY(1,1),
+    Caption     nvarchar(128)    NULL,
+    CONSTRAINT PK_HRType PRIMARY KEY CLUSTERED (HRTypeID)
+)
+GO
+
+
+
+IF OBJECT_ID('HRType') IS NOT NULL
+    PRINT '<<< CREATED TABLE HRType >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE HRType >>>'
+GO
+SET IDENTITY_INSERT [dbo].[HRType] ON
+GO
+
+INSERT INTO [dbo].[HRType]
+(
+    HRTypeID
+  , [Caption]
+)
+VALUES
+  (1, 'Swimmer')
+, (2, 'Parent')
+, (3, 'Committee Member')
+, (4, 'Volunteer Coordinator')
+, (5, 'Misc. Contact')
+, (6, 'Coach')
+, (7, 'Life Member')
+GO
+
+SET IDENTITY_INSERT [dbo].[HRType] OFF
+GO
+
+/* 
  * TABLE: Member 
  */
 
@@ -757,22 +804,25 @@ CREATE TABLE Member(
     MemberID                    int              IDENTITY(1,1),
     MembershipNum               int              NULL,
     MembershipStr               nvarchar(24)     NULL,
-    MembershipDue               datetime         NULL,
     FirstName                   nvarchar(128)    NULL,
+    MiddleInitial               nvarchar(4)      NULL,
     LastName                    nvarchar(128)    NULL,
+    RegisterNum                 int              NULL,
+    RegisterStr                 nvarchar(24)     NULL,
     DOB                         datetime         NULL,
-    IsActive                    bit              DEFAULT 1 NULL,
     IsArchived                  bit              DEFAULT 0 NULL,
+    IsActive                    bit              DEFAULT 1 NULL,
     IsSwimmer                   bit              DEFAULT 1 NULL,
     Email                       nvarchar(256)    NULL,
-    EnableEmailOut              bit              DEFAULT 0 NULL,
     CreatedOn                   datetime         NULL,
     ArchivedOn                  datetime         NULL,
+    EnableEmailOut              bit              DEFAULT 0 NULL,
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
     EnableEmailSessionReport    bit              DEFAULT 0 NULL,
     SwimClubID                  int              NULL,
     HouseID                     int              NULL,
     GenderID                    int              NULL,
+    HRTypeID                    int              NULL,
     CONSTRAINT PK_Member PRIMARY KEY NONCLUSTERED (MemberID)
 )
 GO
@@ -934,6 +984,7 @@ CREATE TABLE SCMSystem(
     DBVersion      int    NULL,
     Major          int    NULL,
     Minor          int    NULL,
+    Build          int    NULL,
     CONSTRAINT PK_SCMSystem PRIMARY KEY CLUSTERED (SCMSystemID)
 )
 GO
@@ -1323,7 +1374,7 @@ CREATE TABLE SwimmerClass(
     AgeFrom           int              NULL,
     AgeTo             int              NULL,
     SwimClubID        int              NULL,
-    CONSTRAINT PK_MembershipType PRIMARY KEY NONCLUSTERED (SwimmerClassID)
+    CONSTRAINT PK_SwimmerClass PRIMARY KEY NONCLUSTERED (SwimmerClassID)
 )
 GO
 
@@ -1592,7 +1643,7 @@ GO
  * TABLE: House 
  */
 
-ALTER TABLE House ADD CONSTRAINT RefSwimClub146 
+ALTER TABLE House ADD CONSTRAINT SwimClubHouse 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
 GO
@@ -1610,6 +1661,11 @@ GO
 ALTER TABLE Member ADD CONSTRAINT HouseMember 
     FOREIGN KEY (HouseID)
     REFERENCES House(HouseID) ON DELETE SET NULL
+GO
+
+ALTER TABLE Member ADD CONSTRAINT HRTypeMember 
+    FOREIGN KEY (HRTypeID)
+    REFERENCES HRType(HRTypeID)
 GO
 
 ALTER TABLE Member ADD CONSTRAINT SwimClubMember 
@@ -1637,7 +1693,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali4 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual35 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -1712,7 +1768,7 @@ GO
  * TABLE: SwimmerClass 
  */
 
-ALTER TABLE SwimmerClass ADD CONSTRAINT RefSwimClub144 
+ALTER TABLE SwimmerClass ADD CONSTRAINT SwimClubSwimmerClass 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
 GO
