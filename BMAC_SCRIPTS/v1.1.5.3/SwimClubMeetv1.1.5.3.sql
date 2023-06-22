@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Monday, June 05, 2023 15:18:17
+ * Date Created : Thursday, June 22, 2023 09:11:50
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -287,7 +287,9 @@ INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (4, N'200m', 
 GO
 INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (5, N'400m', 400)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (6, N'1000m', 1000)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (6, N'800m', 800)
+GO
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (7, N'1000m', 1000)
 GO
 SET IDENTITY_INSERT [dbo].[Distance] OFF
 GO
@@ -304,15 +306,16 @@ GO
  */
 
 CREATE TABLE Entrant(
-    EntrantID         int        IDENTITY(1,1),
-    Lane              int        NULL,
-    RaceTime          time(7)    NULL,
-    TimeToBeat        time(7)    NULL,
-    PersonalBest      time(7)    NULL,
-    IsDisqualified    bit        DEFAULT 0 NULL,
-    IsScratched       bit        DEFAULT 0 NULL,
-    MemberID          int        DEFAULT NULL NULL,
-    HeatID            int        NULL,
+    EntrantID           int        IDENTITY(1,1),
+    Lane                int        NULL,
+    RaceTime            time(7)    NULL,
+    TimeToBeat          time(7)    NULL,
+    PersonalBest        time(7)    NULL,
+    IsDisqualified      bit        DEFAULT 0 NULL,
+    IsScratched         bit        DEFAULT 0 NULL,
+    MemberID            int        DEFAULT NULL NULL,
+    HeatID              int        NULL,
+    DisqualifyCodeID    int        NULL,
     CONSTRAINT PK_Entrant PRIMARY KEY NONCLUSTERED (EntrantID)
 )
 GO
@@ -499,14 +502,13 @@ GO
  */
 
 CREATE TABLE HeatIndividual(
-    HeatID              int              IDENTITY(1,1),
-    HeatNum             int              NULL,
-    Caption             nvarchar(128)    NULL,
-    ClosedDT            datetime         NULL,
-    EventID             int              NULL,
-    HeatTypeID          int              NULL,
-    HeatStatusID        int              NULL,
-    DisqualifyCodeID    int              NULL,
+    HeatID          int              IDENTITY(1,1),
+    HeatNum         int              NULL,
+    Caption         nvarchar(128)    NULL,
+    ClosedDT        datetime         NULL,
+    EventID         int              NULL,
+    HeatTypeID      int              NULL,
+    HeatStatusID    int              NULL,
     CONSTRAINT PK_HeatIndividual PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -579,14 +581,13 @@ GO
  */
 
 CREATE TABLE HeatTeam(
-    HeatID              int              IDENTITY(1,1),
-    HeatNum             int              NULL,
-    Caption             nvarchar(128)    NULL,
-    ClosedDT            datetime         NULL,
-    EventID             int              NULL,
-    HeatTypeID          int              NULL,
-    HeatStatusID        int              NULL,
-    DisqualifyCodeID    int              NULL,
+    HeatID          int              IDENTITY(1,1),
+    HeatNum         int              NULL,
+    Caption         nvarchar(128)    NULL,
+    ClosedDT        datetime         NULL,
+    EventID         int              NULL,
+    HeatTypeID      int              NULL,
+    HeatStatusID    int              NULL,
     CONSTRAINT PK_HeatTeam PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -1414,12 +1415,13 @@ GO
  */
 
 CREATE TABLE Team(
-    TeamID            int        IDENTITY(1,1),
-    Lane              int        NULL,
-    TeamTime          time(7)    NULL,
-    IsDisqualified    bit        DEFAULT 0 NULL,
-    IsScratched       bit        DEFAULT 0 NULL,
-    HeatID            int        NULL,
+    TeamID              int        IDENTITY(1,1),
+    Lane                int        NULL,
+    TeamTime            time(7)    NULL,
+    IsDisqualified      bit        DEFAULT 0 NULL,
+    IsScratched         bit        DEFAULT 0 NULL,
+    HeatID              int        NULL,
+    DisqualifyCodeID    int        NULL,
     CONSTRAINT PK_Team PRIMARY KEY NONCLUSTERED (TeamID)
 )
 GO
@@ -1548,6 +1550,11 @@ GO
  * TABLE: Entrant 
  */
 
+ALTER TABLE Entrant ADD CONSTRAINT DisqualifyCodeEntrant 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
+
 ALTER TABLE Entrant ADD CONSTRAINT HeatIndividualEntrant 
     FOREIGN KEY (HeatID)
     REFERENCES HeatIndividual(HeatID) ON DELETE CASCADE
@@ -1593,11 +1600,6 @@ GO
  * TABLE: HeatIndividual 
  */
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT DisqualifyCodeHeatIndividual 
-    FOREIGN KEY (DisqualifyCodeID)
-    REFERENCES DisqualifyCode(DisqualifyCodeID)
-GO
-
 ALTER TABLE HeatIndividual ADD CONSTRAINT EventHeatIndividual 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
@@ -1617,11 +1619,6 @@ GO
 /* 
  * TABLE: HeatTeam 
  */
-
-ALTER TABLE HeatTeam ADD CONSTRAINT DisqualifyCodeHeatTeam 
-    FOREIGN KEY (DisqualifyCodeID)
-    REFERENCES DisqualifyCode(DisqualifyCodeID)
-GO
 
 ALTER TABLE HeatTeam ADD CONSTRAINT EventHeatTeam 
     FOREIGN KEY (EventID)
@@ -1693,7 +1690,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual35 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual25 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -1777,6 +1774,11 @@ GO
 /* 
  * TABLE: Team 
  */
+
+ALTER TABLE Team ADD CONSTRAINT DisqualifyCodeTeam 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
 
 ALTER TABLE Team ADD CONSTRAINT HeatTeamTeam 
     FOREIGN KEY (HeatID)
