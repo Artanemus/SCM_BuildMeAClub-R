@@ -1,18 +1,17 @@
 /*
  * ER/Studio Data Architect SQL Code Generation
- * Company :      Ambrosia
- * Project :      SwimClubMeet_v2.0.DM1
- * Author :       Ben Ambrose
+ * Project :      SwimClubMeet_v2.0.0.0.DM1
+ * Author :       Artanemus
  *
- * Date Created : Sunday, May 28, 2023 11:28:30
+ * Date Created : Sunday, June 25, 2023 11:01:46
  * Target DBMS : Microsoft SQL Server 2017
  */
 
 USE master
 GO
-CREATE DATABASE SwimClubMeet2
+CREATE DATABASE SwimClubMeet
 GO
-USE SwimClubMeet2
+USE SwimClubMeet
 GO
 /* 
  * ROLE: SCM_Administrator 
@@ -33,18 +32,6 @@ GO
  */
 
 CREATE ROLE SCM_Marshall AUTHORIZATION dbo
-GO
-
-/* 
- * USER: scmAdmin 
- */
-
-exec sp_grantdbaccess 'scmAdmin', 'scmAdmin'
-GO
-
-exec sp_addrolemember 'SCM_Administrator', 'scmAdmin'
-GO
-GRANT CONNECT TO scmAdmin
 GO
 
 /* 
@@ -77,6 +64,19 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE ContactNum >>>'
 GO
 
+GRANT INSERT ON ContactNum TO SCM_Administrator
+GO
+GRANT SELECT ON ContactNum TO SCM_Administrator
+GO
+GRANT UPDATE ON ContactNum TO SCM_Administrator
+GO
+GRANT SELECT ON ContactNum TO SCM_Marshall
+GO
+GRANT SELECT ON ContactNum TO SCM_Guest
+GO
+GRANT DELETE ON ContactNum TO SCM_Administrator
+GO
+
 /* 
  * TABLE: ContactNumType 
  */
@@ -104,6 +104,13 @@ GO
 INSERT [dbo].[ContactNumType] ([ContactNumTypeID], [Caption]) VALUES (3, N'Business')
 GO
 SET IDENTITY_INSERT [dbo].[ContactNumType] OFF
+GO
+
+GRANT SELECT ON ContactNumType TO SCM_Marshall
+GO
+GRANT SELECT ON ContactNumType TO SCM_Guest
+GO
+GRANT SELECT ON ContactNumType TO SCM_Administrator
 GO
 
 /* 
@@ -245,8 +252,8 @@ SET IDENTITY_INSERT  [dbo].[DisqualifyType] OFF;
 CREATE TABLE Distance(
     DistanceID      int              IDENTITY(1,1),
     Caption         nvarchar(128)    NULL,
-    ShortCaption    nvarchar(16)     NULL,
     Meters          int              NULL,
+    ShortCaption    nvarchar(16)     NULL,
     ABREV           nvarchar(5)      NULL,
     IsArchived      bit              DEFAULT 0 NOT NULL,
     CONSTRAINT PK_Distance PRIMARY KEY NONCLUSTERED (DistanceID)
@@ -282,6 +289,13 @@ GO
 SET IDENTITY_INSERT [dbo].[Distance] OFF
 GO
 
+GRANT SELECT ON Distance TO SCM_Marshall
+GO
+GRANT SELECT ON Distance TO SCM_Guest
+GO
+GRANT SELECT ON Distance TO SCM_Administrator
+GO
+
 /* 
  * TABLE: Entrant 
  */
@@ -308,6 +322,25 @@ IF OBJECT_ID('Entrant') IS NOT NULL
     PRINT '<<< CREATED TABLE Entrant >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE Entrant >>>'
+GO
+
+GRANT DELETE ON Entrant TO SCM_Marshall
+GO
+GRANT INSERT ON Entrant TO SCM_Marshall
+GO
+GRANT DELETE ON Entrant TO SCM_Administrator
+GO
+GRANT INSERT ON Entrant TO SCM_Administrator
+GO
+GRANT SELECT ON Entrant TO SCM_Administrator
+GO
+GRANT UPDATE ON Entrant TO SCM_Administrator
+GO
+GRANT SELECT ON Entrant TO SCM_Marshall
+GO
+GRANT SELECT ON Entrant TO SCM_Guest
+GO
+GRANT UPDATE ON Entrant TO SCM_Marshall
 GO
 
 /* 
@@ -337,6 +370,19 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE Event >>>'
 GO
 
+GRANT INSERT ON Event TO SCM_Administrator
+GO
+GRANT SELECT ON Event TO SCM_Administrator
+GO
+GRANT UPDATE ON Event TO SCM_Administrator
+GO
+GRANT SELECT ON Event TO SCM_Marshall
+GO
+GRANT SELECT ON Event TO SCM_Guest
+GO
+GRANT DELETE ON Event TO SCM_Administrator
+GO
+
 /* 
  * TABLE: EventStatus 
  */
@@ -362,6 +408,13 @@ GO
 INSERT [dbo].[EventStatus] ([EventStatusID], [Caption]) VALUES (2, N'Closed')
 GO
 SET IDENTITY_INSERT [dbo].[EventStatus] OFF
+GO
+
+GRANT SELECT ON EventStatus TO SCM_Marshall
+GO
+GRANT SELECT ON EventStatus TO SCM_Guest
+GO
+GRANT SELECT ON EventStatus TO SCM_Administrator
 GO
 
 /* 
@@ -391,6 +444,13 @@ GO
 SET IDENTITY_INSERT [dbo].[EventType] OFF
 GO
 
+GRANT SELECT ON EventType TO SCM_Marshall
+GO
+GRANT SELECT ON EventType TO SCM_Guest
+GO
+GRANT SELECT ON EventType TO SCM_Administrator
+GO
+
 /* 
  * TABLE: Gender 
  */
@@ -418,6 +478,13 @@ GO
 SET IDENTITY_INSERT [dbo].[Gender] OFF
 GO
 
+GRANT SELECT ON Gender TO SCM_Marshall
+GO
+GRANT SELECT ON Gender TO SCM_Guest
+GO
+GRANT SELECT ON Gender TO SCM_Administrator
+GO
+
 /* 
  * TABLE: HeatIndividual 
  */
@@ -426,6 +493,7 @@ CREATE TABLE HeatIndividual(
     HeatID          int              IDENTITY(1,1),
     HeatNum         int              NULL,
     Caption         nvarchar(128)    NULL,
+    ScheduleDT      time(7)          NULL,
     ClosedDT        datetime         NULL,
     EventID         int              NULL,
     HeatTypeID      int              NULL,
@@ -440,6 +508,25 @@ IF OBJECT_ID('HeatIndividual') IS NOT NULL
     PRINT '<<< CREATED TABLE HeatIndividual >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE HeatIndividual >>>'
+GO
+
+GRANT DELETE ON HeatIndividual TO SCM_Marshall
+GO
+GRANT INSERT ON HeatIndividual TO SCM_Marshall
+GO
+GRANT DELETE ON HeatIndividual TO SCM_Administrator
+GO
+GRANT INSERT ON HeatIndividual TO SCM_Administrator
+GO
+GRANT SELECT ON HeatIndividual TO SCM_Administrator
+GO
+GRANT UPDATE ON HeatIndividual TO SCM_Administrator
+GO
+GRANT SELECT ON HeatIndividual TO SCM_Marshall
+GO
+GRANT UPDATE ON HeatIndividual TO SCM_Marshall
+GO
+GRANT SELECT ON HeatIndividual TO SCM_Guest
 GO
 
 /* 
@@ -471,6 +558,13 @@ GO
 SET IDENTITY_INSERT [dbo].[HeatStatus] OFF
 GO
 
+GRANT SELECT ON HeatStatus TO SCM_Marshall
+GO
+GRANT SELECT ON HeatStatus TO SCM_Guest
+GO
+GRANT SELECT ON HeatStatus TO SCM_Administrator
+GO
+
 /* 
  * TABLE: HeatTeam 
  */
@@ -479,6 +573,7 @@ CREATE TABLE HeatTeam(
     HeatID          int              IDENTITY(1,1),
     HeatNum         int              NULL,
     Caption         nvarchar(128)    NULL,
+    ScheduleDT      time(7)          NULL,
     ClosedDT        datetime         NULL,
     EventID         int              NULL,
     HeatTypeID      int              NULL,
@@ -493,6 +588,25 @@ IF OBJECT_ID('HeatTeam') IS NOT NULL
     PRINT '<<< CREATED TABLE HeatTeam >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE HeatTeam >>>'
+GO
+
+GRANT DELETE ON HeatTeam TO SCM_Marshall
+GO
+GRANT INSERT ON HeatTeam TO SCM_Marshall
+GO
+GRANT DELETE ON HeatTeam TO SCM_Administrator
+GO
+GRANT INSERT ON HeatTeam TO SCM_Administrator
+GO
+GRANT SELECT ON HeatTeam TO SCM_Administrator
+GO
+GRANT UPDATE ON HeatTeam TO SCM_Administrator
+GO
+GRANT SELECT ON HeatTeam TO SCM_Marshall
+GO
+GRANT SELECT ON HeatTeam TO SCM_Guest
+GO
+GRANT UPDATE ON HeatTeam TO SCM_Marshall
 GO
 
 /* 
@@ -524,6 +638,13 @@ GO
 INSERT [dbo].[HeatType] ([HeatTypeID], [Caption]) VALUES (4, N'Final')
 GO
 SET IDENTITY_INSERT [dbo].[HeatType] OFF
+GO
+
+GRANT SELECT ON HeatType TO SCM_Marshall
+GO
+GRANT SELECT ON HeatType TO SCM_Guest
+GO
+GRANT SELECT ON HeatType TO SCM_Administrator
 GO
 
 /* 
@@ -614,6 +735,19 @@ GO
 SET IDENTITY_INSERT [dbo].[House] OFF
 GO
 
+GRANT INSERT ON House TO SCM_Administrator
+GO
+GRANT SELECT ON House TO SCM_Administrator
+GO
+GRANT UPDATE ON House TO SCM_Administrator
+GO
+GRANT SELECT ON House TO SCM_Marshall
+GO
+GRANT SELECT ON House TO SCM_Guest
+GO
+GRANT DELETE ON House TO SCM_Administrator
+GO
+
 /* 
  * TABLE: HRLink 
  */
@@ -621,7 +755,6 @@ GO
 CREATE TABLE HRLink(
     SwimClubID    int    NOT NULL,
     MemberID      int    NOT NULL,
-    NomineeID     int    NULL,
     CONSTRAINT PK_HRLink PRIMARY KEY CLUSTERED (SwimClubID, MemberID)
 )
 GO
@@ -693,15 +826,27 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE Member >>>'
 GO
 
+GRANT INSERT ON Member TO SCM_Administrator
+GO
+GRANT SELECT ON Member TO SCM_Administrator
+GO
+GRANT UPDATE ON Member TO SCM_Administrator
+GO
+GRANT SELECT ON Member TO SCM_Marshall
+GO
+GRANT SELECT ON Member TO SCM_Guest
+GO
+GRANT DELETE ON Member TO SCM_Administrator
+GO
+
 /* 
  * TABLE: MemberHRRole 
  */
 
 CREATE TABLE MemberHRRole(
-    MemberHRRoleID    int    NOT NULL,
-    HRRoleID          int    NOT NULL,
-    MemberID          int    NOT NULL,
-    CONSTRAINT PK_MemberHRRole PRIMARY KEY CLUSTERED (MemberHRRoleID, HRRoleID, MemberID)
+    HRRoleID    int    NOT NULL,
+    MemberID    int    NOT NULL,
+    CONSTRAINT PK_MemberHRRole PRIMARY KEY CLUSTERED (HRRoleID, MemberID)
 )
 GO
 
@@ -724,6 +869,8 @@ CREATE TABLE Nominee(
     SeedTime         time(7)    NULL,
     AutoBuildFlag    bit        NULL,
     EventID          int        NULL,
+    SwimClubID       int        NULL,
+    MemberID         int        NULL,
     CONSTRAINT PK_Nominee PRIMARY KEY CLUSTERED (NomineeID)
 )
 GO
@@ -734,6 +881,25 @@ IF OBJECT_ID('Nominee') IS NOT NULL
     PRINT '<<< CREATED TABLE Nominee >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE Nominee >>>'
+GO
+
+GRANT DELETE ON Nominee TO SCM_Marshall
+GO
+GRANT INSERT ON Nominee TO SCM_Marshall
+GO
+GRANT UPDATE ON Nominee TO SCM_Marshall
+GO
+GRANT SELECT ON Nominee TO SCM_Guest
+GO
+GRANT SELECT ON Nominee TO SCM_Administrator
+GO
+GRANT SELECT ON Nominee TO SCM_Marshall
+GO
+GRANT DELETE ON Nominee TO SCM_Administrator
+GO
+GRANT INSERT ON Nominee TO SCM_Administrator
+GO
+GRANT UPDATE ON Nominee TO SCM_Administrator
 GO
 
 /* 
@@ -811,6 +977,7 @@ INSERT [dbo].[Qualify] (
 , [TrialTime]
 , [PoolTypeID]
 , [GenderID]
+)
 VALUES 
 (1, 1, 2, 1, CAST(N'00:00:23' AS Time), 1, 1)
 ,(2, 1, 2, 2, CAST(N'00:00:31' AS Time), 1, 1)
@@ -854,6 +1021,19 @@ VALUES
 ,(40, 4, 4, 5, CAST(N'00:03:49' AS Time), 2, 2)
 SET IDENTITY_INSERT [dbo].[Qualify] OFF
 
+GRANT INSERT ON Qualify TO SCM_Administrator
+GO
+GRANT SELECT ON Qualify TO SCM_Administrator
+GO
+GRANT UPDATE ON Qualify TO SCM_Administrator
+GO
+GRANT SELECT ON Qualify TO SCM_Marshall
+GO
+GRANT SELECT ON Qualify TO SCM_Guest
+GO
+GRANT DELETE ON Qualify TO SCM_Administrator
+GO
+
 /* 
  * TABLE: SCMSystem 
  */
@@ -863,6 +1043,7 @@ CREATE TABLE SCMSystem(
     DBVersion      int    NULL,
     Major          int    NULL,
     Minor          int    NULL,
+    Build          int    NULL,
     CONSTRAINT PK_SCMSystem PRIMARY KEY CLUSTERED (SCMSystemID)
 )
 GO
@@ -889,6 +1070,11 @@ VALUES (
 )
 GO
 
+GRANT SELECT ON SCMSystem TO SCM_Marshall
+GO
+GRANT SELECT ON SCMSystem TO SCM_Administrator
+GO
+
 /* 
  * TABLE: ScoreDivision 
  */
@@ -913,25 +1099,32 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[ScoreDivision] ON 
 GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (1, 1, 1, 0, 8)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (2, 1, 2, 9, 9)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (3, 1, 3, 10, 10)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (4, 1, 4, 11, 11)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (5, 1, 5, 12, 12)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (6, 1, 6, 13, 13)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (7, 1, 7, 14, 14)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (8, 1, 8, 15, 15)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [Sort], [AgeFrom], [AgeTo]) VALUES (9, 1, 9, 16, 99)
+INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) 
+VALUES 
+(1, 1, 0, 8)
+,(2, 1, 9, 9)
+,(3, 1, 10, 10)
+,(4, 1, 11, 11)
+,(5, 1, 12, 12)
+,(6, 1, 13, 13)
+,(7, 1, 14, 14)
+,(8, 1, 15, 15)
+,(9, 1, 16, 99)
 GO
 SET IDENTITY_INSERT [dbo].[ScoreDivision] OFF
+GO
+
+GRANT INSERT ON ScoreDivision TO SCM_Administrator
+GO
+GRANT SELECT ON ScoreDivision TO SCM_Administrator
+GO
+GRANT UPDATE ON ScoreDivision TO SCM_Administrator
+GO
+GRANT SELECT ON ScoreDivision TO SCM_Marshall
+GO
+GRANT SELECT ON ScoreDivision TO SCM_Guest
+GO
+GRANT DELETE ON ScoreDivision TO SCM_Administrator
 GO
 
 /* 
@@ -985,6 +1178,19 @@ GO
 SET IDENTITY_INSERT [dbo].[ScorePoints] OFF
 GO
 
+GRANT INSERT ON ScorePoints TO SCM_Administrator
+GO
+GRANT SELECT ON ScorePoints TO SCM_Administrator
+GO
+GRANT UPDATE ON ScorePoints TO SCM_Administrator
+GO
+GRANT SELECT ON ScorePoints TO SCM_Marshall
+GO
+GRANT SELECT ON ScorePoints TO SCM_Guest
+GO
+GRANT DELETE ON ScorePoints TO SCM_Administrator
+GO
+
 /* 
  * TABLE: Session 
  */
@@ -1006,6 +1212,19 @@ IF OBJECT_ID('Session') IS NOT NULL
     PRINT '<<< CREATED TABLE Session >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE Session >>>'
+GO
+
+GRANT INSERT ON Session TO SCM_Administrator
+GO
+GRANT SELECT ON Session TO SCM_Administrator
+GO
+GRANT UPDATE ON Session TO SCM_Administrator
+GO
+GRANT SELECT ON Session TO SCM_Marshall
+GO
+GRANT SELECT ON Session TO SCM_Guest
+GO
+GRANT DELETE ON Session TO SCM_Administrator
 GO
 
 /* 
@@ -1035,6 +1254,13 @@ GO
 SET IDENTITY_INSERT [dbo].[SessionStatus] OFF
 GO
 
+GRANT SELECT ON SessionStatus TO SCM_Marshall
+GO
+GRANT SELECT ON SessionStatus TO SCM_Guest
+GO
+GRANT SELECT ON SessionStatus TO SCM_Administrator
+GO
+
 /* 
  * TABLE: Split 
  */
@@ -1054,6 +1280,19 @@ IF OBJECT_ID('Split') IS NOT NULL
     PRINT '<<< CREATED TABLE Split >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE Split >>>'
+GO
+
+GRANT DELETE ON Split TO SCM_Administrator
+GO
+GRANT INSERT ON Split TO SCM_Administrator
+GO
+GRANT SELECT ON Split TO SCM_Administrator
+GO
+GRANT UPDATE ON Split TO SCM_Administrator
+GO
+GRANT SELECT ON Split TO SCM_Marshall
+GO
+GRANT SELECT ON Split TO SCM_Guest
 GO
 
 /* 
@@ -1094,6 +1333,13 @@ INSERT INTO [dbo].[Stroke]
 GO
 
 SET IDENTITY_INSERT [dbo].[Stroke] OFF;
+
+GRANT SELECT ON Stroke TO SCM_Marshall
+GO
+GRANT SELECT ON Stroke TO SCM_Guest
+GO
+GRANT SELECT ON Stroke TO SCM_Administrator
+GO
 
 /* 
  * TABLE: SwimClub 
@@ -1167,28 +1413,48 @@ GO
 SET IDENTITY_INSERT [dbo].[SwimClub] OFF
 GO
 
+GRANT SELECT ON SwimClub TO SCM_Administrator
+GO
+GRANT SELECT ON SwimClub TO SCM_Guest
+GO
+GRANT SELECT ON SwimClub TO SCM_Marshall
+GO
+
 /* 
- * TABLE: SwimrClass 
+ * TABLE: SwimmerClass 
  */
 
-CREATE TABLE SwimrClass(
-    SwimClassID    int              IDENTITY(1,1),
-    Caption        nvarchar(64)     NULL,
-    LongCaption    nvarchar(128)    NULL,
-    Sort           int              NULL,
-    AgeFrom        int              NULL,
-    AgeTo          int              NULL,
-    SwimClubID     int              NULL,
-    CONSTRAINT PK_SwimrClass PRIMARY KEY CLUSTERED (SwimClassID)
+CREATE TABLE SwimmerClass(
+    SwimmerClassID    int              IDENTITY(1,1),
+    Caption           nvarchar(64)     NULL,
+    LongCaption       nvarchar(128)    NULL,
+    Sort              int              NULL,
+    AgeFrom           int              NULL,
+    AgeTo             int              NULL,
+    SwimClubID        int              NULL,
+    CONSTRAINT PK_SwimmerClass PRIMARY KEY CLUSTERED (SwimmerClassID)
 )
 GO
 
 
 
-IF OBJECT_ID('SwimrClass') IS NOT NULL
-    PRINT '<<< CREATED TABLE SwimrClass >>>'
+IF OBJECT_ID('SwimmerClass') IS NOT NULL
+    PRINT '<<< CREATED TABLE SwimmerClass >>>'
 ELSE
-    PRINT '<<< FAILED CREATING TABLE SwimrClass >>>'
+    PRINT '<<< FAILED CREATING TABLE SwimmerClass >>>'
+GO
+
+GRANT DELETE ON SwimmerClass TO SCM_Administrator
+GO
+GRANT INSERT ON SwimmerClass TO SCM_Administrator
+GO
+GRANT SELECT ON SwimmerClass TO SCM_Administrator
+GO
+GRANT UPDATE ON SwimmerClass TO SCM_Administrator
+GO
+GRANT SELECT ON SwimmerClass TO SCM_Marshall
+GO
+GRANT SELECT ON SwimmerClass TO SCM_Guest
 GO
 
 /* 
@@ -1215,6 +1481,19 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE Team >>>'
 GO
 
+GRANT INSERT ON Team TO SCM_Administrator
+GO
+GRANT SELECT ON Team TO SCM_Administrator
+GO
+GRANT UPDATE ON Team TO SCM_Administrator
+GO
+GRANT SELECT ON Team TO SCM_Marshall
+GO
+GRANT SELECT ON Team TO SCM_Guest
+GO
+GRANT DELETE ON Team TO SCM_Administrator
+GO
+
 /* 
  * TABLE: TeamEntrant 
  */
@@ -1238,6 +1517,25 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE TeamEntrant >>>'
 GO
 
+GRANT DELETE ON TeamEntrant TO SCM_Marshall
+GO
+GRANT INSERT ON TeamEntrant TO SCM_Marshall
+GO
+GRANT DELETE ON TeamEntrant TO SCM_Administrator
+GO
+GRANT INSERT ON TeamEntrant TO SCM_Administrator
+GO
+GRANT SELECT ON TeamEntrant TO SCM_Administrator
+GO
+GRANT UPDATE ON TeamEntrant TO SCM_Administrator
+GO
+GRANT SELECT ON TeamEntrant TO SCM_Marshall
+GO
+GRANT SELECT ON TeamEntrant TO SCM_Guest
+GO
+GRANT UPDATE ON TeamEntrant TO SCM_Marshall
+GO
+
 /* 
  * TABLE: TeamSplit 
  */
@@ -1257,6 +1555,19 @@ IF OBJECT_ID('TeamSplit') IS NOT NULL
     PRINT '<<< CREATED TABLE TeamSplit >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE TeamSplit >>>'
+GO
+
+GRANT DELETE ON TeamSplit TO SCM_Administrator
+GO
+GRANT INSERT ON TeamSplit TO SCM_Administrator
+GO
+GRANT SELECT ON TeamSplit TO SCM_Administrator
+GO
+GRANT UPDATE ON TeamSplit TO SCM_Administrator
+GO
+GRANT SELECT ON TeamSplit TO SCM_Marshall
+GO
+GRANT SELECT ON TeamSplit TO SCM_Guest
 GO
 
 /* 
@@ -1393,11 +1704,6 @@ ALTER TABLE HRLink ADD CONSTRAINT MemberHRLink
     REFERENCES Member(MemberID)
 GO
 
-ALTER TABLE HRLink ADD CONSTRAINT NomineeHRLink 
-    FOREIGN KEY (NomineeID)
-    REFERENCES Nominee(NomineeID)
-GO
-
 ALTER TABLE HRLink ADD CONSTRAINT SwimClubHRLink 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
@@ -1443,12 +1749,17 @@ ALTER TABLE Nominee ADD CONSTRAINT EventNominee
     REFERENCES Event(EventID) ON DELETE CASCADE
 GO
 
+ALTER TABLE Nominee ADD CONSTRAINT HRLinkNominee 
+    FOREIGN KEY (SwimClubID, MemberID)
+    REFERENCES HRLink(SwimClubID, MemberID)
+GO
+
 
 /* 
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali5 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual25 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -1535,10 +1846,10 @@ GO
 
 
 /* 
- * TABLE: SwimrClass 
+ * TABLE: SwimmerClass 
  */
 
-ALTER TABLE SwimrClass ADD CONSTRAINT SwimClubSwimrClass 
+ALTER TABLE SwimmerClass ADD CONSTRAINT SwimClubSwimmerClass 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
 GO
@@ -2391,11 +2702,11 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION RaceTimeDIFF >>>'
 GO
 
+GRANT EXECUTE ON RaceTimeDIFF TO SCM_Administrator
+GO
 GRANT EXECUTE ON RaceTimeDIFF TO SCM_Marshall
 GO
 GRANT EXECUTE ON RaceTimeDIFF TO SCM_Guest
-GO
-GRANT EXECUTE ON RaceTimeDIFF TO SCM_Administrator
 GO
 
 
@@ -3451,4 +3762,34 @@ GO
 GRANT EXECUTE ON TimeToBeat_DEFAULT TO SCM_Guest
 GO
 
+
+
+USE [SwimClubMeet]
+GO
+-- REQUIRED AS GENERATE DATABASE unsuccessful at creating this user
+-- (Syntax used by ER/Studio too simple.)  
+/****** Object:  User [scmAdmin]    Script Date: 25/12/2020 1:42:57 PM ******/
+CREATE USER [scmAdmin] WITHOUT LOGIN WITH DEFAULT_SCHEMA=[scmAdmin]
+GO
+-- Roles can be successfully created with GENERATE DATABASE ROLES param
+/****** Object:  DatabaseRole [SCM_Administrator]    Script Date: 25/12/2020 1:42:57 PM ******/
+--CREATE ROLE [SCM_Administrator]
+--GO
+/****** Object:  DatabaseRole [SCM_Guest]    Script Date: 25/12/2020 1:42:57 PM ******/
+--CREATE ROLE [SCM_Guest]
+--GO
+/****** Object:  DatabaseRole [SCM_Marshall]    Script Date: 25/12/2020 1:42:57 PM ******/
+--CREATE ROLE [SCM_Marshall]
+--GO
+ALTER ROLE [SCM_Administrator] ADD MEMBER [scmAdmin]
+GO
+ALTER ROLE [db_datareader] ADD MEMBER [scmAdmin]
+GO
+ALTER ROLE [db_datawriter] ADD MEMBER [scmAdmin]
+GO
+
+-- REQUIRED AS GENERATE DATABASE unsuccessful at creating schema without scmAdmin user name
+/****** Object:  Schema [scmAdmin]    Script Date: 25/12/2020 1:42:58 PM ******/
+CREATE SCHEMA [scmAdmin]
+GO
 

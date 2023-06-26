@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Thursday, June 22, 2023 09:11:50
+ * Date Created : Sunday, June 25, 2023 10:56:11
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -505,6 +505,7 @@ CREATE TABLE HeatIndividual(
     HeatID          int              IDENTITY(1,1),
     HeatNum         int              NULL,
     Caption         nvarchar(128)    NULL,
+    ScheduleDT      time(7)          NULL,
     ClosedDT        datetime         NULL,
     EventID         int              NULL,
     HeatTypeID      int              NULL,
@@ -584,6 +585,7 @@ CREATE TABLE HeatTeam(
     HeatID          int              IDENTITY(1,1),
     HeatNum         int              NULL,
     Caption         nvarchar(128)    NULL,
+    ScheduleDT      time(7)          NULL,
     ClosedDT        datetime         NULL,
     EventID         int              NULL,
     HeatTypeID      int              NULL,
@@ -759,6 +761,27 @@ GRANT DELETE ON House TO SCM_Administrator
 GO
 
 /* 
+ * TABLE: HRRole 
+ */
+
+CREATE TABLE HRRole(
+    HRRoleID      int              IDENTITY(1,1),
+    Caption       nvarchar(128)    NULL,
+    IsArchived    bit              DEFAULT 0 NOT NULL,
+    CreatedOn     datetime         NULL,
+    CONSTRAINT PK_HRRole PRIMARY KEY CLUSTERED (HRRoleID)
+)
+GO
+
+
+
+IF OBJECT_ID('HRRole') IS NOT NULL
+    PRINT '<<< CREATED TABLE HRRole >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE HRRole >>>'
+GO
+
+/* 
  * TABLE: HRType 
  */
 
@@ -850,6 +873,25 @@ GRANT DELETE ON Member TO SCM_Administrator
 GO
 
 /* 
+ * TABLE: MemberHRRole 
+ */
+
+CREATE TABLE MemberHRRole(
+    HRRoleID    int    NOT NULL,
+    MemberID    int    NOT NULL,
+    CONSTRAINT PK_MemberHRRole PRIMARY KEY CLUSTERED (HRRoleID, MemberID)
+)
+GO
+
+
+
+IF OBJECT_ID('MemberHRRole') IS NOT NULL
+    PRINT '<<< CREATED TABLE MemberHRRole >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE MemberHRRole >>>'
+GO
+
+/* 
  * TABLE: Nominee 
  */
 
@@ -890,6 +932,30 @@ GO
 GRANT INSERT ON Nominee TO SCM_Administrator
 GO
 GRANT UPDATE ON Nominee TO SCM_Administrator
+GO
+
+/* 
+ * TABLE: PoolType 
+ */
+
+CREATE TABLE PoolType(
+    PoolTypeID      int              IDENTITY(1,1),
+    Caption         nvarchar(128)    NULL,
+    ShortCaption    nvarchar(16)     NULL,
+    ABREV           nvarchar(5)      NULL,
+    IsArchived      bit              DEFAULT 0 NULL,
+    IsActive        bit              DEFAULT 1 NULL,
+    LenOfPool       float            NULL,
+    CONSTRAINT PK_PoolType PRIMARY KEY CLUSTERED (PoolTypeID)
+)
+GO
+
+
+
+IF OBJECT_ID('PoolType') IS NOT NULL
+    PRINT '<<< CREATED TABLE PoolType >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE PoolType >>>'
 GO
 
 /* 
@@ -1306,6 +1372,7 @@ CREATE TABLE SwimClub(
     LogoDir                         varchar(max)     NULL,
     LogoImg                         image            NULL,
     LogoType                        nvarchar(5)      NULL,
+    PoolTypeID                      int              NULL,
     CONSTRAINT PK_SwimClub PRIMARY KEY NONCLUSTERED (SwimClubID)
 )
 GO
@@ -1672,6 +1739,21 @@ GO
 
 
 /* 
+ * TABLE: MemberHRRole 
+ */
+
+ALTER TABLE MemberHRRole ADD CONSTRAINT HRRoleMemberHRRole 
+    FOREIGN KEY (HRRoleID)
+    REFERENCES HRRole(HRRoleID)
+GO
+
+ALTER TABLE MemberHRRole ADD CONSTRAINT MemberMemberHRRole 
+    FOREIGN KEY (MemberID)
+    REFERENCES Member(MemberID)
+GO
+
+
+/* 
  * TABLE: Nominee 
  */
 
@@ -1690,7 +1772,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual25 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual27 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -1758,6 +1840,16 @@ GO
 ALTER TABLE Split ADD CONSTRAINT EntrantSplit 
     FOREIGN KEY (EntrantID)
     REFERENCES Entrant(EntrantID) ON DELETE CASCADE
+GO
+
+
+/* 
+ * TABLE: SwimClub 
+ */
+
+ALTER TABLE SwimClub ADD CONSTRAINT PoolTypeSwimClub 
+    FOREIGN KEY (PoolTypeID)
+    REFERENCES PoolType(PoolTypeID)
 GO
 
 
