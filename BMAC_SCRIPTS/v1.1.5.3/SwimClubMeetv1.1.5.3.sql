@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Sunday, June 25, 2023 10:56:11
+ * Date Created : Tuesday, June 27, 2023 13:44:33
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -782,45 +782,6 @@ ELSE
 GO
 
 /* 
- * TABLE: HRType 
- */
-
-CREATE TABLE HRType(
-    HRTypeID    int              IDENTITY(1,1),
-    Caption     nvarchar(128)    NULL,
-    CONSTRAINT PK_HRType PRIMARY KEY CLUSTERED (HRTypeID)
-)
-GO
-
-
-
-IF OBJECT_ID('HRType') IS NOT NULL
-    PRINT '<<< CREATED TABLE HRType >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE HRType >>>'
-GO
-SET IDENTITY_INSERT [dbo].[HRType] ON
-GO
-
-INSERT INTO [dbo].[HRType]
-(
-    HRTypeID
-  , [Caption]
-)
-VALUES
-  (1, 'Swimmer')
-, (2, 'Parent')
-, (3, 'Committee Member')
-, (4, 'Volunteer Coordinator')
-, (5, 'Misc. Contact')
-, (6, 'Coach')
-, (7, 'Life Member')
-GO
-
-SET IDENTITY_INSERT [dbo].[HRType] OFF
-GO
-
-/* 
  * TABLE: Member 
  */
 
@@ -846,7 +807,6 @@ CREATE TABLE Member(
     SwimClubID                  int              NULL,
     HouseID                     int              NULL,
     GenderID                    int              NULL,
-    HRTypeID                    int              NULL,
     CONSTRAINT PK_Member PRIMARY KEY NONCLUSTERED (MemberID)
 )
 GO
@@ -1725,11 +1685,6 @@ GO
 ALTER TABLE Member ADD CONSTRAINT HouseMember 
     FOREIGN KEY (HouseID)
     REFERENCES House(HouseID) ON DELETE SET NULL
-GO
-
-ALTER TABLE Member ADD CONSTRAINT HRTypeMember 
-    FOREIGN KEY (HRTypeID)
-    REFERENCES HRType(HRTypeID)
 GO
 
 ALTER TABLE Member ADD CONSTRAINT SwimClubMember 
