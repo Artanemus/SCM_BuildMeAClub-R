@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Tuesday, June 27, 2023 13:44:33
+ * Date Created : Wednesday, June 28, 2023 12:37:23
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -1369,7 +1369,7 @@ VALUES (
 	,N'SCM_CLUBNAME'
 	,N'SCM_EMAIL'
 	,N''
-	,N''
+	,N'https://artanemus.github.io/index.html'
 	,1
 	,0
 	,0
@@ -1392,49 +1392,52 @@ GRANT SELECT ON SwimClub TO SCM_Marshall
 GO
 
 /* 
- * TABLE: SwimmerClass 
+ * TABLE: SwimmerCategory 
  */
 
-CREATE TABLE SwimmerClass(
-    SwimmerClassID    int              IDENTITY(1,1),
-    Caption           nvarchar(64)     NULL,
-    LongCaption       nvarchar(128)    NULL,
-    AgeFrom           int              NULL,
-    AgeTo             int              NULL,
-    SwimClubID        int              NULL,
-    CONSTRAINT PK_SwimmerClass PRIMARY KEY NONCLUSTERED (SwimmerClassID)
+CREATE TABLE SwimmerCategory(
+    SwimmerCategoryID    int              IDENTITY(1,1),
+    Caption              nvarchar(64)     NULL,
+    LongCaption          nvarchar(128)    NULL,
+    ABREV                nvarchar(5)      NULL,
+    AgeFrom              int              NULL,
+    AgeTo                int              NULL,
+    IsArchived           bit              DEFAULT 0 NULL,
+    IsActive             bit              DEFAULT 1 NULL,
+    SwimClubID           int              NULL,
+    CONSTRAINT PK_SwimmerCategory PRIMARY KEY CLUSTERED (SwimmerCategoryID)
 )
 GO
 
 
 
-IF OBJECT_ID('SwimmerClass') IS NOT NULL
-    PRINT '<<< CREATED TABLE SwimmerClass >>>'
+IF OBJECT_ID('SwimmerCategory') IS NOT NULL
+    PRINT '<<< CREATED TABLE SwimmerCategory >>>'
 ELSE
-    PRINT '<<< FAILED CREATING TABLE SwimmerClass >>>'
+    PRINT '<<< FAILED CREATING TABLE SwimmerCategory >>>'
 GO
-SET IDENTITY_INSERT [dbo].[SwimmerClass] ON 
+SET IDENTITY_INSERT [dbo].[SwimmerCategory] ON 
 GO
-INSERT [dbo].[SwimmerClass] ([SwimmerClassID], [Caption], [LongCaption], [AgeFrom], [AgeTo]) VALUES 
-(1, N'Competitive Swimmer 9 years+', N'Competitive Swimmer 9 years and over.', 9, NULL)
-,(2, N'Casual Swimmer 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ', 9, NULL)
-,(3, N'Junior Dolphin 7 & Under', N'Junior Dolphin 7 and Under', 1, 7)
-,(4, N'Junior Dolphin 8 Year Old', N'Junior Dolphin 8 Year Old', 8, 8)
+INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) VALUES 
+(1, N'Competitive Swimmer 9 years+', N'Competitive Swimmer 9 years and over.', 9, NULL,0,1,1)
+,(2, N'Casual Swimmer 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ', 9, NULL,0,1,1)
+,(3, N'Junior Dolphin 7 & Under', N'Junior Dolphin 7 and Under', 1, 7,0,1,1)
+,(4, N'Junior Dolphin 8 Year Old', N'Junior Dolphin 8 Year Old', 8, 8,0,1,1)
 GO
-SET IDENTITY_INSERT [dbo].[SwimmerClass] OFF
+SET IDENTITY_INSERT [dbo].[SwimmerCategory] OFF
 GO
 
-GRANT INSERT ON SwimmerClass TO SCM_Administrator
+GRANT UPDATE ON SwimmerCategory TO SCM_Administrator
 GO
-GRANT SELECT ON SwimmerClass TO SCM_Administrator
+GRANT SELECT ON SwimmerCategory TO SCM_Marshall
 GO
-GRANT UPDATE ON SwimmerClass TO SCM_Administrator
+GRANT SELECT ON SwimmerCategory TO SCM_Guest
 GO
-GRANT SELECT ON SwimmerClass TO SCM_Marshall
+GRANT DELETE ON SwimmerCategory TO SCM_Administrator
 GO
-GRANT SELECT ON SwimmerClass TO SCM_Guest
+GRANT INSERT ON SwimmerCategory TO SCM_Administrator
 GO
-GRANT DELETE ON SwimmerClass TO SCM_Administrator
+GRANT SELECT ON SwimmerCategory TO SCM_Administrator
 GO
 
 /* 
@@ -1732,7 +1735,7 @@ ALTER TABLE Qualify ADD CONSTRAINT DistanceQual27
     REFERENCES Distance(DistanceID)
 GO
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQualify 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual43 
     FOREIGN KEY (TrialDistID)
     REFERENCES Distance(DistanceID) ON DELETE SET NULL
 GO
@@ -1809,10 +1812,10 @@ GO
 
 
 /* 
- * TABLE: SwimmerClass 
+ * TABLE: SwimmerCategory 
  */
 
-ALTER TABLE SwimmerClass ADD CONSTRAINT SwimClubSwimmerClass 
+ALTER TABLE SwimmerCategory ADD CONSTRAINT SwimClubSwimmerCategory 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID)
 GO
