@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Wednesday, June 28, 2023 12:37:23
+ * Date Created : Thursday, June 29, 2023 14:08:22
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -761,27 +761,6 @@ GRANT DELETE ON House TO SCM_Administrator
 GO
 
 /* 
- * TABLE: HRRole 
- */
-
-CREATE TABLE HRRole(
-    HRRoleID      int              IDENTITY(1,1),
-    Caption       nvarchar(128)    NULL,
-    IsArchived    bit              DEFAULT 0 NOT NULL,
-    CreatedOn     datetime         NULL,
-    CONSTRAINT PK_HRRole PRIMARY KEY CLUSTERED (HRRoleID)
-)
-GO
-
-
-
-IF OBJECT_ID('HRRole') IS NOT NULL
-    PRINT '<<< CREATED TABLE HRRole >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE HRRole >>>'
-GO
-
-/* 
  * TABLE: Member 
  */
 
@@ -795,8 +774,8 @@ CREATE TABLE Member(
     RegisterNum                 int              NULL,
     RegisterStr                 nvarchar(24)     NULL,
     DOB                         datetime         NULL,
-    IsArchived                  bit              DEFAULT 0 NULL,
-    IsActive                    bit              DEFAULT 1 NULL,
+    IsArchived                  bit              DEFAULT 0 NOT NULL,
+    IsActive                    bit              DEFAULT 1 NOT NULL,
     IsSwimmer                   bit              DEFAULT 1 NULL,
     Email                       nvarchar(256)    NULL,
     CreatedOn                   datetime         NULL,
@@ -804,6 +783,7 @@ CREATE TABLE Member(
     EnableEmailOut              bit              DEFAULT 0 NULL,
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
     EnableEmailSessionReport    bit              DEFAULT 0 NULL,
+    ABREV                       nvarchar(5)      NULL,
     SwimClubID                  int              NULL,
     HouseID                     int              NULL,
     GenderID                    int              NULL,
@@ -833,22 +813,76 @@ GRANT DELETE ON Member TO SCM_Administrator
 GO
 
 /* 
- * TABLE: MemberHRRole 
+ * TABLE: MemberRole 
  */
 
-CREATE TABLE MemberHRRole(
-    HRRoleID    int    NOT NULL,
-    MemberID    int    NOT NULL,
-    CONSTRAINT PK_MemberHRRole PRIMARY KEY CLUSTERED (HRRoleID, MemberID)
+CREATE TABLE MemberRole(
+    MemberRoleID    int              IDENTITY(1,1),
+    Caption         nvarchar(128)    NULL,
+    IsArchived      bit              DEFAULT 0 NOT NULL,
+    IsActive        bit              DEFAULT 1 NOT NULL,
+    CreatedOn       datetime         NULL,
+    CONSTRAINT PK_MemberRole PRIMARY KEY CLUSTERED (MemberRoleID)
 )
 GO
 
 
 
-IF OBJECT_ID('MemberHRRole') IS NOT NULL
-    PRINT '<<< CREATED TABLE MemberHRRole >>>'
+IF OBJECT_ID('MemberRole') IS NOT NULL
+    PRINT '<<< CREATED TABLE MemberRole >>>'
 ELSE
-    PRINT '<<< FAILED CREATING TABLE MemberHRRole >>>'
+    PRINT '<<< FAILED CREATING TABLE MemberRole >>>'
+GO
+SET IDENTITY_INSERT [dbo].[MemberRole] ON
+GO
+
+INSERT INTO [dbo].[MemberRole]
+(
+    MemberRoleID
+  , [Caption]
+  , [IsActive]
+  , [IsArchived]
+)
+VALUES
+(1, 'President', 1, 0)
+, (2, 'Vice President', 1, 0)
+, (3, 'Secretary', 1, 0)
+, (4, 'Registrar', 1, 0)
+, (5, 'Treasurer', 1, 0)
+, (6, 'Race Secretary', 1, 0)
+, (7, 'Committee Member', 1, 0)
+, (8, 'Volunteer Coordinator', 1, 0)
+, (9, 'Public Officer', 1, 0)
+, (10, 'Swimmer', 1, 0)
+, (11, 'Parent', 1, 0)
+, (12, 'Coach', 1, 0)
+, (13, 'Life Member', 1, 0)
+, (14, 'Misc. Contact', 1, 0)
+GO
+
+SET IDENTITY_INSERT [dbo].[MemberRole] OFF
+GO
+
+/* 
+ * TABLE: MemberRoleLink 
+ */
+
+CREATE TABLE MemberRoleLink(
+    MemberRoleID    int         NOT NULL,
+    MemberID        int         NOT NULL,
+    CreatedOn       datetime    NULL,
+    IsActive        bit         DEFAULT 1 NOT NULL,
+    IsArchived      bit         DEFAULT 0 NOT NULL,
+    CONSTRAINT PK_MemberRoleLink PRIMARY KEY CLUSTERED (MemberRoleID, MemberID)
+)
+GO
+
+
+
+IF OBJECT_ID('MemberRoleLink') IS NOT NULL
+    PRINT '<<< CREATED TABLE MemberRoleLink >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE MemberRoleLink >>>'
 GO
 
 /* 
@@ -902,7 +936,7 @@ CREATE TABLE PoolType(
     PoolTypeID      int              IDENTITY(1,1),
     Caption         nvarchar(128)    NULL,
     ShortCaption    nvarchar(16)     NULL,
-    ABREV           nvarchar(5)      NULL,
+    ABREV           nvarchar(12)     NULL,
     IsArchived      bit              DEFAULT 0 NULL,
     IsActive        bit              DEFAULT 1 NULL,
     LenOfPool       float            NULL,
@@ -1399,7 +1433,7 @@ CREATE TABLE SwimmerCategory(
     SwimmerCategoryID    int              IDENTITY(1,1),
     Caption              nvarchar(64)     NULL,
     LongCaption          nvarchar(128)    NULL,
-    ABREV                nvarchar(5)      NULL,
+    ABREV                nvarchar(12)     NULL,
     AgeFrom              int              NULL,
     AgeTo                int              NULL,
     IsArchived           bit              DEFAULT 0 NULL,
@@ -1418,11 +1452,11 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] ON 
 GO
-INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) VALUES 
-(1, N'Competitive Swimmer 9 years+', N'Competitive Swimmer 9 years and over.', 9, NULL,0,1,1)
-,(2, N'Casual Swimmer 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ', 9, NULL,0,1,1)
-,(3, N'Junior Dolphin 7 & Under', N'Junior Dolphin 7 and Under', 1, 7,0,1,1)
-,(4, N'Junior Dolphin 8 Year Old', N'Junior Dolphin 8 Year Old', 8, 8,0,1,1)
+INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [ABREV], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) VALUES 
+(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',N'COMPETITIVE', 9, NULL,0,1,1)
+,(2, N'Casual 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ',NULL, 9, NULL,0,1,1)
+,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under',NULL, 1, 7,0,1,1)
+,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old',NULL, 8, 8,0,1,1)
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] OFF
 GO
@@ -1697,17 +1731,17 @@ GO
 
 
 /* 
- * TABLE: MemberHRRole 
+ * TABLE: MemberRoleLink 
  */
 
-ALTER TABLE MemberHRRole ADD CONSTRAINT HRRoleMemberHRRole 
-    FOREIGN KEY (HRRoleID)
-    REFERENCES HRRole(HRRoleID)
-GO
-
-ALTER TABLE MemberHRRole ADD CONSTRAINT MemberMemberHRRole 
+ALTER TABLE MemberRoleLink ADD CONSTRAINT MemberMemberRoleLink 
     FOREIGN KEY (MemberID)
     REFERENCES Member(MemberID)
+GO
+
+ALTER TABLE MemberRoleLink ADD CONSTRAINT MemberRoleMemberRoleLink 
+    FOREIGN KEY (MemberRoleID)
+    REFERENCES MemberRole(MemberRoleID)
 GO
 
 
@@ -1730,14 +1764,14 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual27 
-    FOREIGN KEY (QualifyDistID)
-    REFERENCES Distance(DistanceID)
-GO
-
 ALTER TABLE Qualify ADD CONSTRAINT DistanceQual43 
     FOREIGN KEY (TrialDistID)
     REFERENCES Distance(DistanceID) ON DELETE SET NULL
+GO
+
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQualify 
+    FOREIGN KEY (QualifyDistID)
+    REFERENCES Distance(DistanceID)
 GO
 
 ALTER TABLE Qualify ADD CONSTRAINT GenderQualify 
