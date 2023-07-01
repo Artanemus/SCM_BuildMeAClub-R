@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Thursday, June 29, 2023 14:08:22
+ * Date Created : Saturday, July 01, 2023 13:46:50
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -783,7 +783,8 @@ CREATE TABLE Member(
     EnableEmailOut              bit              DEFAULT 0 NULL,
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
     EnableEmailSessionReport    bit              DEFAULT 0 NULL,
-    ABREV                       nvarchar(5)      NULL,
+    ABREV                       nvarchar(13)     NULL,
+    METADATA                    ntext            NULL,
     SwimClubID                  int              NULL,
     HouseID                     int              NULL,
     GenderID                    int              NULL,
@@ -883,6 +884,27 @@ IF OBJECT_ID('MemberRoleLink') IS NOT NULL
     PRINT '<<< CREATED TABLE MemberRoleLink >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE MemberRoleLink >>>'
+GO
+
+/* 
+ * TABLE: MetaData 
+ */
+
+CREATE TABLE MetaData(
+    MetaDataID    int              IDENTITY(1,1),
+    Caption       nvarchar(128)    NULL,
+    IsActive      bit              DEFAULT 1 NOT NULL,
+    IsArchived    bit              DEFAULT 0 NOT NULL,
+    CONSTRAINT PK_MetaData PRIMARY KEY CLUSTERED (MetaDataID)
+)
+GO
+
+
+
+IF OBJECT_ID('MetaData') IS NOT NULL
+    PRINT '<<< CREATED TABLE MetaData >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE MetaData >>>'
 GO
 
 /* 
@@ -1426,6 +1448,25 @@ GRANT SELECT ON SwimClub TO SCM_Marshall
 GO
 
 /* 
+ * TABLE: SwimClubMetaDataLink 
+ */
+
+CREATE TABLE SwimClubMetaDataLink(
+    SwimClubID    int    NOT NULL,
+    MetaDataID    int    NOT NULL,
+    CONSTRAINT PK_SwimClubMetaDataLink PRIMARY KEY CLUSTERED (SwimClubID, MetaDataID)
+)
+GO
+
+
+
+IF OBJECT_ID('SwimClubMetaDataLink') IS NOT NULL
+    PRINT '<<< CREATED TABLE SwimClubMetaDataLink >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE SwimClubMetaDataLink >>>'
+GO
+
+/* 
  * TABLE: SwimmerCategory 
  */
 
@@ -1842,6 +1883,21 @@ GO
 ALTER TABLE SwimClub ADD CONSTRAINT PoolTypeSwimClub 
     FOREIGN KEY (PoolTypeID)
     REFERENCES PoolType(PoolTypeID)
+GO
+
+
+/* 
+ * TABLE: SwimClubMetaDataLink 
+ */
+
+ALTER TABLE SwimClubMetaDataLink ADD CONSTRAINT MetaDataSwimClubMetaDataLink 
+    FOREIGN KEY (MetaDataID)
+    REFERENCES MetaData(MetaDataID)
+GO
+
+ALTER TABLE SwimClubMetaDataLink ADD CONSTRAINT SwimClubSwimClubMetaDataLink 
+    FOREIGN KEY (SwimClubID)
+    REFERENCES SwimClub(SwimClubID)
 GO
 
 
