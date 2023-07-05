@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Saturday, July 01, 2023 13:46:50
+ * Date Created : Wednesday, July 05, 2023 13:23:38
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -199,10 +199,11 @@ VALUES
 (49, N'Changed order of swimmers',N'RC',7),
 (50, N'Non listed swimmer swam',N'RD',7),
 (51, N'Stroke infraction - use stroke codes and swimmer',N'RE',7),
-(52, N'Swimmer other than the swimmer designated to swim entered race area before finished',N'Rf',7)
+(52, N'Swimmer other than the swimmer designated to swim entered race area before finished',N'RF',7),
 
 -- SCM Special
-(53, N'Swimmer didn''t show for event. Scratched ',N'SA',7)
+(53, N'Swimmer didn''t show for event. Scratched',N'ScmA',7),
+(54, N'Unspecified disqualification.',N'ScmB',7)
 
 GO
 
@@ -222,6 +223,7 @@ GO
 CREATE TABLE DisqualifyType(
     DisqualifyTypeID    int              IDENTITY(1,1),
     Caption             nvarchar(128)    NULL,
+    StrokeID            int              NULL,
     CONSTRAINT PK_DisqualifyType PRIMARY KEY CLUSTERED (DisqualifyTypeID)
 )
 GO
@@ -236,17 +238,17 @@ GO
 SET IDENTITY_INSERT  [dbo].[DisqualifyType] ON;
 INSERT INTO DisqualifyType
 (
-[DisqualifyTypeID], [Caption]
+[DisqualifyTypeID], [Caption], [StrokeID]
 )
 VALUES
-(1, N'General')
-,(2, N'Freestyle')
-,(3, N'Backstroke')
-,(4, N'Breaststroke')
-,(5, N'Butterfly')
-,(6, N'Individual Medley')
-,(7, N'Relays')
-,(8, N'SCM')
+(1, N'General',0)
+,(2, N'Freestyle',1)
+,(3, N'Backstroke',3)
+,(4, N'Breaststroke',2)
+,(5, N'Butterfly',4)
+,(6, N'Individual Medley',5)
+,(7, N'Relays',0)
+,(8, N'SCM',0)
 SET IDENTITY_INSERT  [dbo].[DisqualifyType] OFF;
 
 GRANT SELECT ON DisqualifyType TO SCM_Guest
@@ -814,6 +816,25 @@ GRANT DELETE ON Member TO SCM_Administrator
 GO
 
 /* 
+ * TABLE: MemberMetaData 
+ */
+
+CREATE TABLE MemberMetaData(
+    MemberID      int    NOT NULL,
+    MetaDataID    int    NOT NULL,
+    CONSTRAINT PK_MemberMetaData PRIMARY KEY CLUSTERED (MemberID, MetaDataID)
+)
+GO
+
+
+
+IF OBJECT_ID('MemberMetaData') IS NOT NULL
+    PRINT '<<< CREATED TABLE MemberMetaData >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE MemberMetaData >>>'
+GO
+
+/* 
  * TABLE: MemberRole 
  */
 
@@ -893,6 +914,8 @@ GO
 CREATE TABLE MetaData(
     MetaDataID    int              IDENTITY(1,1),
     Caption       nvarchar(128)    NULL,
+    ABREV         nvarchar(5)      NULL,
+    CATID         int              NULL,
     IsActive      bit              DEFAULT 1 NOT NULL,
     IsArchived    bit              DEFAULT 0 NOT NULL,
     CONSTRAINT PK_MetaData PRIMARY KEY CLUSTERED (MetaDataID)
@@ -1652,6 +1675,16 @@ GO
 
 
 /* 
+ * TABLE: DisqualifyType 
+ */
+
+ALTER TABLE DisqualifyType ADD CONSTRAINT StrokeDisqualifyType 
+    FOREIGN KEY (StrokeID)
+    REFERENCES Stroke(StrokeID)
+GO
+
+
+/* 
  * TABLE: Entrant 
  */
 
@@ -1772,6 +1805,21 @@ GO
 
 
 /* 
+ * TABLE: MemberMetaData 
+ */
+
+ALTER TABLE MemberMetaData ADD CONSTRAINT MemberMemberMetaData 
+    FOREIGN KEY (MemberID)
+    REFERENCES Member(MemberID)
+GO
+
+ALTER TABLE MemberMetaData ADD CONSTRAINT MetaDataMemberMetaData 
+    FOREIGN KEY (MetaDataID)
+    REFERENCES MetaData(MetaDataID)
+GO
+
+
+/* 
  * TABLE: MemberRoleLink 
  */
 
@@ -1805,14 +1853,14 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual43 
-    FOREIGN KEY (TrialDistID)
-    REFERENCES Distance(DistanceID) ON DELETE SET NULL
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual31 
+    FOREIGN KEY (QualifyDistID)
+    REFERENCES Distance(DistanceID)
 GO
 
 ALTER TABLE Qualify ADD CONSTRAINT DistanceQualify 
-    FOREIGN KEY (QualifyDistID)
-    REFERENCES Distance(DistanceID)
+    FOREIGN KEY (TrialDistID)
+    REFERENCES Distance(DistanceID) ON DELETE SET NULL
 GO
 
 ALTER TABLE Qualify ADD CONSTRAINT GenderQualify 
