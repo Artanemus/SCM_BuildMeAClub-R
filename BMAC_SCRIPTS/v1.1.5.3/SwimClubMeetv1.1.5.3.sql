@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Wednesday, July 05, 2023 13:23:38
+ * Date Created : Sunday, July 09, 2023 14:10:13
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -786,7 +786,7 @@ CREATE TABLE Member(
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
     EnableEmailSessionReport    bit              DEFAULT 0 NULL,
     ABREV                       nvarchar(13)     NULL,
-    METADATA                    ntext            NULL,
+    TAG                         ntext            NULL,
     SwimClubID                  int              NULL,
     HouseID                     int              NULL,
     GenderID                    int              NULL,
@@ -813,25 +813,6 @@ GO
 GRANT SELECT ON Member TO SCM_Guest
 GO
 GRANT DELETE ON Member TO SCM_Administrator
-GO
-
-/* 
- * TABLE: MemberMetaData 
- */
-
-CREATE TABLE MemberMetaData(
-    MemberID      int    NOT NULL,
-    MetaDataID    int    NOT NULL,
-    CONSTRAINT PK_MemberMetaData PRIMARY KEY CLUSTERED (MemberID, MetaDataID)
-)
-GO
-
-
-
-IF OBJECT_ID('MemberMetaData') IS NOT NULL
-    PRINT '<<< CREATED TABLE MemberMetaData >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE MemberMetaData >>>'
 GO
 
 /* 
@@ -1146,24 +1127,31 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[ScoreDivision] ON 
 GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (1, 1, 0, 8)
+
+INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo], [Caption], [GenderID]) 
+VALUES
+-- GIRLS 
+(1, 1, 0, 8, N'Junior swimmers 8 years and under.', 2),
+(2, 1, 9, 9, N'Junior swimmers 9 years.', 2),
+(3, 1, 10, 11, N'10-11. Girls Multi-Class.', 2),
+(4, 1, 12, 13, N'12-13. Girls Multi-Class.', 2),
+(5, 1, 14, 15, N'14-15. Girls Multi-Class.', 2),
+(6, 1, 16, 18, N'16-18. Girls Multi-Class.', 2),
+-- Example of Set Inclusion
+(7, 1, 14, 18, N'14-18. Girls Senior Championship.', 2),
+
+-- BOYS
+(8, 1, 0, 8, N'Junior swimmers 8 years and under.', 1),
+(9, 1, 9, 9, N'Junior swimmers 9 years.', 1),
+(10, 1, 10, 11, N'10-11. Boys Multi-Class.', 1),
+(11, 1, 12, 13, N'12-13. Boys Multi-Class.', 1),
+(12, 1, 14, 15, N'14-15. Boys Multi-Class.', 1),
+(13, 1, 16, 18, N'16-18. Boys Multi-Class.', 1),
+-- Example of Set Inclusion
+(14, 1, 14, 18, N'14-18. Boys Senior Championship.', 1)
+
 GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (2, 1, 9, 9)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (3, 1, 10, 10)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (4, 1, 11, 11)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (5, 1, 12, 12)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (6, 1, 13, 13)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (7, 1, 14, 14)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (8, 1, 15, 15)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (9, 1, 16, 99)
-GO
+
 SET IDENTITY_INSERT [dbo].[ScoreDivision] OFF
 GO
 
@@ -1516,11 +1504,16 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] ON 
 GO
-INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [ABREV], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) VALUES 
-(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',N'COMPETITIVE', 9, NULL,0,1,1)
-,(2, N'Casual 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ',NULL, 9, NULL,0,1,1)
-,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under',NULL, 1, 7,0,1,1)
-,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old',NULL, 8, 8,0,1,1)
+INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [ABREV], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) 
+VALUES 
+/* 
+NOTE: Gender not a consideration in swimming categories. ABREV short for METADATA TAG.
+HINT: Use Auto-Build 'seperate genders' option.'
+*/
+(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',N'CASUAL', 9, NULL,0,1,1)
+,(2, N'Casual 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ',N'COMPETITIVE', 9, NULL,0,1,1)
+,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under.', N'CASUAL', 1, 7,0,1,1)
+,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old.', N'CASUAL', 8, 8,0,1,1)
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] OFF
 GO
@@ -1801,21 +1794,6 @@ GO
 ALTER TABLE Member ADD CONSTRAINT SwimClubMember 
     FOREIGN KEY (SwimClubID)
     REFERENCES SwimClub(SwimClubID) ON DELETE SET NULL
-GO
-
-
-/* 
- * TABLE: MemberMetaData 
- */
-
-ALTER TABLE MemberMetaData ADD CONSTRAINT MemberMemberMetaData 
-    FOREIGN KEY (MemberID)
-    REFERENCES Member(MemberID)
-GO
-
-ALTER TABLE MemberMetaData ADD CONSTRAINT MetaDataMemberMetaData 
-    FOREIGN KEY (MetaDataID)
-    REFERENCES MetaData(MetaDataID)
 GO
 
 
