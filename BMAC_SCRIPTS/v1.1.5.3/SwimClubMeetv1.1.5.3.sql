@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Sunday, July 09, 2023 14:10:13
+ * Date Created : Friday, July 14, 2023 15:30:31
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -785,8 +785,7 @@ CREATE TABLE Member(
     EnableEmailOut              bit              DEFAULT 0 NULL,
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
     EnableEmailSessionReport    bit              DEFAULT 0 NULL,
-    ABREV                       nvarchar(13)     NULL,
-    TAG                         ntext            NULL,
+    TAGS                        ntext            NULL,
     SwimClubID                  int              NULL,
     HouseID                     int              NULL,
     GenderID                    int              NULL,
@@ -856,11 +855,9 @@ VALUES
 , (7, 'Committee Member', 1, 0)
 , (8, 'Volunteer Coordinator', 1, 0)
 , (9, 'Public Officer', 1, 0)
-, (10, 'Swimmer', 1, 0)
-, (11, 'Parent', 1, 0)
-, (12, 'Coach', 1, 0)
-, (13, 'Life Member', 1, 0)
-, (14, 'Misc. Contact', 1, 0)
+, (10, 'Club Coach', 1, 0)
+, (11, 'Life Member', 1, 0)
+, (12, 'Misc. Contact', 1, 0)
 GO
 
 SET IDENTITY_INSERT [dbo].[MemberRole] OFF
@@ -876,6 +873,8 @@ CREATE TABLE MemberRoleLink(
     CreatedOn       datetime    NULL,
     IsActive        bit         DEFAULT 1 NOT NULL,
     IsArchived      bit         DEFAULT 0 NOT NULL,
+    ElectedOn       datetime    NULL,
+    RetiredOn       datetime    NULL,
     CONSTRAINT PK_MemberRoleLink PRIMARY KEY CLUSTERED (MemberRoleID, MemberID)
 )
 GO
@@ -894,9 +893,8 @@ GO
 
 CREATE TABLE MetaData(
     MetaDataID    int              IDENTITY(1,1),
-    Caption       nvarchar(128)    NULL,
-    ABREV         nvarchar(5)      NULL,
-    CATID         int              NULL,
+    TAG           nvarchar(128)    NULL,
+    TAGID         int              NULL,
     IsActive      bit              DEFAULT 1 NOT NULL,
     IsArchived    bit              DEFAULT 0 NOT NULL,
     CONSTRAINT PK_MetaData PRIMARY KEY CLUSTERED (MetaDataID)
@@ -909,6 +907,24 @@ IF OBJECT_ID('MetaData') IS NOT NULL
     PRINT '<<< CREATED TABLE MetaData >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE MetaData >>>'
+GO
+SET IDENTITY_INSERT [dbo].[MetaData] ON
+GO
+
+INSERT INTO [dbo].[MetaData]
+(
+    MetaDataID
+  , [TAG]	-- METADATA STRING
+  , [TAGID] -- NON SPECIFIC RELATIONSHIP - [dbo].[ClubType] - NULL PERMITTED.
+  , [IsActive] -- NULL VALUE NOT PERMITTED
+  , [IsArchived] -- NULL VALUE NOT PERMITTED
+)
+VALUES
+(1, 'COMPETITIVE', 1, 1, 0)
+
+GO
+
+SET IDENTITY_INSERT [dbo].[MetaData] OFF
 GO
 
 /* 
@@ -952,6 +968,130 @@ GO
 GRANT INSERT ON Nominee TO SCM_Administrator
 GO
 GRANT UPDATE ON Nominee TO SCM_Administrator
+GO
+
+/* 
+ * TABLE: ParaDetail 
+ */
+
+CREATE TABLE ParaDetail(
+    ParaDetailID    int              IDENTITY(1,1),
+    Code            nvarchar(16)     NULL,
+    Details         nvarchar(max)    NULL,
+    ParaMasterID    int              NULL,
+    CONSTRAINT PK_ParaDetail PRIMARY KEY CLUSTERED (ParaDetailID)
+)
+GO
+
+
+
+IF OBJECT_ID('ParaDetail') IS NOT NULL
+    PRINT '<<< CREATED TABLE ParaDetail >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE ParaDetail >>>'
+GO
+/*
+Para-Swimming Sport Classes
+The prefix for each class identifies the stroke;
+S denotes the class for freestyle, backstroke and butterfly 
+SB denotes the class for breaststroke 
+SM denotes the class for individual medley
+*/
+
+
+SET IDENTITY_INSERT [dbo].[ParaDetail] ON 
+GO
+
+INSERT [dbo].[ParaDetail] (
+ParaDetailID
+, Code
+, Details
+, ParaMasterID
+)
+ 
+VALUES 
+(1, 'S1', 'Swimmers with a Physical Impairment: Swimmers who have significant movement difficulties in arms, legs and trunk. Swimmers use a wheelchair for everyday mobility. Swimmers start in the water for all strokes, use assistance for water exit and entry and complete all strokes on their back.', 1),
+(2,'SB1', 'Swimmers with a Physical Impairment: Swimmers who have significant movement difficulties in arms, legs and trunk. Swimmers use a wheelchair for everyday mobility. Swimmers start in the water for all strokes, use assistance for water exit and entry and complete all strokes on their back.', 1),
+(3,'SM1', 'Swimmers with a Physical Impairment: Swimmers who have significant movement difficulties in arms, legs and trunk. Swimmers use a wheelchair for everyday mobility. Swimmers start in the water for all strokes, use assistance for water exit and entry and complete all strokes on their back.', 1),
+(4,'S2', 'Swimmers with a Physical Impairment: Swimmers have significant movement difficulties in arms, legs and trunk, but with more propulsive ability in arms or legs than S1 swimmers. Swimmers use water starts and assistance with water entry.', 1),
+(5,'SB1', 'Swimmers with a Physical Impairment: Swimmers have significant movement difficulties in arms, legs and trunk, but with more propulsive ability in arms or legs than S1 swimmers. Swimmers use water starts and assistance with water entry.', 1),
+(6,'SM2', 'Swimmers with a Physical Impairment: Swimmers have significant movement difficulties in arms, legs and trunk, but with more propulsive ability in arms or legs than S1 swimmers. Swimmers use water starts and assistance with water entry.', 1),
+(7,'S3', 'Swimmers with a Physical Impairment: Swimmers with some arm movement but with no use of their legs or torso; or swimmers with significant restrictions in all four limbs. Swimmers use water starts and assistance in the water.', 1),
+(8,'SB2', 'Swimmers with a Physical Impairment: Swimmers with some arm movement but with no use of their legs or torso; or swimmers with significant restrictions in all four limbs. Swimmers use water starts and assistance in the water.', 1),
+(9,'SM3', 'Swimmers with a Physical Impairment: Swimmers with some arm movement but with no use of their legs or torso; or swimmers with significant restrictions in all four limbs. Swimmers use water starts and assistance in the water.', 1),
+(10,'S4', 'Swimmers with a Physical Impairment: Swimmers with good use of arms and some hand weakness with no use of their torso or legs; swimmers with significant limb loss to three or four limbs. Swimmers usually start in the water.', 1),
+(11,'SB3', 'Swimmers with a Physical Impairment: Swimmers with good use of arms and some hand weakness with no use of their torso or legs; swimmers with significant limb loss to three or four limbs. Swimmers usually start in the water.', 1),
+(12,'SM4', 'Swimmers with a Physical Impairment: Swimmers with good use of arms and some hand weakness with no use of their torso or legs; swimmers with significant limb loss to three or four limbs. Swimmers usually start in the water.', 1),
+(13,'S5', 'Swimmers with a Physical Impairment: Swimmers with good use of arms, but no torso and leg movement; swimmers with some limb loss in three or four limbs. Some swimmers may start in the water and may have difficulty holding good body position in the water.', 1),
+(14,'SB4', 'Swimmers with a Physical Impairment: Swimmers with good use of arms, but no torso and leg movement; swimmers with some limb loss in three or four limbs. Some swimmers may start in the water and may have difficulty holding good body position in the water.', 1),
+(15,'SM5', 'Swimmers with a Physical Impairment: Swimmers with good use of arms, but no torso and leg movement; swimmers with some limb loss in three or four limbs. Some swimmers may start in the water and may have difficulty holding good body position in the water.', 1),
+(16,'S6', 'Swimmers with a Physical Impairment: Swimmers with short stature; swimmers with good arms, some torso and no leg movement; swimmers with significant impairment down one side of their body (limb loss or co-ordination difficulties).', 1),
+(17,'SB5', 'Swimmers with a Physical Impairment: Swimmers with short stature; swimmers with good arms, some torso and no leg movement; swimmers with significant impairment down one side of their body (limb loss or co-ordination difficulties).', 1),
+(18,'SM6', 'Swimmers with a Physical Impairment: Swimmers with short stature; swimmers with good arms, some torso and no leg movement; swimmers with significant impairment down one side of their body (limb loss or co-ordination difficulties).', 1),
+(19,'S7', 'Swimmers with a Physical Impairment: Swimmers with short stature; good arms and torso control and some leg movement; or swimmers with co-ordination difficulties or limb loss down one side of the body.', 1),
+(20,'SB6', 'Swimmers with a Physical Impairment: Swimmers with short stature; good arms and torso control and some leg movement; or swimmers with co-ordination difficulties or limb loss down one side of the body.', 1),
+(21,'SM7', 'Swimmers with a Physical Impairment: Swimmers with short stature; good arms and torso control and some leg movement; or swimmers with co-ordination difficulties or limb loss down one side of the body.', 1),
+(22,'S8', 'Swimmers with a Physical Impairment: Swimmers with full use of their arms and torso with good hip and some leg movement; or swimmers with limb loss of two limbs; swimmers without the use of one arm. Swimmers use regular starts, strokes and turns and may have some difficulties with timing of their strokes.', 1),
+(23,'SB7', 'Swimmers with a Physical Impairment: Swimmers with full use of their arms and torso with good hip and some leg movement; or swimmers with limb loss of two limbs; swimmers without the use of one arm. Swimmers use regular starts, strokes and turns and may have some difficulties with timing of their strokes.', 1),
+(24,'SM8', 'Swimmers with a Physical Impairment: Swimmers with full use of their arms and torso with good hip and some leg movement; or swimmers with limb loss of two limbs; swimmers without the use of one arm. Swimmers use regular starts, strokes and turns and may have some difficulties with timing of their strokes.', 1),
+(25,'S9', 'Swimmers with a Physical Impairment: Swimmers with weakness, limb loss or co-ordination difficulties in one arm or leg only. Swimmers use regular starts, strokes and turns, but have some difficulties in applying even power to the water.', 1),
+(26,'SB8', 'Swimmers with a Physical Impairment: Swimmers with weakness, limb loss or co-ordination difficulties in one arm or leg only. Swimmers use regular starts, strokes and turns, but have some difficulties in applying even power to the water.', 1),
+(27,'SM9', 'Swimmers with a Physical Impairment: Swimmers with weakness, limb loss or co-ordination difficulties in one arm or leg only. Swimmers use regular starts, strokes and turns, but have some difficulties in applying even power to the water.', 1),
+(28,'S10', 'Swimmers with a Physical Impairment: Swimmers with minimal impairment that affects one joint, usually their foot or hand. Starts, turns and strokes are smooth and fluid.', 1),
+(29,'SB9', 'Swimmers with a Physical Impairment: Swimmers with minimal impairment that affects one joint, usually their foot or hand. Starts, turns and strokes are smooth and fluid.', 1),
+(30,'SM10', 'Swimmers with a Physical Impairment: Swimmers with minimal impairment that affects one joint, usually their foot or hand. Starts, turns and strokes are smooth and fluid.', 1),
+(31,'S11', 'Swimmers with a Vision Impairment: Swimmers who are blind. Swimmers must wear blacked out goggles for competition and use a tapper as they approach the end of the pool. Swimmers often count strokes to know the length of the lane and anticipate turns.', 2),
+(32,'SB11', 'Swimmers with a Vision Impairment: Swimmers who are blind. Swimmers must wear blacked out goggles for competition and use a tapper as they approach the end of the pool. Swimmers often count strokes to know the length of the lane and anticipate turns.', 2),
+(33,'SM11', 'Swimmers with a Vision Impairment: Swimmers who are blind. Swimmers must wear blacked out goggles for competition and use a tapper as they approach the end of the pool. Swimmers often count strokes to know the length of the lane and anticipate turns.', 2),
+(34,'S12', 'Swimmers with a Vision Impairment: Swimmers who have very low vision in both eyes either in how far they can see (visual acuity <2/60; LogMAR 1.5-2.6 inclusive) or how wide they can see (visual field <10 degrees diameter). Swimmers have the option to use a tapper.', 2),
+(35,'SB12', 'Swimmers with a Vision Impairment: Swimmers who have very low vision in both eyes either in how far they can see (visual acuity <2/60; LogMAR 1.5-2.6 inclusive) or how wide they can see (visual field <10 degrees diameter). Swimmers have the option to use a tapper.', 2),
+(36,'SM12', 'Swimmers with a Vision Impairment: Swimmers who have very low vision in both eyes either in how far they can see (visual acuity <2/60; LogMAR 1.5-2.6 inclusive) or how wide they can see (visual field <10 degrees diameter). Swimmers have the option to use a tapper.', 2),
+(37,'S13', 'Swimmer who have low vision in both eyes, but more vision than S12 swimmers. Vision is affected either in how far they can see (visual acuity <6/60; LogMAR 1-1.4 inclusive) or how wide they can see (visual field < 40 degrees diameter). Swimmers may elect to use a tapper.', 2),
+(38,'SB13', 'Swimmer who have low vision in both eyes, but more vision than S12 swimmers. Vision is affected either in how far they can see (visual acuity <6/60; LogMAR 1-1.4 inclusive) or how wide they can see (visual field < 40 degrees diameter). Swimmers may elect to use a tapper.', 2),
+(39,'SM13', 'Swimmer who have low vision in both eyes, but more vision than S12 swimmers. Vision is affected either in how far they can see (visual acuity <6/60; LogMAR 1-1.4 inclusive) or how wide they can see (visual field < 40 degrees diameter). Swimmers may elect to use a tapper.', 2),
+(40,'S14', 'Swimmers with an Intellectual Impairment: Swimmers with an intellectual impairment. Swimmers may find it more difficult to pace consistently and plan event tactics.', 3),
+(41,'SB14', 'Swimmers with an Intellectual Impairment: Swimmers with an intellectual impairment. Swimmers may find it more difficult to pace consistently and plan event tactics.', 3),
+(42,'SM14', 'Swimmers with an Intellectual Impairment: Swimmers with an intellectual impairment. Swimmers may find it more difficult to pace consistently and plan event tactics.', 3),
+(43,'NE', 'Not Eligible: Swimmers do not meet the minimum criteria for the Para-sport classes, but may still be able to compete. Contact Swimming Australia for more information.', 4);
+
+GO
+
+SET IDENTITY_INSERT [dbo].[ParaDetail] OFF
+GO
+
+/* 
+ * TABLE: ParaMaster 
+ */
+
+CREATE TABLE ParaMaster(
+    ParaMasterID    int              IDENTITY(1,1),
+    Caption         nvarchar(128)    NULL,
+    CONSTRAINT PK_ParaMaster PRIMARY KEY CLUSTERED (ParaMasterID)
+)
+GO
+
+
+
+IF OBJECT_ID('ParaMaster') IS NOT NULL
+    PRINT '<<< CREATED TABLE ParaMaster >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE ParaMaster >>>'
+GO
+SET IDENTITY_INSERT [dbo].[ParaMaster] ON 
+GO
+
+INSERT [dbo].[ParaMaster] (
+ParaMasterID
+, Caption
+)
+VALUES 
+(1,'Physical')
+, (2,'Vision Impaired')
+, (3,'Intellectual')
+, (4,'Not Eligible')
+GO
+
+SET IDENTITY_INSERT [dbo].[ParaMaster] OFF
 GO
 
 /* 
@@ -1400,6 +1540,7 @@ CREATE TABLE SwimClub(
     LogoImg                         image            NULL,
     LogoType                        nvarchar(5)      NULL,
     PoolTypeID                      int              NULL,
+    SwimClubTypeID                  int              NULL,
     CONSTRAINT PK_SwimClub PRIMARY KEY NONCLUSTERED (SwimClubID)
 )
 GO
@@ -1476,6 +1617,69 @@ IF OBJECT_ID('SwimClubMetaDataLink') IS NOT NULL
 ELSE
     PRINT '<<< FAILED CREATING TABLE SwimClubMetaDataLink >>>'
 GO
+SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] ON
+GO
+
+INSERT INTO [dbo].[SwimClubMetaDataLink]
+(
+    SwimClubID
+  , MetaDataID
+)
+VALUES
+(1, 1)
+
+GO
+
+SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] OFF
+GO
+
+/* 
+ * TABLE: SwimClubType 
+ */
+
+CREATE TABLE SwimClubType(
+    SwimClubTypeID    int              IDENTITY(1,1),
+    Caption           nvarchar(128)    NULL,
+    ShortCaption      nvarchar(32)     NULL,
+    ABREV             nvarchar(12)     NULL,
+    IsArchived        bit              DEFAULT 0 NOT NULL,
+    IsActive          bit              DEFAULT 1 NOT NULL,
+    CONSTRAINT PK_SwimClubType PRIMARY KEY CLUSTERED (SwimClubTypeID)
+)
+GO
+
+
+
+IF OBJECT_ID('SwimClubType') IS NOT NULL
+    PRINT '<<< CREATED TABLE SwimClubType >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE SwimClubType >>>'
+GO
+SET IDENTITY_INSERT [dbo].[SwimClubType] ON
+GO
+
+INSERT [dbo].[SwimClubType]
+(
+    [SwimClubTypeID]
+  , [Caption]
+  , [ShortCaption]
+  , [ABREV]
+  , [IsActive] -- NULL NOT ALLOWED
+  , [IsArchived] -- NULL NOT ALLOWED
+)
+VALUES
+(1, N'Amateur Swimming Club', 'SCM SwimClub', N'SCMCLUB', 1, 0)
+, (2, N'SCM Carnival Club vs Clubs', 'SCM Carnival', N'SCMCARNIVAL', 1, 0)
+, (3, N'Club Championship', 'Championship', N'CLUBCHAMP', 1, 0)
+, (4, N'Regional Championship', 'Regional Competitive', N'REGCOMP', 1, 0)
+, (5, N'State Championship', 'State Competitive', N'STATECOMP', 1, 0)
+, (6, N'National Championship', 'National Competitive', N'NATCOMP', 1, 0)
+, (7, N'Masters Swimming', 'Masters', N'MASTER', 1, 0)
+, (8, N'Paralympic Swimming', 'Paralympic', N'PARA', 1, 0)
+, (9, N'Primary School Carnival', 'Primary School', N'PRIMARY', 1, 0)
+, (10, N'Secondary School Carnival', 'Secondary School', N'SECONDARY', 1, 0)
+, (11, N'Multi-Class Carnival', 'Multi-Class', N'MULTICLASS', 1, 0)
+GO
 
 /* 
  * TABLE: SwimmerCategory 
@@ -1485,11 +1689,12 @@ CREATE TABLE SwimmerCategory(
     SwimmerCategoryID    int              IDENTITY(1,1),
     Caption              nvarchar(64)     NULL,
     LongCaption          nvarchar(128)    NULL,
-    ABREV                nvarchar(12)     NULL,
+    TAG                  nvarchar(128)    NULL,
+    TAGID                int              NULL,
     AgeFrom              int              NULL,
     AgeTo                int              NULL,
-    IsArchived           bit              DEFAULT 0 NULL,
-    IsActive             bit              DEFAULT 1 NULL,
+    IsArchived           bit              DEFAULT 0 NOT NULL,
+    IsActive             bit              DEFAULT 1 NOT NULL,
     SwimClubID           int              NULL,
     CONSTRAINT PK_SwimmerCategory PRIMARY KEY CLUSTERED (SwimmerCategoryID)
 )
@@ -1507,13 +1712,13 @@ GO
 INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [ABREV], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) 
 VALUES 
 /* 
-NOTE: Gender not a consideration in swimming categories. ABREV short for METADATA TAG.
-HINT: Use Auto-Build 'seperate genders' option.'
+NOTE: Gender not a consideration in swimming categories. METADATA TAG used to resolve duplicity.
+HINT: Use by Auto-Build 'seperate by Swimming Category' option.'
 */
-(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',N'CASUAL', 9, NULL,0,1,1)
+(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',NULL, 9, NULL,0,1,1)
 ,(2, N'Casual 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ',N'COMPETITIVE', 9, NULL,0,1,1)
-,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under.', N'CASUAL', 1, 7,0,1,1)
-,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old.', N'CASUAL', 8, 8,0,1,1)
+,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under.', NULL, 1, 7,0,1,1)
+,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old.', NULL, 8, 8,0,1,1)
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] OFF
 GO
@@ -1828,10 +2033,20 @@ GO
 
 
 /* 
+ * TABLE: ParaDetail 
+ */
+
+ALTER TABLE ParaDetail ADD CONSTRAINT ParaMasterParaDetail 
+    FOREIGN KEY (ParaMasterID)
+    REFERENCES ParaMaster(ParaMasterID)
+GO
+
+
+/* 
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual31 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual43 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -1909,6 +2124,11 @@ GO
 ALTER TABLE SwimClub ADD CONSTRAINT PoolTypeSwimClub 
     FOREIGN KEY (PoolTypeID)
     REFERENCES PoolType(PoolTypeID)
+GO
+
+ALTER TABLE SwimClub ADD CONSTRAINT SwimClubTypeSwimClub 
+    FOREIGN KEY (SwimClubTypeID)
+    REFERENCES SwimClubType(SwimClubTypeID)
 GO
 
 
@@ -2571,6 +2791,104 @@ GO
 GRANT EXECUTE ON IsPoolShortCourse TO SCM_Guest
 GO
 GRANT EXECUTE ON IsPoolShortCourse TO SCM_Administrator
+GO
+
+
+/* 
+ * FUNCTION: MembersSwimmerCategory 
+ */
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Ben Ambrose
+-- Create date: 13/07/2023
+-- Description:	Get the Swimming CATEGORY of the MEMBER
+-- =============================================
+CREATE FUNCTION [MembersSwimmerCategory] 
+(
+	-- Add the parameters for the function here
+	@MemberID int
+	,@SwimClubID int
+	,@SeedDate DateTime
+)
+RETURNS int
+AS
+BEGIN
+	-- Declare the return variable here
+	DECLARE @Result int;
+
+	IF @SwimClubID IS NULL SET @SwimClubID = 1;
+
+	IF @SeedDate IS NULL SET @SeedDate = GETDATE();
+
+	SET @Result = 0;
+
+	IF @MemberID IS NULL RETURN @Result;
+
+    DECLARE @SwimClubTypeID AS INTEGER;
+    SET @SwimClubTypeID = (SELECT @SwimClubTypeID FROM dbo.SwimClub WHERE SwimClubID = @SwimClubID);
+    IF @SwimClubTypeID IS NULL SET @SwimClubTypeID = 1;    
+
+	    -- Declare the table variable
+    DECLARE @A TABLE (MemberID INT, AGE INT, TAGS nvarchar(max));
+	DECLARE @B TABLE (ID INT, aMATCH INT);
+
+    -- Insert data into the table variable
+    INSERT INTO @A (MemberID, AGE, TAGS) 
+    SELECT 
+		[MemberID]
+		, dbo.SwimmerAge(@SeedDate, member.DOB) AS AGE
+		, [TAGS]
+
+	FROM [SwimClubMeet].[dbo].[Member]
+	WHERE MemberID = @MemberID AND SwimClubID = @SwimClubID	;
+
+
+	INSERT INTO @B (ID, aMATCH)
+	SELECT 
+		[dbo].[SwimmerCategory].[SwimmerCategoryID] AS ID
+		, CASE
+            -- IF BOTH ARE NULL - MATCH
+			WHEN (SwimmerCategory.TAG IS NULL)
+				AND (TAGS IS NULL) THEN
+				1 
+            -- TAG FOUND IN META-DATA                
+			-- If either the expressionToFind or expressionToSearch expression has a NULL value, CHARINDEX returns NULL.
+			-- If CHARINDEX does not find expressionToFind within expressionToSearch, CHARINDEX returns 0.
+			WHEN (CHARINDEX(SwimmerCategory.TAG, TAGS) > 0) THEN
+				1 
+			ELSE
+				0 -- NO MATCH
+		END AS aMATCH 
+
+		FROM [dbo].[SwimmerCategory]
+            
+			INNER JOIN @A
+				ON (AGE >= AgeFrom)
+				   AND (AGE <= AgeTo)
+        WHERE [dbo].[SwimmerCategory].[SwimClubID] = @SwimClubID
+		-- Ordering here fails !!! ???
+
+
+	SELECT TOP (1)  @Result = ID FROM @B  WHERE aMATCH = 1 ORDER BY aMATCH DESC; 
+
+
+	-- Return the result of the function
+	RETURN @Result
+
+END
+GO
+
+
+
+GO
+IF OBJECT_ID('MembersSwimmerCategory') IS NOT NULL
+    PRINT '<<< CREATED FUNCTION MembersSwimmerCategory >>>'
+ELSE
+    PRINT '<<< FAILED CREATING FUNCTION MembersSwimmerCategory >>>'
 GO
 
 
