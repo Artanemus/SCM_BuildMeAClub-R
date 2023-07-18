@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Friday, July 14, 2023 15:30:31
+ * Date Created : Tuesday, July 18, 2023 09:33:08
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -857,7 +857,6 @@ VALUES
 , (9, 'Public Officer', 1, 0)
 , (10, 'Club Coach', 1, 0)
 , (11, 'Life Member', 1, 0)
-, (12, 'Misc. Contact', 1, 0)
 GO
 
 SET IDENTITY_INSERT [dbo].[MemberRole] OFF
@@ -873,8 +872,8 @@ CREATE TABLE MemberRoleLink(
     CreatedOn       datetime    NULL,
     IsActive        bit         DEFAULT 1 NOT NULL,
     IsArchived      bit         DEFAULT 0 NOT NULL,
-    ElectedOn       datetime    NULL,
-    RetiredOn       datetime    NULL,
+    StartOn         datetime    NULL,
+    EndOn           datetime    NULL,
     CONSTRAINT PK_MemberRoleLink PRIMARY KEY CLUSTERED (MemberRoleID, MemberID)
 )
 GO
