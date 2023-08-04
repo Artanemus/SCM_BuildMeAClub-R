@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Tuesday, July 18, 2023 09:33:08
+ * Date Created : Friday, August 04, 2023 16:48:23
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -577,50 +577,6 @@ GO
 GRANT SELECT ON HeatStatus TO SCM_Guest
 GO
 GRANT SELECT ON HeatStatus TO SCM_Administrator
-GO
-
-/* 
- * TABLE: HeatTeam 
- */
-
-CREATE TABLE HeatTeam(
-    HeatID          int              IDENTITY(1,1),
-    HeatNum         int              NULL,
-    Caption         nvarchar(128)    NULL,
-    ScheduleDT      time(7)          NULL,
-    ClosedDT        datetime         NULL,
-    EventID         int              NULL,
-    HeatTypeID      int              NULL,
-    HeatStatusID    int              NULL,
-    CONSTRAINT PK_HeatTeam PRIMARY KEY NONCLUSTERED (HeatID)
-)
-GO
-
-
-
-IF OBJECT_ID('HeatTeam') IS NOT NULL
-    PRINT '<<< CREATED TABLE HeatTeam >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE HeatTeam >>>'
-GO
-
-GRANT DELETE ON HeatTeam TO SCM_Marshall
-GO
-GRANT INSERT ON HeatTeam TO SCM_Marshall
-GO
-GRANT DELETE ON HeatTeam TO SCM_Administrator
-GO
-GRANT INSERT ON HeatTeam TO SCM_Administrator
-GO
-GRANT SELECT ON HeatTeam TO SCM_Administrator
-GO
-GRANT UPDATE ON HeatTeam TO SCM_Administrator
-GO
-GRANT SELECT ON HeatTeam TO SCM_Marshall
-GO
-GRANT SELECT ON HeatTeam TO SCM_Guest
-GO
-GRANT UPDATE ON HeatTeam TO SCM_Marshall
 GO
 
 /* 
@@ -1690,6 +1646,7 @@ CREATE TABLE SwimmerCategory(
     LongCaption          nvarchar(128)    NULL,
     TAG                  nvarchar(128)    NULL,
     TAGID                int              NULL,
+    ABREV                nvarchar(9)      NULL,
     AgeFrom              int              NULL,
     AgeTo                int              NULL,
     IsArchived           bit              DEFAULT 0 NOT NULL,
@@ -1708,16 +1665,16 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] ON 
 GO
-INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [ABREV], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) 
+INSERT [dbo].[SwimmerCategory] ([SwimmerCategoryID], [Caption], [LongCaption], [TAG], [TAGID], [ABREV], [AgeFrom], [AgeTo], [IsArchived], [IsActive], [SwimClubID]) 
 VALUES 
 /* 
 NOTE: Gender not a consideration in swimming categories. METADATA TAG used to resolve duplicity.
 HINT: Use by Auto-Build 'seperate by Swimming Category' option.'
 */
-(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',NULL, 9, NULL,0,1,1)
-,(2, N'Casual 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ',N'COMPETITIVE', 9, NULL,0,1,1)
-,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under.', NULL, 1, 7,0,1,1)
-,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old.', NULL, 8, 8,0,1,1)
+(1, N'Competitive 9 years+', N'Competitive Swimmer 9 years and over.',N'COMPETITIVE',1,N'COMPET9+', 9, 99, 0,1,1)
+,(2, N'Casual 9 years+', N'Casual or recreational Swimmer 9 years and over, who does not compete in Metropolitan ChampionShips ',NULL,0,N'CASUAL9+', 9, 99, 0,1,1)
+,(3, N'Junior Dolphin 7 & under', N'Junior Dolphin 7 and under.', NULL,0,N'JrDOLP7U', 1, 7, 0,1,1)
+,(4, N'Junior Dolphin 8 years', N'Junior Dolphin 8 year old.', NULL,0,N'JrDOLPH8Y', 8, 8, 0,1,1)
 GO
 SET IDENTITY_INSERT [dbo].[SwimmerCategory] OFF
 GO
@@ -1745,8 +1702,8 @@ CREATE TABLE Team(
     TeamTime            time(7)    NULL,
     IsDisqualified      bit        DEFAULT 0 NULL,
     IsScratched         bit        DEFAULT 0 NULL,
-    HeatID              int        NULL,
     DisqualifyCodeID    int        NULL,
+    HeatID              int        NULL,
     CONSTRAINT PK_Team PRIMARY KEY NONCLUSTERED (TeamID)
 )
 GO
@@ -1952,26 +1909,6 @@ GO
 
 
 /* 
- * TABLE: HeatTeam 
- */
-
-ALTER TABLE HeatTeam ADD CONSTRAINT EventHeatTeam 
-    FOREIGN KEY (EventID)
-    REFERENCES Event(EventID) ON DELETE CASCADE
-GO
-
-ALTER TABLE HeatTeam ADD CONSTRAINT HeatStatusHeatTeam 
-    FOREIGN KEY (HeatStatusID)
-    REFERENCES HeatStatus(HeatStatusID) ON DELETE SET NULL
-GO
-
-ALTER TABLE HeatTeam ADD CONSTRAINT HeatTypeHeatTeam 
-    FOREIGN KEY (HeatTypeID)
-    REFERENCES HeatType(HeatTypeID) ON DELETE SET NULL
-GO
-
-
-/* 
  * TABLE: House 
  */
 
@@ -2160,14 +2097,14 @@ GO
  * TABLE: Team 
  */
 
+ALTER TABLE Team ADD CONSTRAINT RefHeatIndividual181 
+    FOREIGN KEY (HeatID)
+    REFERENCES HeatIndividual(HeatID)
+GO
+
 ALTER TABLE Team ADD CONSTRAINT DisqualifyCodeTeam 
     FOREIGN KEY (DisqualifyCodeID)
     REFERENCES DisqualifyCode(DisqualifyCodeID)
-GO
-
-ALTER TABLE Team ADD CONSTRAINT HeatTeamTeam 
-    FOREIGN KEY (HeatID)
-    REFERENCES HeatTeam(HeatID) ON DELETE CASCADE
 GO
 
 
