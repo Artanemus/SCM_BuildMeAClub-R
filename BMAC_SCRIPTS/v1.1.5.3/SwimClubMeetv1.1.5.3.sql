@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Saturday, August 05, 2023 15:28:52
+ * Date Created : Sunday, August 06, 2023 16:27:02
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -1158,82 +1158,6 @@ GRANT DELETE ON Qualify TO SCM_Administrator
 GO
 
 /* 
- * TABLE: Relay 
- */
-
-CREATE TABLE Relay(
-    RelayID    int              IDENTITY(1,1),
-    Name       nvarchar(16)     NULL,
-    Alias      nvarchar(128)    NULL,
-    CONSTRAINT PK_Relay PRIMARY KEY CLUSTERED (RelayID)
-)
-GO
-
-
-
-IF OBJECT_ID('Relay') IS NOT NULL
-    PRINT '<<< CREATED TABLE Relay >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE Relay >>>'
-GO
-SET IDENTITY_INSERT [dbo].[Relay] ON 
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (1, N'Team A')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (2, N'Team B')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (3, N'Team C')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (4, N'Team D')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (5, N'Team E')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (6, N'Team F')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (7, N'Team G')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (8, N'Team H')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (9, N'Team I')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (10, N'Team J')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (11, N'Team K')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (12, N'Team L')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (13, N'Team M')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (14, N'Team N')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (15, N'Team O')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (16, N'Team P')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (17, N'Team Q')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (18, N'Team R')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (19, N'Team S')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (20, N'Team T')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (21, N'Team U')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (22, N'Team V')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (23, N'Team W')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (24, N'Team X')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (25, N'Team Y')
-GO
-INSERT [dbo].[Relay] ([RelayID], [Name]) VALUES (26, N'Team Z')
-GO
-SET IDENTITY_INSERT [dbo].[Relay] OFF
-GO
-
-/* 
  * TABLE: SCMSystem 
  */
 
@@ -1780,7 +1704,7 @@ CREATE TABLE Team(
     IsScratched         bit        DEFAULT 0 NULL,
     DisqualifyCodeID    int        NULL,
     HeatID              int        NULL,
-    RelayID             int        NULL,
+    TeamNameID          int        NULL,
     CONSTRAINT PK_Team PRIMARY KEY NONCLUSTERED (TeamID)
 )
 GO
@@ -1845,6 +1769,27 @@ GO
 GRANT SELECT ON TeamEntrant TO SCM_Guest
 GO
 GRANT UPDATE ON TeamEntrant TO SCM_Marshall
+GO
+
+/* 
+ * TABLE: TeamName 
+ */
+
+CREATE TABLE TeamName(
+    TeamNameID      int              IDENTITY(1,1),
+    Caption         nvarchar(128)    NULL,
+    CaptionShort    nvarchar(16)     NULL,
+    ABREV           nvarchar(5)      NULL,
+    CONSTRAINT PK_TeamName PRIMARY KEY CLUSTERED (TeamNameID)
+)
+GO
+
+
+
+IF OBJECT_ID('TeamName') IS NOT NULL
+    PRINT '<<< CREATED TABLE TeamName >>>'
+ELSE
+    PRINT '<<< FAILED CREATING TABLE TeamName >>>'
 GO
 
 /* 
@@ -2059,7 +2004,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual30 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual16 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -2184,9 +2129,9 @@ ALTER TABLE Team ADD CONSTRAINT HeatIndividualTeam
     REFERENCES HeatIndividual(HeatID)
 GO
 
-ALTER TABLE Team ADD CONSTRAINT RelayTeam 
-    FOREIGN KEY (RelayID)
-    REFERENCES Relay(RelayID)
+ALTER TABLE Team ADD CONSTRAINT TeamNameTeam 
+    FOREIGN KEY (TeamNameID)
+    REFERENCES TeamName(TeamNameID)
 GO
 
 
