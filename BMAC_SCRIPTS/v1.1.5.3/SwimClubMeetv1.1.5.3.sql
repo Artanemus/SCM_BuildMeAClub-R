@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Sunday, August 06, 2023 16:27:02
+ * Date Created : Thursday, August 10, 2023 16:02:41
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -266,6 +266,7 @@ CREATE TABLE Distance(
     DistanceID    int              IDENTITY(1,1),
     Caption       nvarchar(128)    NULL,
     Meters        int              NULL,
+    ABREV         nvarchar(8)      NULL,
     CONSTRAINT PK_Distance PRIMARY KEY NONCLUSTERED (DistanceID)
 )
 GO
@@ -279,19 +280,27 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[Distance] ON 
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (1, N'25m', 25)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (1, N'25m', 25, N'25')
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (2, N'50m', 50)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (2, N'50m', 50, N'50')
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (3, N'100m', 100)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (3, N'100m', 100, N'100')
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (4, N'200m', 200)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (4, N'200m', 200, N'200')
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (5, N'400m', 400)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (5, N'400m', 400, N'400')
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (6, N'800m', 800)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (6, N'800m', 800, N'800')
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters]) VALUES (7, N'1000m', 1000)
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (7, N'1000m', 1000, N'1000')
+GO
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (8, N'4x25m', 100, N'4x25')
+GO
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (9, N'4x50m', 200, N'4x50')
+GO
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (10, N'4x100m', 400, N'4x100')
+GO
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (11, N'4x200m', 800, N'4x200')
 GO
 SET IDENTITY_INSERT [dbo].[Distance] OFF
 GO
@@ -330,10 +339,6 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE Entrant >>>'
 GO
 
-GRANT DELETE ON Entrant TO SCM_Marshall
-GO
-GRANT INSERT ON Entrant TO SCM_Marshall
-GO
 GRANT DELETE ON Entrant TO SCM_Administrator
 GO
 GRANT INSERT ON Entrant TO SCM_Administrator
@@ -347,6 +352,10 @@ GO
 GRANT SELECT ON Entrant TO SCM_Guest
 GO
 GRANT UPDATE ON Entrant TO SCM_Marshall
+GO
+GRANT DELETE ON Entrant TO SCM_Marshall
+GO
+GRANT INSERT ON Entrant TO SCM_Marshall
 GO
 
 /* 
@@ -524,10 +533,6 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE HeatIndividual >>>'
 GO
 
-GRANT DELETE ON HeatIndividual TO SCM_Marshall
-GO
-GRANT INSERT ON HeatIndividual TO SCM_Marshall
-GO
 GRANT DELETE ON HeatIndividual TO SCM_Administrator
 GO
 GRANT INSERT ON HeatIndividual TO SCM_Administrator
@@ -541,6 +546,10 @@ GO
 GRANT UPDATE ON HeatIndividual TO SCM_Marshall
 GO
 GRANT SELECT ON HeatIndividual TO SCM_Guest
+GO
+GRANT DELETE ON HeatIndividual TO SCM_Marshall
+GO
+GRANT INSERT ON HeatIndividual TO SCM_Marshall
 GO
 
 /* 
@@ -818,6 +827,13 @@ GO
 SET IDENTITY_INSERT [dbo].[MemberRole] OFF
 GO
 
+GRANT SELECT ON MemberRole TO SCM_Marshall
+GO
+GRANT SELECT ON MemberRole TO SCM_Guest
+GO
+GRANT SELECT ON MemberRole TO SCM_Administrator
+GO
+
 /* 
  * TABLE: MemberRoleLink 
  */
@@ -882,6 +898,19 @@ GO
 SET IDENTITY_INSERT [dbo].[MetaData] OFF
 GO
 
+GRANT INSERT ON MetaData TO SCM_Administrator
+GO
+GRANT SELECT ON MetaData TO SCM_Administrator
+GO
+GRANT UPDATE ON MetaData TO SCM_Administrator
+GO
+GRANT SELECT ON MetaData TO SCM_Marshall
+GO
+GRANT SELECT ON MetaData TO SCM_Guest
+GO
+GRANT DELETE ON MetaData TO SCM_Administrator
+GO
+
 /* 
  * TABLE: Nominee 
  */
@@ -906,12 +935,6 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE Nominee >>>'
 GO
 
-GRANT DELETE ON Nominee TO SCM_Marshall
-GO
-GRANT INSERT ON Nominee TO SCM_Marshall
-GO
-GRANT UPDATE ON Nominee TO SCM_Marshall
-GO
 GRANT SELECT ON Nominee TO SCM_Guest
 GO
 GRANT SELECT ON Nominee TO SCM_Administrator
@@ -923,6 +946,12 @@ GO
 GRANT INSERT ON Nominee TO SCM_Administrator
 GO
 GRANT UPDATE ON Nominee TO SCM_Administrator
+GO
+GRANT DELETE ON Nominee TO SCM_Marshall
+GO
+GRANT INSERT ON Nominee TO SCM_Marshall
+GO
+GRANT UPDATE ON Nominee TO SCM_Marshall
 GO
 
 /* 
@@ -1071,6 +1100,19 @@ IF OBJECT_ID('PoolType') IS NOT NULL
     PRINT '<<< CREATED TABLE PoolType >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE PoolType >>>'
+GO
+
+GRANT INSERT ON PoolType TO SCM_Administrator
+GO
+GRANT SELECT ON PoolType TO SCM_Administrator
+GO
+GRANT UPDATE ON PoolType TO SCM_Administrator
+GO
+GRANT SELECT ON PoolType TO SCM_Marshall
+GO
+GRANT SELECT ON PoolType TO SCM_Guest
+GO
+GRANT DELETE ON PoolType TO SCM_Administrator
 GO
 
 /* 
@@ -1588,6 +1630,19 @@ GO
 SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] OFF
 GO
 
+GRANT INSERT ON SwimClubMetaDataLink TO SCM_Administrator
+GO
+GRANT SELECT ON SwimClubMetaDataLink TO SCM_Administrator
+GO
+GRANT UPDATE ON SwimClubMetaDataLink TO SCM_Administrator
+GO
+GRANT SELECT ON SwimClubMetaDataLink TO SCM_Marshall
+GO
+GRANT SELECT ON SwimClubMetaDataLink TO SCM_Guest
+GO
+GRANT DELETE ON SwimClubMetaDataLink TO SCM_Administrator
+GO
+
 /* 
  * TABLE: SwimClubType 
  */
@@ -1700,6 +1755,7 @@ CREATE TABLE Team(
     TeamID              int        IDENTITY(1,1),
     Lane                int        NULL,
     RaceTime            time(7)    NULL,
+    TimeToBeat          time(7)    NULL,
     IsDisqualified      bit        DEFAULT 0 NULL,
     IsScratched         bit        DEFAULT 0 NULL,
     DisqualifyCodeID    int        NULL,
@@ -1736,7 +1792,10 @@ GO
 
 CREATE TABLE TeamEntrant(
     TeamEntrantID    int        IDENTITY(1,1),
+    SwimOrder        int        NULL,
     RaceTime         time(7)    NULL,
+    TimeToBeat       time(7)    NULL,
+    PersonalBest     time(7)    NULL,
     MemberID         int        NULL,
     StrokeID         int        NULL,
     TeamID           int        NULL,
@@ -1752,10 +1811,6 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE TeamEntrant >>>'
 GO
 
-GRANT DELETE ON TeamEntrant TO SCM_Marshall
-GO
-GRANT INSERT ON TeamEntrant TO SCM_Marshall
-GO
 GRANT DELETE ON TeamEntrant TO SCM_Administrator
 GO
 GRANT INSERT ON TeamEntrant TO SCM_Administrator
@@ -1769,6 +1824,10 @@ GO
 GRANT SELECT ON TeamEntrant TO SCM_Guest
 GO
 GRANT UPDATE ON TeamEntrant TO SCM_Marshall
+GO
+GRANT DELETE ON TeamEntrant TO SCM_Marshall
+GO
+GRANT INSERT ON TeamEntrant TO SCM_Marshall
 GO
 
 /* 
