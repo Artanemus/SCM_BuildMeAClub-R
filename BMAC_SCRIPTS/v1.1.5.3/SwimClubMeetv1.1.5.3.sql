@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Thursday, August 10, 2023 16:02:41
+ * Date Created : Thursday, August 31, 2023 15:53:38
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -263,10 +263,11 @@ GO
  */
 
 CREATE TABLE Distance(
-    DistanceID    int              IDENTITY(1,1),
-    Caption       nvarchar(128)    NULL,
-    Meters        int              NULL,
-    ABREV         nvarchar(8)      NULL,
+    DistanceID     int              IDENTITY(1,1),
+    Caption        nvarchar(128)    NULL,
+    Meters         int              NULL,
+    ABREV          nvarchar(8)      NULL,
+    EventTypeID    int              NULL,
     CONSTRAINT PK_Distance PRIMARY KEY NONCLUSTERED (DistanceID)
 )
 GO
@@ -280,27 +281,27 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[Distance] ON 
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (1, N'25m', 25, N'25')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (1, N'25m', 25, N'25', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (2, N'50m', 50, N'50')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (2, N'50m', 50, N'50', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (3, N'100m', 100, N'100')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (3, N'100m', 100, N'100', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (4, N'200m', 200, N'200')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (4, N'200m', 200, N'200', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (5, N'400m', 400, N'400')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (5, N'400m', 400, N'400', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (6, N'800m', 800, N'800')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (6, N'800m', 800, N'800', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (7, N'1000m', 1000, N'1000')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (7, N'1000m', 1000, N'1000', 1)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (8, N'4x25m', 100, N'4x25')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (8, N'4x25m', 100, N'4x25', 2)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (9, N'4x50m', 200, N'4x50')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (9, N'4x50m', 200, N'4x50', 2)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (10, N'4x100m', 400, N'4x100')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (10, N'4x100m', 400, N'4x100', 2)
 GO
-INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV]) VALUES (11, N'4x200m', 800, N'4x200')
+INSERT [dbo].[Distance] ([DistanceID], [Caption], [Meters], [ABREV], [EventTypeID]) VALUES (11, N'4x200m', 800, N'4x200', 2)
 GO
 SET IDENTITY_INSERT [dbo].[Distance] OFF
 GO
@@ -369,7 +370,6 @@ CREATE TABLE Event(
     ClosedDT         datetime         NULL,
     ScheduleDT       time(7)          NULL,
     SessionID        int              NULL,
-    EventTypeID      int              NULL,
     StrokeID         int              NULL,
     DistanceID       int              NULL,
     EventStatusID    int              NULL,
@@ -1920,6 +1920,16 @@ GO
 
 
 /* 
+ * TABLE: Distance 
+ */
+
+ALTER TABLE Distance ADD CONSTRAINT EventTypeDistance 
+    FOREIGN KEY (EventTypeID)
+    REFERENCES EventType(EventTypeID)
+GO
+
+
+/* 
  * TABLE: Entrant 
  */
 
@@ -1951,11 +1961,6 @@ GO
 ALTER TABLE Event ADD CONSTRAINT EventStatusEvent 
     FOREIGN KEY (EventStatusID)
     REFERENCES EventStatus(EventStatusID) ON DELETE SET NULL
-GO
-
-ALTER TABLE Event ADD CONSTRAINT EventTypeEvent 
-    FOREIGN KEY (EventTypeID)
-    REFERENCES EventType(EventTypeID) ON DELETE SET NULL
 GO
 
 ALTER TABLE Event ADD CONSTRAINT SessionEvent 
