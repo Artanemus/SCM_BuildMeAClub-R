@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Thursday, August 31, 2023 15:53:38
+ * Date Created : Friday, September 22, 2023 15:24:41
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -1785,6 +1785,12 @@ GRANT SELECT ON Team TO SCM_Guest
 GO
 GRANT DELETE ON Team TO SCM_Administrator
 GO
+GRANT DELETE ON Team TO SCM_Marshall
+GO
+GRANT INSERT ON Team TO SCM_Marshall
+GO
+GRANT UPDATE ON Team TO SCM_Marshall
+GO
 
 /* 
  * TABLE: TeamEntrant 
@@ -1835,10 +1841,10 @@ GO
  */
 
 CREATE TABLE TeamName(
-    TeamNameID      int              IDENTITY(1,1),
-    Caption         nvarchar(128)    NULL,
-    CaptionShort    nvarchar(16)     NULL,
-    ABREV           nvarchar(5)      NULL,
+    TeamNameID      int             IDENTITY(1,1),
+    Caption         nvarchar(64)    NULL,
+    CaptionShort    nvarchar(64)    NULL,
+    ABREV           nvarchar(5)     NULL,
     CONSTRAINT PK_TeamName PRIMARY KEY CLUSTERED (TeamNameID)
 )
 GO
@@ -1849,6 +1855,19 @@ IF OBJECT_ID('TeamName') IS NOT NULL
     PRINT '<<< CREATED TABLE TeamName >>>'
 ELSE
     PRINT '<<< FAILED CREATING TABLE TeamName >>>'
+GO
+
+GRANT INSERT ON TeamName TO SCM_Administrator
+GO
+GRANT SELECT ON TeamName TO SCM_Administrator
+GO
+GRANT UPDATE ON TeamName TO SCM_Administrator
+GO
+GRANT SELECT ON TeamName TO SCM_Marshall
+GO
+GRANT SELECT ON TeamName TO SCM_Guest
+GO
+GRANT DELETE ON TeamName TO SCM_Administrator
 GO
 
 /* 
@@ -2410,7 +2429,7 @@ GO
  * FUNCTION: EntrantCount 
  */
 
-/****** Object:  UserDefinedFunction [dbo].[EntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
+/****** Object:  UserDefinedFunction [dbo].[EntrantCount]    Script Date: 05/09/23 1:45:52 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -2420,7 +2439,10 @@ GO
 -- =============================================
 -- Author:		Ben Ambrose
 -- Create date: 13/8/2019
--- Description:	Count the number of entrants for an event
+-- Modified on: 05/09/2023 
+-- 
+-- Description:	Count the number of swimmers for an event.
+-- Determines if event is INDV or TEAM.
 -- =============================================
 CREATE FUNCTION [EntrantCount] (
     -- Add the parameters for the function here
@@ -2430,21 +2452,46 @@ RETURNS INT
 AS
 BEGIN
     -- Declare the return variable here
-    DECLARE @Result INT
+    DECLARE @Result INT;
+	DECLARE @EventTypeID  INT;
 
-    -- Add the T-SQL statements to compute the return value here
-    SELECT @Result = Count(Entrant.EntrantID)
-    FROM Entrant
-    INNER JOIN HeatIndividual
-        ON Entrant.HeatID = HeatIndividual.HeatID
-    WHERE (Entrant.MemberID IS NOT NULL)
-    GROUP BY HeatIndividual.EventID
-    HAVING HeatIndividual.EventID = @EventID
+	SET @EventTypeID = (SELECT EventTypeID FROM dbo.[Event] INNER JOIN [Distance] ON [Event].DistanceID = Distance.DistanceID WHERE [Event].EventID = @EventID);
+	SET @Result = 0;
+
+	IF @EventTypeID IS NULL RETURN @Result; 
+
+	IF @EventTypeID IS NULL RETURN @Result; 
+
+	IF @EventTypeID = 1
+	BEGIN
+		SELECT @Result = Count(Entrant.EntrantID)
+		FROM Entrant
+		INNER JOIN HeatIndividual
+			ON Entrant.HeatID = HeatIndividual.HeatID
+		WHERE (Entrant.MemberID IS NOT NULL) AND (Entrant.MemberID > 0)
+		GROUP BY HeatIndividual.EventID
+		HAVING HeatIndividual.EventID = @EventID
+	END;
+
+	ELSE IF @EventTypeID = 2
+	BEGIN
+		SELECT @Result = Count(TeamEntrant.TeamEntrantID)
+		FROM TeamEntrant
+		INNER JOIN Team
+			ON TeamEntrant.TeamID = Team.TeamID
+		INNER JOIN HeatIndividual
+			ON Team.HeatID = HeatIndividual.HeatID
+		WHERE (TeamEntrant.MemberID IS NOT NULL) AND (TeamEntrant.MemberID > 0)
+		GROUP BY HeatIndividual.EventID
+		HAVING HeatIndividual.EventID = @EventID
+	END;
 
     -- Return the result of the function
-    RETURN @Result
+    RETURN @Result;
+
 END
 GO
+
 
 
 
@@ -3325,17 +3372,22 @@ GO
  * FUNCTION: SessionEntrantCount 
  */
 
-/****** Object:  UserDefinedFunction [dbo].[SessionEntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
+
+/****** Object:  UserDefinedFunction [dbo].[SessionEntrantCount]    Script Date: 14/09/23 4:15:03 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 -- =============================================
 -- Author:		Ben Ambrose
 -- Create date: 15/11/2019
--- Description:	Count the number of entrants in a given session
+-- Modified on: 05/09/2023
+--
+-- Description:	Count the number of swimmers for the session.
+-- Determines if the event is INDV or TEAM.
 -- =============================================
 CREATE FUNCTION [SessionEntrantCount] (
 	-- Add the parameters for the function here
@@ -3346,14 +3398,25 @@ AS
 BEGIN
 	-- Declare the return variable here
 	DECLARE @Result INT
+	DECLARE @Ent  INT;
+	DECLARE @TeamEnt INT;
 
-	-- Add the T-SQL statements to compute the return value here
-	SELECT @Result = Count(Entrant.MemberID)
+	SET @Ent = (SELECT Count(Entrant.MemberID)
 	FROM Entrant
 	INNER JOIN HeatIndividual ON Entrant.HeatID = HeatIndividual.HeatID
 	INNER JOIN Event ON HeatIndividual.EventID = Event.EventID
-	WHERE (Event.SessionID = @SessionID)
-		AND (Entrant.MemberID > 0)
+	WHERE (Event.SessionID = @SessionID) AND
+		(Entrant.MemberID IS NOT NULL) AND (Entrant.MemberID > 0));
+
+	SET @TeamEnt = (SELECT Count(TeamEntrant.MemberID)
+	FROM TeamEntrant
+	INNER JOIN Team ON TeamEntrant.TeamID = Team.TeamID
+	INNER JOIN HeatIndividual ON Team.HeatID = HeatIndividual.HeatID
+	INNER JOIN Event ON HeatIndividual.EventID = Event.EventID
+	WHERE (Event.SessionID = @SessionID) AND
+		(TeamEntrant.MemberID IS NOT NULL) AND (TeamEntrant.MemberID > 0));
+
+	SET @Result = @Ent + @TeamEnt;
 
 	-- Return the result of the function
 	RETURN @Result
