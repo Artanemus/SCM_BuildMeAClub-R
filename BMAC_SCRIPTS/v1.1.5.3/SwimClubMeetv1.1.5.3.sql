@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Friday, September 22, 2023 15:24:41
+ * Date Created : Sunday, September 24, 2023 10:00:46
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -340,6 +340,10 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE Entrant >>>'
 GO
 
+GRANT DELETE ON Entrant TO SCM_Marshall
+GO
+GRANT INSERT ON Entrant TO SCM_Marshall
+GO
 GRANT DELETE ON Entrant TO SCM_Administrator
 GO
 GRANT INSERT ON Entrant TO SCM_Administrator
@@ -353,10 +357,6 @@ GO
 GRANT SELECT ON Entrant TO SCM_Guest
 GO
 GRANT UPDATE ON Entrant TO SCM_Marshall
-GO
-GRANT DELETE ON Entrant TO SCM_Marshall
-GO
-GRANT INSERT ON Entrant TO SCM_Marshall
 GO
 
 /* 
@@ -533,6 +533,10 @@ ELSE
     PRINT '<<< FAILED CREATING TABLE HeatIndividual >>>'
 GO
 
+GRANT DELETE ON HeatIndividual TO SCM_Marshall
+GO
+GRANT INSERT ON HeatIndividual TO SCM_Marshall
+GO
 GRANT DELETE ON HeatIndividual TO SCM_Administrator
 GO
 GRANT INSERT ON HeatIndividual TO SCM_Administrator
@@ -546,10 +550,6 @@ GO
 GRANT UPDATE ON HeatIndividual TO SCM_Marshall
 GO
 GRANT SELECT ON HeatIndividual TO SCM_Guest
-GO
-GRANT DELETE ON HeatIndividual TO SCM_Marshall
-GO
-GRANT INSERT ON HeatIndividual TO SCM_Marshall
 GO
 
 /* 
@@ -1798,7 +1798,7 @@ GO
 
 CREATE TABLE TeamEntrant(
     TeamEntrantID    int        IDENTITY(1,1),
-    SwimOrder        int        NULL,
+    Lane             int        NULL,
     RaceTime         time(7)    NULL,
     TimeToBeat       time(7)    NULL,
     PersonalBest     time(7)    NULL,
