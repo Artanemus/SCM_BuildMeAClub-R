@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Sunday, September 24, 2023 10:00:46
+ * Date Created : Tuesday, September 26, 2023 17:47:29
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -325,9 +325,9 @@ CREATE TABLE Entrant(
     PersonalBest        time(7)    NULL,
     IsDisqualified      bit        DEFAULT 0 NULL,
     IsScratched         bit        DEFAULT 0 NULL,
+    DisqualifyCodeID    int        NULL,
     MemberID            int        DEFAULT NULL NULL,
     HeatID              int        NULL,
-    DisqualifyCodeID    int        NULL,
     CONSTRAINT PK_Entrant PRIMARY KEY NONCLUSTERED (EntrantID)
 )
 GO
@@ -1797,14 +1797,17 @@ GO
  */
 
 CREATE TABLE TeamEntrant(
-    TeamEntrantID    int        IDENTITY(1,1),
-    Lane             int        NULL,
-    RaceTime         time(7)    NULL,
-    TimeToBeat       time(7)    NULL,
-    PersonalBest     time(7)    NULL,
-    MemberID         int        NULL,
-    StrokeID         int        NULL,
-    TeamID           int        NULL,
+    TeamEntrantID       int        IDENTITY(1,1),
+    Lane                int        NULL,
+    RaceTime            time(7)    NULL,
+    TimeToBeat          time(7)    NULL,
+    PersonalBest        time(7)    NULL,
+    IsDisqualified      bit        DEFAULT 0 NULL,
+    IsScratched         bit        DEFAULT 0 NULL,
+    DisqualifyCodeID    int        NULL,
+    MemberID            int        NULL,
+    StrokeID            int        NULL,
+    TeamID              int        NULL,
     CONSTRAINT PK_TeamEntrant PRIMARY KEY NONCLUSTERED (TeamEntrantID)
 )
 GO
@@ -2221,6 +2224,11 @@ GO
 /* 
  * TABLE: TeamEntrant 
  */
+
+ALTER TABLE TeamEntrant ADD CONSTRAINT DisqualifyCodeTeamEntrant 
+    FOREIGN KEY (DisqualifyCodeID)
+    REFERENCES DisqualifyCode(DisqualifyCodeID)
+GO
 
 ALTER TABLE TeamEntrant ADD CONSTRAINT MemberTeamEntrant 
     FOREIGN KEY (MemberID)
