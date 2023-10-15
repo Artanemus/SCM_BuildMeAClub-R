@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Tuesday, September 26, 2023 17:47:29
+ * Date Created : Sunday, October 15, 2023 13:54:55
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -1500,7 +1500,7 @@ INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (3, N'BackStroke')
 GO
 INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (4, N'ButterFly')
 GO
-INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (5, N'IndvMedley')
+INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (5, N'Medley')
 GO
 SET IDENTITY_INSERT [dbo].[Stroke] OFF
 GO
