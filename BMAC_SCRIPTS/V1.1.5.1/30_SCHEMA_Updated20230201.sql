@@ -123,6 +123,7 @@ CREATE TABLE [dbo].[Event](
 	[StrokeID] [int] NULL,
 	[DistanceID] [int] NULL,
 	[EventStatusID] [int] NULL,
+	[ScheduleDT] [datetime] NULL,	
  CONSTRAINT [PK_Event] PRIMARY KEY NONCLUSTERED 
 (
 	[EventID] ASC

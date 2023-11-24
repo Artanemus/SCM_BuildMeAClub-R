@@ -12778,7 +12778,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 706
     object VirtualImage1: TVirtualImage
       Left = 442
       Top = 72
@@ -12800,6 +12799,19 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       ImageHeight = 0
       ImageIndex = 1
       ImageName = 'check_box'
+    end
+    object Label1: TLabel
+      Left = 585
+      Top = 308
+      Width = 62
+      Height = 25
+      Caption = 'Build 2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
     end
     object Panel1: TPanel
       Left = 0
@@ -25596,6 +25608,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Align = alLeft
       Caption = 'Login to the MS SQLEXPRESS database server ...'
       TabOrder = 1
+      ExplicitTop = 63
       object Label5: TLabel
         Left = 16
         Top = 38
