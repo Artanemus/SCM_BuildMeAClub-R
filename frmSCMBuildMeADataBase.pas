@@ -49,6 +49,7 @@ type
     ImageCollection1: TImageCollection;
     VirtualImage1: TVirtualImage;
     vimgPassed: TVirtualImage;
+    lblVersionAttributes: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure actnConnectExecute(Sender: TObject);
@@ -280,7 +281,7 @@ procedure TSCMBuildMeADataBase.FormCreate(Sender: TObject);
 begin
   BuildDone := false; // clear BMAC critical error flag
   // Display the Major.Minor.Release.Build version details
-  Caption := 'SCM BuildMeAClub v1.5.2.0 builds vDB1.1.5.2.';
+  Caption := 'BuildMeAClub builds SwimClubMeet MSSQL DataBase v1.1.5.3.';
   // Prepare the display
   GroupBox1.Visible := true;
   btnConnect.Visible := true;
