@@ -4,7 +4,7 @@
  * Project :      SwimClubMeet_v1.1.5.3.DM1
  * Author :       Ben Ambrose
  *
- * Date Created : Saturday, November 25, 2023 10:27:21
+ * Date Created : Sunday, November 26, 2023 16:45:15
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -241,14 +241,14 @@ INSERT INTO DisqualifyType
 [DisqualifyTypeID], [Caption], [StrokeID]
 )
 VALUES
-(1, N'General',0)
+(1, N'General',NULL)
 ,(2, N'Freestyle',1)
 ,(3, N'Backstroke',3)
 ,(4, N'Breaststroke',2)
 ,(5, N'Butterfly',4)
 ,(6, N'Individual Medley',5)
-,(7, N'Relays',0)
-,(8, N'SCM',0)
+,(7, N'Relays',NULL)
+,(8, N'SCM',NULL)
 SET IDENTITY_INSERT  [dbo].[DisqualifyType] OFF;
 
 GRANT SELECT ON DisqualifyType TO SCM_Guest
@@ -461,7 +461,7 @@ INSERT [dbo].[EventType] (
 , [ABREV]
 ) 
 VALUES 
-(1, N'Individual', N'Indiv', N'INDIV')
+(1, N'Individual', N'Indiv', N'INDIV'),
 (2, N'Team', N'Relay', N'RELAY')
 GO
 SET IDENTITY_INSERT [dbo].[EventType] OFF
@@ -660,12 +660,14 @@ INSERT [dbo].[House] (
 	,[Caption]
 	,[Motto]
 	,[Color]
+	,[IsArchived]
 	)
 VALUES (
 	1
 	,N'Arapaima'
 	,N'Ad astra per aspera.'
 	,255
+	,0
 	)
 GO
 
@@ -674,12 +676,14 @@ INSERT [dbo].[House] (
 	,[Caption]
 	,[Motto]
 	,[Color]
+	,[IsArchived]
 	)
 VALUES (
 	2
 	,N'Goonch'
 	,N'Acta non verba.'
 	,378084
+	,0
 	)
 GO
 
@@ -688,12 +692,14 @@ INSERT [dbo].[House] (
 	,[Caption]
 	,[Motto]
 	,[Color]
+	,[IsArchived]
 	)
 VALUES (
 	3
 	,N'Payara'
 	,N'Audentes fortuna iuvat.'
 	,12615680
+	,0
 	)
 GO
 
@@ -702,12 +708,14 @@ INSERT [dbo].[House] (
 	,[Caption]
 	,[Motto]
 	,[Color]
+	,[IsArchived]
 	)
 VALUES (
 	4
 	,N'Pacu'
 	,N'Ad meliora.'
 	,32768
+	,0
 	)
 GO
 
@@ -1614,8 +1622,8 @@ IF OBJECT_ID('SwimClubMetaDataLink') IS NOT NULL
 ELSE
     PRINT '<<< FAILED CREATING TABLE SwimClubMetaDataLink >>>'
 GO
-SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] ON
-GO
+--SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] ON
+--GO
 
 INSERT INTO [dbo].[SwimClubMetaDataLink]
 (
@@ -1627,8 +1635,8 @@ VALUES
 
 GO
 
-SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] OFF
-GO
+--SET IDENTITY_INSERT [dbo].[SwimClubMetaDataLink] OFF
+--GO
 
 GRANT INSERT ON SwimClubMetaDataLink TO SCM_Administrator
 GO
@@ -1689,6 +1697,9 @@ VALUES
 , (9, N'Primary School Carnival', 'Primary School', N'PRIMARY', 1, 0)
 , (10, N'Secondary School Carnival', 'Secondary School', N'SECONDARY', 1, 0)
 , (11, N'Multi-Class Carnival', 'Multi-Class', N'MULTICLASS', 1, 0)
+GO
+
+SET IDENTITY_INSERT [dbo].[SwimClubType] OFF
 GO
 
 /* 
@@ -2090,7 +2101,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQual16 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQual10 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
