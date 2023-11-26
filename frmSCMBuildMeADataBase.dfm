@@ -12802,16 +12802,19 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     end
     object Label1: TLabel
       Left = 585
-      Top = 308
+      Top = 133
       Width = 62
       Height = 25
-      Caption = 'Build 2'
+      Caption = 'Build 3'
+      Color = clBtnFace
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
+      ParentColor = False
       ParentFont = False
+      StyleElements = [seClient, seBorder]
     end
     object Panel1: TPanel
       Left = 0
@@ -25608,7 +25611,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Align = alLeft
       Caption = 'Login to the MS SQLEXPRESS database server ...'
       TabOrder = 1
-      ExplicitTop = 63
       object Label5: TLabel
         Left = 16
         Top = 38
