@@ -125,7 +125,7 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <Icon_MainIcon>SCM_BuildMeAClub.ico</Icon_MainIcon>
         <VerInfo_Build>3</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Artanemus;FileDescription=$(MSBuildProjectName);FileVersion=1.5.1.3;InternalName=BMAC;LegalCopyright=Copyright (c) 2019-2023 Artanemus;LegalTrademarks=;OriginalFilename=BuildMeAClub;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.5;Comments=Build the SwimClubMeet database on MS SQL v1.1.5.1</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Artanemus;FileDescription=$(MSBuildProjectName);FileVersion=1.5.1.3;InternalName=BMAC;LegalCopyright=Copyright (c) 2019-2023 Artanemus;LegalTrademarks=;OriginalFilename=BuildMeAClub;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.5.1;Comments=Build the SwimClubMeet database on MS SQL v1.1.5.1</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
