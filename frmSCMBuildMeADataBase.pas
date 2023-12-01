@@ -49,6 +49,7 @@ type
     ImageCollection1: TImageCollection;
     VirtualImage1: TVirtualImage;
     vimgPassed: TVirtualImage;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure actnConnectExecute(Sender: TObject);

@@ -12778,7 +12778,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 706
     object VirtualImage1: TVirtualImage
       Left = 442
       Top = 72
@@ -12800,6 +12799,20 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       ImageHeight = 0
       ImageIndex = 1
       ImageName = 'check_box'
+    end
+    object Label1: TLabel
+      Left = 600
+      Top = 136
+      Width = 60
+      Height = 21
+      Caption = 'BUILD 1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      StyleElements = [seClient, seBorder]
     end
     object Panel1: TPanel
       Left = 0
