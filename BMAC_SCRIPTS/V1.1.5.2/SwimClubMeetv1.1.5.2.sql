@@ -3,7 +3,7 @@
  * Project :      SwimClubMeet_v1.1.5.2.DM1
  * Author :       Artanemus
  *
- * Date Created : Friday, June 02, 2023 12:46:33
+ * Date Created : Friday, December 01, 2023 15:39:09
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -1625,7 +1625,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali4 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali8 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -2515,11 +2515,11 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION RaceTimeDIFF >>>'
 GO
 
+GRANT EXECUTE ON RaceTimeDIFF TO SCM_Administrator
+GO
 GRANT EXECUTE ON RaceTimeDIFF TO SCM_Marshall
 GO
 GRANT EXECUTE ON RaceTimeDIFF TO SCM_Guest
-GO
-GRANT EXECUTE ON RaceTimeDIFF TO SCM_Administrator
 GO
 
 
@@ -2722,11 +2722,11 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION RELHeatPlace >>>'
 GO
 
-GRANT EXECUTE ON RELHeatPlace TO SCM_Marshall
-GO
 GRANT EXECUTE ON RELHeatPlace TO SCM_Guest
 GO
 GRANT EXECUTE ON RELHeatPlace TO SCM_Administrator
+GO
+GRANT EXECUTE ON RELHeatPlace TO SCM_Marshall
 GO
 
 
