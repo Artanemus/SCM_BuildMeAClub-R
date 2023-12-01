@@ -12778,6 +12778,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 706
     object VirtualImage1: TVirtualImage
       Left = 442
       Top = 72
@@ -12805,7 +12806,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Top = 133
       Width = 62
       Height = 25
-      Caption = 'Build 3'
+      Caption = 'Build 4'
       Color = clBtnFace
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
