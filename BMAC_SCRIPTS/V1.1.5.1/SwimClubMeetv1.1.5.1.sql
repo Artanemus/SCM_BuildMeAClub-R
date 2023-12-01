@@ -1,9 +1,9 @@
 /*
  * ER/Studio Data Architect SQL Code Generation
- * Project :      SwimClubMeet_v1.1.5.2.DM1
+ * Project :      SwimClubMeet_v1.1.5.1.DM1
  * Author :       Artanemus
  *
- * Date Created : Friday, December 01, 2023 15:42:02
+ * Date Created : Friday, December 01, 2023 15:41:18
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -43,7 +43,6 @@ CREATE TABLE ContactNum(
     Number              nvarchar(30)    NULL,
     ContactNumTypeID    int             NULL,
     MemberID            int             NULL,
-    IsArchived          bit             DEFAULT 0 NOT NULL,
     CONSTRAINT PK_ContactNum PRIMARY KEY CLUSTERED (ContactNumID)
 )
 GO
@@ -103,152 +102,6 @@ GO
 GRANT SELECT ON ContactNumType TO SCM_Guest
 GO
 GRANT SELECT ON ContactNumType TO SCM_Administrator
-GO
-
-/* 
- * TABLE: DisqualifyCode 
- */
-
-CREATE TABLE DisqualifyCode(
-    DisqualifyCodeID    int              IDENTITY(1,1),
-    Caption             nvarchar(128)    NULL,
-    ABREV               nvarchar(16)     NULL,
-    DisqualifyTypeID    int              NULL,
-    CONSTRAINT PK_DisqualifyCode PRIMARY KEY CLUSTERED (DisqualifyCodeID)
-)
-GO
-
-
-
-IF OBJECT_ID('DisqualifyCode') IS NOT NULL
-    PRINT '<<< CREATED TABLE DisqualifyCode >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE DisqualifyCode >>>'
-GO
-SET IDENTITY_INSERT  [dbo].[DisqualifyCode] ON;
-
--- Insert rows into tableN'DisqualifyCodeCodes'
-INSERT INTO DisqualifyCode
-( -- columns to insert data into
- [DisqualifyCodeID], [Caption], [ABREV], [DisqualifyTypeID]
-)
-VALUES
-(1,N'False start', N'GA', 1),
-(2,N'Delay of meet', N'GB', 1),
-(3,N'Unsportsmanlike manner', N'GC', 1),
-(4,N'Interference with another swimmer', N'GD', 1),
-(5,N'Did not swim stroke specified', N'GE', 1),
-(6,N'Did not swim distance specified', N'GF', 1),
-(7,N'Did not finish in same lane', N'GG', 1),
-(8,N'Standing on bottom during any stroke but freestyle', N'GH', 1),
-(9,N'Swimmer swam in wrong lane', N'GI', 1),
-(10,N'Swimmer made use of aids', N'GJ', 1),
-(11,N'Swimmer did not finish', N'GK', 1),
-(12,N'Pulled on lane ropes', N'GL', 1),
-(13,N'Use of not FINA approved swim suit', N'GM', 1),
-(14,N'Use of more than one swim suit', N'GN', 1),
-(15,N'Use of tape on the body', N'GO', 1),
-
--- Freestyle
-(16, N'No touch at turn or finish', N'FrA' ,2),
-(17, N'Swam under water more than 15 meters after start or turn', N'FrB' ,2),
-(18, N'Walked on pool bottom and/or pushed off bottom', N'FrC' ,2),
-
--- Backstroke
-(19, N'Toes over the gutter', N'BaA' ,3),
-(20, N'Head did not break surface by 15 meters after start or turn', N'BaB' ,3),
-(21, N'Shoulders past vertical', N'BaC' ,3),
-(22, N'No touch at turn and/or finish', N'BaD' ,3),
-(23, N'Not on back off wall', N'BaE' ,3),
-(24, N'Did not finish on back', N'BaF' ,3),
-(25, N'Past vertical at turn: non continuous turning action', N'BaG' ,3),
-(26, N'Past vertical at turn: independent kicks', N'BaH' ,3),
-(27, N'Past vertical at turn: independent strokes', N'BaI' ,3),
-(28, N'Sub-merged at the finish', N'BaJ' ,3),
-
--- Breaststroke
-(29, N'Head did not break surface before hands turned inside at widest part of second stroke', N'BrA' ,4),
-(30, N'Head did not break surface of water during each complete stroke cycle', N'BrB' ,4),
-(31, N'Arm movements not always simultaneous and in horizontal plane', N'BrC' ,4),
-(32, N'Leg Movements not always simultaneous and in horizontal plane', N'BrD' ,4),
-(33, N'Hands not pushed forward on, under or over water', N'BrE' ,4),
-
--- BUTTERFLY 
- 
-(34, N'Head did not break surface 15 meters after start or turn', N'BfA' ,5),
-(35 , N'More than one arm pull under water after start or turn', N'BfB' ,5), 
-(36 , N'Not toward breast off the wall', N'BfC' ,5), 
-(37 , N'Did not bring arms forward and/or backward simultaneously', N'BfD' ,5),
-(38 , N'Did not bring arms forward over water', N'BfE' ,5), 
-(39, N'Did not execute movement of both feet in same way', N'BfF' ,5), 
-(40, N'Touch was not made with both hands separated and simultaneously at turn and/or finish', N'BfG' ,5), 
-(41, N'No touch at turn and/or finish', N'BfH' ,5),
-(42, N'Arm movements did not continue throughout race', N'BfI' ,5),
-(43, N'More than one breaststroke kick per arm pull', N'BfJ' ,5),
-
--- Individual Medley
-(44, N'Freestyle swum as backstroke, breaststroke or butterfly', N'IMA' ,6),
-(45, N'Not swum in right order', N'IMB' ,6),
-(46, N'Stroke infraction - use stroke codes', N'IMC' ,6),
-
--- Relay
-(47, N'Early swimmer take-off # (RA#)', N'RA#' ,7),
-(48, N'Medley not swum in right order', N'RB' ,7),
-(49, N'Changed order of swimmers',N'RC',7),
-(50, N'Non listed swimmer swam',N'RD',7),
-(51, N'Stroke infraction - use stroke codes and swimmer',N'RE',7),
-(52, N'Swimmer other than the swimmer designated to swim entered race area before finished',N'Rf',7)
-
-GO
-
-SET IDENTITY_INSERT [dbo].[DisqualifyCode]  OFF;
-
-GRANT SELECT ON DisqualifyCode TO SCM_Guest
-GO
-GRANT SELECT ON DisqualifyCode TO SCM_Administrator
-GO
-GRANT SELECT ON DisqualifyCode TO SCM_Marshall
-GO
-
-/* 
- * TABLE: DisqualifyType 
- */
-
-CREATE TABLE DisqualifyType(
-    DisqualifyTypeID    int              IDENTITY(1,1),
-    Caption             nvarchar(128)    NULL,
-    CONSTRAINT PK_DisqualifyType PRIMARY KEY CLUSTERED (DisqualifyTypeID)
-)
-GO
-
-
-
-IF OBJECT_ID('DisqualifyType') IS NOT NULL
-    PRINT '<<< CREATED TABLE DisqualifyType >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE DisqualifyType >>>'
-GO
-SET IDENTITY_INSERT  [dbo].[DisqualifyType] ON;
-INSERT INTO DisqualifyType
-(
-[DisqualifyTypeID], [Caption]
-)
-VALUES
-(1, N'General')
-,(2, N'Freestyle')
-,(3, N'Backstroke')
-,(4, N'Breaststroke')
-,(5, N'Butterfly')
-,(6, N'Individual Medley')
-,(7, N'Relays')
-
-SET IDENTITY_INSERT  [dbo].[DisqualifyType] OFF;
-
-GRANT SELECT ON DisqualifyType TO SCM_Marshall
-GO
-GRANT SELECT ON DisqualifyType TO SCM_Administrator
-GO
-GRANT SELECT ON DisqualifyType TO SCM_Guest
 GO
 
 /* 
@@ -353,7 +206,6 @@ CREATE TABLE Event(
     StrokeID         int              NULL,
     DistanceID       int              NULL,
     EventStatusID    int              NULL,
-    ScheduleDT       time(7)          NULL,
     CONSTRAINT PK_Event PRIMARY KEY NONCLUSTERED (EventID)
 )
 GO
@@ -437,6 +289,8 @@ INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (1, N'Individual')
 GO
 INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (2, N'Team')
 GO
+INSERT [dbo].[EventType] ([EventTypeID], [Caption]) VALUES (3, N'Swim-O-Thon')
+GO
 SET IDENTITY_INSERT [dbo].[EventType] OFF
 GO
 
@@ -486,14 +340,13 @@ GO
  */
 
 CREATE TABLE HeatIndividual(
-    HeatID              int              IDENTITY(1,1),
-    HeatNum             int              NULL,
-    Caption             nvarchar(128)    NULL,
-    ClosedDT            datetime         NULL,
-    EventID             int              NULL,
-    HeatTypeID          int              NULL,
-    HeatStatusID        int              NULL,
-    DisqualifyCodeID    int              NULL,
+    HeatID          int              IDENTITY(1,1),
+    HeatNum         int              NULL,
+    Caption         nvarchar(128)    NULL,
+    ClosedDT        datetime         NULL,
+    EventID         int              NULL,
+    HeatTypeID      int              NULL,
+    HeatStatusID    int              NULL,
     CONSTRAINT PK_HeatIndividual PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -566,14 +419,13 @@ GO
  */
 
 CREATE TABLE HeatTeam(
-    HeatID              int              IDENTITY(1,1),
-    HeatNum             int              NULL,
-    Caption             nvarchar(128)    NULL,
-    ClosedDT            datetime         NULL,
-    EventID             int              NULL,
-    HeatTypeID          int              NULL,
-    HeatStatusID        int              NULL,
-    DisqualifyCodeID    int              NULL,
+    HeatID          int              IDENTITY(1,1),
+    HeatNum         int              NULL,
+    Caption         nvarchar(128)    NULL,
+    ClosedDT        datetime         NULL,
+    EventID         int              NULL,
+    HeatTypeID      int              NULL,
+    HeatStatusID    int              NULL,
     CONSTRAINT PK_HeatTeam PRIMARY KEY NONCLUSTERED (HeatID)
 )
 GO
@@ -648,13 +500,12 @@ GO
  */
 
 CREATE TABLE House(
-    HouseID     int              IDENTITY(1,1),
-    Caption     nvarchar(128)    NULL,
-    Motto       nvarchar(128)    NULL,
-    Color       int              NULL,
-    LogoDir     varchar(max)     NULL,
-    LogoImg     image            NULL,
-    LogoType    nvarchar(5)      NULL,
+    HouseID    int              IDENTITY(1,1),
+    Caption    nvarchar(128)    NULL,
+    Motto      nvarchar(128)    NULL,
+    Color      int              NULL,
+    LogoDir    varchar(max)     NULL,
+    LogoImg    image            NULL,
     CONSTRAINT PK_House PRIMARY KEY CLUSTERED (HouseID)
 )
 GO
@@ -753,8 +604,9 @@ CREATE TABLE Member(
     FirstName                   nvarchar(128)    NULL,
     LastName                    nvarchar(128)    NULL,
     DOB                         datetime         NULL,
-    IsActive                    bit              DEFAULT 1 NULL,
     IsArchived                  bit              DEFAULT 0 NULL,
+    IsActive                    bit              DEFAULT 1 NULL,
+    IsSwimmer                   bit              DEFAULT 1 NULL,
     Email                       nvarchar(256)    NULL,
     EnableEmailOut              bit              DEFAULT 0 NULL,
     GenderID                    int              NULL,
@@ -763,9 +615,8 @@ CREATE TABLE Member(
     CreatedOn                   datetime         NULL,
     ArchivedOn                  datetime         NULL,
     EnableEmailNomineeForm      bit              DEFAULT 0 NULL,
-    EnableEmailSessionReport    bit              DEFAULT 0 NULL,
+    EnableEmailSessionReport    bit              DEFAULT 1 NULL,
     HouseID                     int              NULL,
-    IsSwimmer                   bit              DEFAULT 1 NULL,
     CONSTRAINT PK_Member PRIMARY KEY NONCLUSTERED (MemberID)
 )
 GO
@@ -911,49 +762,46 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[Qualify] ON 
 
-INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool])
-VALUES 
-(1, 1, 2, 1, CAST(N'00:00:23' AS Time), 1, 1, 25)
-,(2, 1, 2, 2, CAST(N'00:00:31' AS Time), 1, 1, 25)
-,(3, 1, 2, 3, CAST(N'00:00:29' AS Time), 1, 1, 25)
-,(4, 1, 2, 4, CAST(N'00:00:26' AS Time), 1, 1, 25)
-,(5, 2, 3, 1, CAST(N'00:00:45' AS Time), 1, 1, 25)
-,(6, 2, 3, 2, CAST(N'00:01:00' AS Time), 1, 1, 25)
-,(7, 2, 3, 3, CAST(N'00:01:00' AS Time), 1, 1, 25)
-,(8, 2, 3, 4, CAST(N'00:00:55' AS Time), 1, 1, 25)
-,(9, 3, 3, 5, CAST(N'00:01:49' AS Time), 1, 1, 25)
-,(10, 4, 4, 5, CAST(N'00:03:45' AS Time), 1, 1, 25)
-,(11, 1, 2, 1, CAST(N'00:00:23' AS Time), 1, 2, 25)
-,(12, 1, 2, 2, CAST(N'00:00:31' AS Time), 1, 2, 25)
-,(13, 1, 2, 3, CAST(N'00:00:29' AS Time), 1, 2, 25)
-,(14, 1, 2, 4, CAST(N'00:00:26' AS Time), 1, 2, 25)
-,(15, 2, 3, 1, CAST(N'00:00:45' AS Time), 1, 2, 25)
-,(16, 2, 3, 2, CAST(N'00:01:00' AS Time), 1, 2, 25)
-,(17, 2, 3, 3, CAST(N'00:01:00' AS Time), 1, 2, 25)
-,(18, 2, 3, 4, CAST(N'00:00:55' AS Time), 1, 2, 25)
-,(19, 3, 3, 5, CAST(N'00:01:49' AS Time), 1, 2, 25)
-,(20, 4, 4, 5, CAST(N'00:03:48' AS Time), 1, 2, 25)
-,(21, 1, 2, 1, CAST(N'00:00:24' AS Time), 0, 1, 50)
-,(22, 1, 2, 2, CAST(N'00:00:32' AS Time), 0, 1, 50)
-,(23, 1, 2, 3, CAST(N'00:00:30' AS Time), 0, 1, 50)
-,(24, 1, 2, 4, CAST(N'00:00:27' AS Time), 0, 1, 50)
-,(25, 2, 3, 1, CAST(N'00:00:46' AS Time), 0, 1, 50)
-,(26, 2, 3, 2, CAST(N'00:01:01' AS Time), 0, 1, 50)
-,(27, 2, 3, 3, CAST(N'00:01:01' AS Time), 0, 1, 50)
-,(28, 2, 3, 4, CAST(N'00:00:56' AS Time), 0, 1, 50)
-,(29, 3, 3, 5, CAST(N'00:01:50' AS Time), 0, 1, 50)
-,(30, 4, 4, 5, CAST(N'00:03:46' AS Time), 0, 1, 50)
-,(31, 1, 2, 1, CAST(N'00:00:24' AS Time), 0, 2, 50)
-,(32, 1, 2, 2, CAST(N'00:00:32' AS Time), 0, 2, 50)
-,(33, 1, 2, 3, CAST(N'00:00:30' AS Time), 0, 2, 50)
-,(34, 1, 2, 4, CAST(N'00:00:27' AS Time), 0, 2, 50)
-,(35, 2, 3, 1, CAST(N'00:00:46' AS Time), 0, 2, 50)
-,(36, 2, 3, 2, CAST(N'00:01:01' AS Time), 0, 2, 50)
-,(37, 2, 3, 3, CAST(N'00:01:01' AS Time), 0, 2, 50)
-,(38, 2, 3, 4, CAST(N'00:00:56' AS Time), 0, 2, 50)
-,(39, 3, 3, 5, CAST(N'00:01:50' AS Time), 0, 2, 50)
-,(40, 4, 4, 5, CAST(N'00:03:49' AS Time), 0, 2, 50)
-
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (1, 1, 2, 1, CAST(N'00:00:23' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (2, 1, 2, 2, CAST(N'00:00:31' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (3, 1, 2, 3, CAST(N'00:00:29' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (4, 1, 2, 4, CAST(N'00:00:26' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (5, 2, 3, 1, CAST(N'00:00:45' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (6, 2, 3, 2, CAST(N'00:01:00' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (7, 2, 3, 3, CAST(N'00:01:00' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (8, 2, 3, 4, CAST(N'00:00:55' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (9, 3, 3, 5, CAST(N'00:01:49' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (10, 4, 4, 5, CAST(N'00:03:45' AS Time), 1, 1, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (11, 1, 2, 1, CAST(N'00:00:23' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (12, 1, 2, 2, CAST(N'00:00:31' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (13, 1, 2, 3, CAST(N'00:00:29' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (14, 1, 2, 4, CAST(N'00:00:26' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (15, 2, 3, 1, CAST(N'00:00:45' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (16, 2, 3, 2, CAST(N'00:01:00' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (17, 2, 3, 3, CAST(N'00:01:00' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (18, 2, 3, 4, CAST(N'00:00:55' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (19, 3, 3, 5, CAST(N'00:01:49' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (20, 4, 4, 5, CAST(N'00:03:48' AS Time), 1, 2, 25)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (21, 1, 2, 1, CAST(N'00:00:24' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (22, 1, 2, 2, CAST(N'00:00:32' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (23, 1, 2, 3, CAST(N'00:00:30' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (24, 1, 2, 4, CAST(N'00:00:27' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (25, 2, 3, 1, CAST(N'00:00:46' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (26, 2, 3, 2, CAST(N'00:01:01' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (27, 2, 3, 3, CAST(N'00:01:01' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (28, 2, 3, 4, CAST(N'00:00:56' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (29, 3, 3, 5, CAST(N'00:01:50' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (30, 4, 4, 5, CAST(N'00:03:46' AS Time), 0, 1, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (31, 1, 2, 1, CAST(N'00:00:24' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (32, 1, 2, 2, CAST(N'00:00:32' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (33, 1, 2, 3, CAST(N'00:00:30' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (34, 1, 2, 4, CAST(N'00:00:27' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (35, 2, 3, 1, CAST(N'00:00:46' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (36, 2, 3, 2, CAST(N'00:01:01' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (37, 2, 3, 3, CAST(N'00:01:01' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (38, 2, 3, 4, CAST(N'00:00:56' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (39, 3, 3, 5, CAST(N'00:01:50' AS Time), 0, 2, 50)
+INSERT [dbo].[Qualify] ([QualifyID], [TrialDistID], [QualifyDistID], [StrokeID], [TrialTime], [IsShortCourse], [GenderID], [LengthOfPool]) VALUES (40, 4, 4, 5, CAST(N'00:03:49' AS Time), 0, 2, 50)
 SET IDENTITY_INSERT [dbo].[Qualify] OFF
 
 GRANT INSERT ON Qualify TO SCM_Administrator
@@ -998,15 +846,13 @@ INSERT INTO [dbo].[SCMSystem](
 ,[Minor]      -- MINOR RELEASE NUMBER
 )
 VALUES
-(1 ,1, 5, 2)
+(1 ,1, 5, 1)
 GO
 SET IDENTITY_INSERT [dbo].[SCMSystem] OFF
 
 GRANT SELECT ON SCMSystem TO SCM_Marshall
 GO
 GRANT SELECT ON SCMSystem TO SCM_Administrator
-GO
-GRANT SELECT ON SCMSystem TO SCM_Guest
 GO
 
 /* 
@@ -1033,24 +879,31 @@ ELSE
 GO
 SET IDENTITY_INSERT [dbo].[ScoreDivision] ON 
 GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (1, 1, 0, 8)
+
+INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo], [Caption], [GenderID]) 
+VALUES
+-- GIRLS 
+(1, 1, 0, 8, N'Junior swimmers 8 years and under.', 2),
+(2, 1, 9, 9, N'Junior swimmers 9 years.', 2),
+(3, 1, 10, 11, N'10-11. Girls Multi-Class.', 2),
+(4, 1, 12, 13, N'12-13. Girls Multi-Class.', 2),
+(5, 1, 14, 15, N'14-15. Girls Multi-Class.', 2),
+(6, 1, 16, 18, N'16-18. Girls Multi-Class.', 2),
+-- Example of Set Inclusion
+(7, 1, 14, 18, N'14-18. Girls Senior Championship.', 2),
+
+-- BOYS
+(8, 1, 0, 8, N'Junior swimmers 8 years and under.', 1),
+(9, 1, 9, 9, N'Junior swimmers 9 years.', 1),
+(10, 1, 10, 11, N'10-11. Boys Multi-Class.', 1),
+(11, 1, 12, 13, N'12-13. Boys Multi-Class.', 1),
+(12, 1, 14, 15, N'14-15. Boys Multi-Class.', 1),
+(13, 1, 16, 18, N'16-18. Boys Multi-Class.', 1),
+-- Example of Set Inclusion
+(14, 1, 14, 18, N'14-18. Boys Senior Championship.', 1)
+
 GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (2, 1, 9, 9)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (3, 1, 10, 10)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (4, 1, 11, 11)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (5, 1, 12, 12)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (6, 1, 13, 13)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (7, 1, 14, 14)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (8, 1, 15, 15)
-GO
-INSERT [dbo].[ScoreDivision] ([ScoreDivisionID], [SwimClubID], [AgeFrom], [AgeTo]) VALUES (9, 1, 16, 99)
-GO
+
 SET IDENTITY_INSERT [dbo].[ScoreDivision] OFF
 GO
 
@@ -1262,7 +1115,7 @@ INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (3, N'BackStroke')
 GO
 INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (4, N'ButterFly')
 GO
-INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (5, N'IndvMedley')
+INSERT [dbo].[Stroke] ([StrokeID], [Caption]) VALUES (5, N'Medley')
 GO
 SET IDENTITY_INSERT [dbo].[Stroke] OFF
 GO
@@ -1294,9 +1147,6 @@ CREATE TABLE SwimClub(
     LenOfPool              int              DEFAULT 25 NULL,
     StartOfSwimSeason      datetime         NULL,
     CreatedOn              datetime         NULL,
-    LogoDir                varchar(max)     NULL,
-    LogoImg                image            NULL,
-    LogoType               nvarchar(5)      NULL,
     CONSTRAINT PK_SwimClub PRIMARY KEY NONCLUSTERED (SwimClubID)
 )
 GO
@@ -1322,6 +1172,7 @@ INSERT [dbo].[SwimClub] (
 	,[EnableTeamEvents]
 	,[EnableSwimOThon]
 	,[EnableExtHeatTypes]
+	,[EnableMemberShipStr]
 	,[NumOfLanes]
 	,[LenOfPool]
 	)
@@ -1331,8 +1182,9 @@ VALUES (
 	,N'SCM_CLUBNAME'
 	,N'SCM_EMAIL'
 	,N''
-	,N''
+	,N'https://artanemus.github.io/index.html'
 	,1
+	,0
 	,0
 	,0
 	,0
@@ -1477,16 +1329,6 @@ GO
 
 
 /* 
- * TABLE: DisqualifyCode 
- */
-
-ALTER TABLE DisqualifyCode ADD CONSTRAINT DisqualifyTypeDisqualifyCode 
-    FOREIGN KEY (DisqualifyTypeID)
-    REFERENCES DisqualifyType(DisqualifyTypeID)
-GO
-
-
-/* 
  * TABLE: Entrant 
  */
 
@@ -1535,11 +1377,6 @@ GO
  * TABLE: HeatIndividual 
  */
 
-ALTER TABLE HeatIndividual ADD CONSTRAINT DisqualifyCodeHeatIndividual 
-    FOREIGN KEY (DisqualifyCodeID)
-    REFERENCES DisqualifyCode(DisqualifyCodeID)
-GO
-
 ALTER TABLE HeatIndividual ADD CONSTRAINT EventHeatIndividual 
     FOREIGN KEY (EventID)
     REFERENCES Event(EventID) ON DELETE CASCADE
@@ -1559,11 +1396,6 @@ GO
 /* 
  * TABLE: HeatTeam 
  */
-
-ALTER TABLE HeatTeam ADD CONSTRAINT DisqualifyCodeHeatTeam 
-    FOREIGN KEY (DisqualifyCodeID)
-    REFERENCES DisqualifyCode(DisqualifyCodeID)
-GO
 
 ALTER TABLE HeatTeam ADD CONSTRAINT EventHeatTeam 
     FOREIGN KEY (EventID)
@@ -1625,7 +1457,7 @@ GO
  * TABLE: Qualify 
  */
 
-ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali8 
+ALTER TABLE Qualify ADD CONSTRAINT DistanceQuali4 
     FOREIGN KEY (QualifyDistID)
     REFERENCES Distance(DistanceID)
 GO
@@ -1740,6 +1572,9 @@ GO
  * FUNCTION: ABSEventPlace 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[ABSEventPlace]    Script Date: 20/11/2020 12:40:49 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1827,6 +1662,9 @@ GO
 /* 
  * FUNCTION: ABSHeatPlace 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[ABSHeatPlace]    Script Date: 20/11/2020 12:41:05 PM ******/
 SET ANSI_NULLS ON
@@ -1917,6 +1755,9 @@ GO
  * FUNCTION: EntrantCount 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[EntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1975,6 +1816,9 @@ GO
  * FUNCTION: EntrantScore 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[EntrantScore]    Script Date: 28/08/22 4:13:31 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2028,17 +1872,13 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION EntrantScore >>>'
 GO
 
-GRANT EXECUTE ON EntrantScore TO SCM_Marshall
-GO
-GRANT EXECUTE ON EntrantScore TO SCM_Guest
-GO
-GRANT EXECUTE ON EntrantScore TO SCM_Administrator
-GO
-
 
 /* 
  * FUNCTION: HeatCount 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[HeatCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2100,6 +1940,8 @@ GO
  * FUNCTION: IsMemberNominated 
  */
 
+USE [SwimClubMeet]
+GO
 /****** Object:  UserDefinedFunction [dbo].[IsMemberNominated]    Script Date: 04/02/23 9:29:06 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -2111,7 +1953,7 @@ GO
 -- Create date: 04/02/2023
 -- Description:	Is the member nominated for the event
 -- =============================================
-CREATE FUNCTION [IsMemberNominated]
+CREATE OR ALTER FUNCTION [dbo].[IsMemberNominated]
 (
     -- Add the parameters for the function here
     @MemberID INT
@@ -2161,6 +2003,9 @@ GO
 /* 
  * FUNCTION: IsMemberQualified 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[IsMemberQualified]    Script Date: 26/05/22 11:29:28 AM ******/
 SET ANSI_NULLS ON
@@ -2266,6 +2111,9 @@ GO
  * FUNCTION: IsPoolShortCourse 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[IsPoolShortCourse]    Script Date: 4/10/2020 9:25:38 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -2332,6 +2180,9 @@ GO
  * FUNCTION: NomineeCount 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[NomineeCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2391,6 +2242,9 @@ GO
 /* 
  * FUNCTION: PersonalBest 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[PersonalBest]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2467,6 +2321,9 @@ GO
  * FUNCTION: RaceTimeDIFF 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[RaceTimeDIFF]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2526,6 +2383,9 @@ GO
 /* 
  * FUNCTION: RELEventPlace 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[RELEventPlace]    Script Date: 20/11/2020 12:41:46 PM ******/
 SET ANSI_NULLS ON
@@ -2631,6 +2491,9 @@ GO
  * FUNCTION: RELHeatPlace 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[RELHeatPlace]    Script Date: 20/11/2020 12:41:52 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2722,17 +2585,20 @@ ELSE
     PRINT '<<< FAILED CREATING FUNCTION RELHeatPlace >>>'
 GO
 
+GRANT EXECUTE ON RELHeatPlace TO SCM_Marshall
+GO
 GRANT EXECUTE ON RELHeatPlace TO SCM_Guest
 GO
 GRANT EXECUTE ON RELHeatPlace TO SCM_Administrator
-GO
-GRANT EXECUTE ON RELHeatPlace TO SCM_Marshall
 GO
 
 
 /* 
  * FUNCTION: SessionEntrantCount 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[SessionEntrantCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -2792,6 +2658,9 @@ GO
  * FUNCTION: SessionNomineeCount 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[SessionNomineeCount]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS OFF
 GO
@@ -2848,6 +2717,9 @@ GO
  * FUNCTION: SwimmerAge 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[SwimmerAge]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -2901,6 +2773,9 @@ GO
 /* 
  * FUNCTION: SwimmerGenderToString 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[SwimmerGenderToString]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS OFF
@@ -2962,6 +2837,9 @@ GO
  * FUNCTION: SwimTimeToMilliseconds 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[SwimTimeToMilliseconds]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -3016,6 +2894,9 @@ GO
 /* 
  * FUNCTION: SwimTimeToString 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[SwimTimeToString]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3079,6 +2960,9 @@ GO
 /* 
  * FUNCTION: TimeToBeat 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3160,6 +3044,9 @@ GO
  * FUNCTION: TimeToBeat_1 
  */
 
+USE [SwimClubMeet]
+GO
+
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_1]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -3234,6 +3121,9 @@ GO
 /* 
  * FUNCTION: TimeToBeat_2 
  */
+
+USE [SwimClubMeet]
+GO
 
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_2]    Script Date: 4/03/2022 4:04:00 PM ******/
 SET ANSI_NULLS ON
@@ -3323,6 +3213,8 @@ GO
  * FUNCTION: TimeToBeat_DEFAULT 
  */
 
+USE [SwimClubMeet]
+GO
 /****** Object:  UserDefinedFunction [dbo].[TimeToBeat_DEFAULT]    Script Date: 5/03/2022 2:04:09 PM ******/
 SET ANSI_NULLS ON
 GO
