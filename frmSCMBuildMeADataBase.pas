@@ -49,7 +49,7 @@ type
     ImageCollection1: TImageCollection;
     VirtualImage1: TVirtualImage;
     vimgPassed: TVirtualImage;
-    lblVersionAttributes: TLabel;
+    lblDatabaseVersion: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure actnConnectExecute(Sender: TObject);
@@ -68,8 +68,7 @@ type
     OUT_Model = 1;
     OUT_Version = 1;
     OUT_Major = 5;
-    OUT_Minor = 2;
-
+    OUT_Minor = 1;
 
   private
     // ---------------------------------------------------------
@@ -124,6 +123,7 @@ const
   SectionName = 'SCM_BuildMeAClub';
   logOutFnTmp = '\Documents\SCM_BuildMeAClub.tmp';
   defUpdateScriptsRootPath = 'SQL\'; // No prefix delimeter.
+  dataBaseVersion = 'UNKNOWN';
 
 implementation
 
@@ -280,8 +280,6 @@ end;
 procedure TSCMBuildMeADataBase.FormCreate(Sender: TObject);
 begin
   BuildDone := false; // clear BMAC critical error flag
-  // Display the Major.Minor.Release.Build version details
-  Caption := 'BuildMeAClub builds SwimClubMeet MSSQL DataBase v1.1.5.3.';
   // Prepare the display
   GroupBox1.Visible := true;
   btnConnect.Visible := true;
@@ -302,6 +300,15 @@ begin
   FDBVerCtrlStrVerbose := '';
 
   fBMACScriptSubPath := BuildBMACScriptSubPath;
+
+  // SwimClubMeet database version number
+  lblDatabaseVersion.Caption := IntToStr(OUT_Model) + '.' +
+    IntToStr(OUT_Version) + '.' + IntToStr(OUT_Major) + '.' +
+    IntToStr(OUT_Minor);
+
+  // App title bar
+  Caption := 'BuildMeAClub builds SwimClubMeet MSSQL DataBase' +
+    lblDatabaseVersion.Caption + '.';
 
 end;
 
