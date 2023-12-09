@@ -6,7 +6,8 @@ uses
   utilVersion in 'utilVersion.pas',
   Vcl.Themes,
   Vcl.Styles,
-  dlgBMACMsgBox in 'dlgBMACMsgBox.pas' {BMACMsgBox};
+  dlgBMACMsgBox in 'dlgBMACMsgBox.pas' {BMACMsgBox},
+  dlgSelectDataBaseToBuild in 'dlgSelectDataBaseToBuild.pas' {SelectDataBaseToBuild};
 
 {$R *.res}
 

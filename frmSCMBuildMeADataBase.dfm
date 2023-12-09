@@ -12808,7 +12808,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Height = 54
       Alignment = taCenter
       AutoSize = False
-      Caption = 'UNKNOWN'
+      Caption = 'version?'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -43
@@ -25713,8 +25713,12 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
           'The '#39'Build Me A Club'#39' button will not be visible until a connect' +
           'ion to the DB Server is '
         
-          'established. BMAC also uses sqlcmd.exe (installed by default wit' +
-          'h MS SQL).'
+          'established. BMAC uses sqlcmd.exe (installed by default with MS ' +
+          'SQL).'
+        ''
+        
+          'The '#39'Build Me A Club'#39' button will not be enabled until a databas' +
+          'e version is selected.'
         ''
         'BMAC will not overwrite an existing SwimClubMeet DB.'
         ''
@@ -25751,8 +25755,8 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     ExplicitTop = 726
     ExplicitWidth = 706
     object btnBMAC: TButton
-      Left = 160
-      Top = 6
+      Left = 231
+      Top = 9
       Width = 298
       Height = 36
       Action = actnBMAC
@@ -25760,14 +25764,22 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       TabOrder = 0
     end
     object btnCancel: TButton
-      Left = 464
-      Top = 6
+      Left = 535
+      Top = 9
       Width = 91
       Height = 36
       Caption = 'EXIT'
       ModalResult = 2
       TabOrder = 1
       OnClick = btnCancelClick
+    end
+    object btnSelectDatabase: TButton
+      Left = 87
+      Top = 9
+      Width = 138
+      Height = 36
+      Action = actnSelectDataBase
+      TabOrder = 2
     end
   end
   object scmConnection: TFDConnection
@@ -25803,6 +25815,11 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Caption = 'Update DataBase'
       OnExecute = actnBMACExecute
       OnUpdate = actnBMACUpdate
+    end
+    object actnSelectDataBase: TAction
+      Caption = 'Select Database'
+      OnExecute = actnSelectDataBaseExecute
+      OnUpdate = actnSelectDataBaseUpdate
     end
   end
   object qryDBExists: TFDQuery

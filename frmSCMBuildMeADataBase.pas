@@ -50,6 +50,8 @@ type
     VirtualImage1: TVirtualImage;
     vimgPassed: TVirtualImage;
     lblDatabaseVersion: TLabel;
+    btnSelectDatabase: TButton;
+    actnSelectDataBase: TAction;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure actnConnectExecute(Sender: TObject);
@@ -58,6 +60,8 @@ type
     procedure actnDisconnectUpdate(Sender: TObject);
     procedure actnBMACExecute(Sender: TObject);
     procedure actnBMACUpdate(Sender: TObject);
+    procedure actnSelectDataBaseExecute(Sender: TObject);
+    procedure actnSelectDataBaseUpdate(Sender: TObject);
 
   private const
     SCMCONFIGFILENAME = 'SCMConfig.ini';
@@ -83,15 +87,12 @@ type
     // Version Control Display Strings
     FDBVerCtrlStr: string;
     FDBVerCtrlStrVerbose: string;
-
-    fBMACScriptSubPath: String;
+    fBMACScriptSubPath: String; // default 'BMAC_SCRIPTS'
+    fScriptPath: string; // full path to folder contain build scripts.
 
     // Flags that building is finalised or can't proceed.
     // Once set - btnBMAC is not long visible. User may only exit.
     BuildDone: Boolean;
-
-    // builds the full sub-path of "\BMAC_SCRIPTS\"
-    function BuildBMACScriptSubPath(): String;
 
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
@@ -106,7 +107,8 @@ type
     procedure LoadConfigData;
     procedure SaveConfigData;
 
-    procedure SimpleLoadSettingString(ASection, AName: String; var AValue: String);
+    procedure SimpleLoadSettingString(ASection, AName: String;
+      var AValue: String);
     procedure SimpleSaveSettingString(ASection, AName, AValue: String);
     procedure SimpleMakeTemporyFDConnection(Server, User, Password: String;
       OsAuthent: Boolean);
@@ -122,14 +124,14 @@ const
   logOutFn = '\Documents\SCM_BuildMeAClub.log';
   SectionName = 'SCM_BuildMeAClub';
   logOutFnTmp = '\Documents\SCM_BuildMeAClub.tmp';
-  defUpdateScriptsRootPath = 'SQL\'; // No prefix delimeter.
   dataBaseVersion = 'UNKNOWN';
 
 implementation
 
 {$R *.dfm}
 
-uses utilVersion, System.IniFiles, System.Math, Vcl.FileCtrl;
+uses utilVersion, System.IniFiles, System.Math, Vcl.FileCtrl,
+  dlgSelectDataBaseToBuild;
 
 function TSCMBuildMeADataBase.ExecuteProcess(const FileName, Params: string;
   Folder: string; WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
@@ -143,7 +145,7 @@ begin
   Result := true;
   cmdLine := '"' + FileName + '" ' + Params;
   if Folder = '' then
-    Folder := ExcludeTrailingPathDelimiter(ExtractFilePath(FileName));
+      Folder := ExcludeTrailingPathDelimiter(ExtractFilePath(FileName));
   ZeroMemory(@StartupInfo, SizeOf(StartupInfo));
   StartupInfo.cb := SizeOf(StartupInfo);
   if RunMinimized then
@@ -151,10 +153,8 @@ begin
     StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
     StartupInfo.wShowWindow := SW_SHOWMINIMIZED;
   end;
-  if Folder <> '' then
-    WorkingDirP := PChar(Folder)
-  else
-    WorkingDirP := nil;
+  if Folder <> '' then WorkingDirP := PChar(Folder)
+  else WorkingDirP := nil;
   if not CreateProcess(nil, PChar(cmdLine), nil, nil, false, 0, nil,
     WorkingDirP, StartupInfo, ProcessInfo) then
   begin
@@ -165,12 +165,10 @@ begin
   with ProcessInfo do
   begin
     CloseHandle(hThread); // CHECK - CLOSE HERE? or move line down?
-    if WaitUntilIdle then
-      WaitForInputIdle(hProcess, INFINITE);
+    if WaitUntilIdle then WaitForInputIdle(hProcess, INFINITE);
     // CHECK ::WaitUntilTerminated was used in C++ sqlcmd.exe
     if WaitUntilTerminated then
-      repeat
-        Application.ProcessMessages;
+      repeat Application.ProcessMessages;
       until MsgWaitForMultipleObjects(1, hProcess, false, INFINITE, QS_ALLINPUT)
         <> WAIT_OBJECT_0 + 1;
     CloseHandle(hProcess);
@@ -196,8 +194,7 @@ begin
   errCode := 0;
 
   // the string isn't empty
-  if SQLFile.IsEmpty then
-    exit;
+  if SQLFile.IsEmpty then exit;
 
   quotedSQLFile := AnsiQuotedStr(SQLFile, '"');
   {
@@ -214,10 +211,10 @@ begin
   Param := '-S ' + ServerName;
   if UseOSAthent then
     // using windows OS Authentication
-    Param := Param + ' -E '
+      Param := Param + ' -E '
   else
     // UserName and Password
-    Param := Param + ' -U ' + UserName + ' -P ' + Password;
+      Param := Param + ' -U ' + UserName + ' -P ' + Password;
   // input file
   Param := Param + ' -i ' + quotedSQLFile + ' ';
 
@@ -272,8 +269,7 @@ begin
     end;
   end;
 
-  if passed then
-    Result := true; // flag success
+  if passed then Result := true; // flag success
 
 end;
 
@@ -288,7 +284,7 @@ begin
   btnDisconnect.Visible := false;
   LoadConfigData;
   // green 'tick' checkbox
-  vimgPassed.Visible := False;
+  vimgPassed.Visible := false;
 
   // Memo already populated with useful user info... indicate ready...
   Memo1.Lines.Add('READY ...');
@@ -299,16 +295,14 @@ begin
   FDBVerCtrlStr := '';
   FDBVerCtrlStrVerbose := '';
 
-  fBMACScriptSubPath := BuildBMACScriptSubPath;
+  fBMACScriptSubPath := 'BMAC_SCRIPTS\';
+  fScriptPath := '';
 
   // SwimClubMeet database version number
-  lblDatabaseVersion.Caption := IntToStr(OUT_Model) + '.' +
-    IntToStr(OUT_Version) + '.' + IntToStr(OUT_Major) + '.' +
-    IntToStr(OUT_Minor);
+  lblDatabaseVersion.Caption := 'version?';
 
   // App title bar
-  Caption := 'BuildMeAClub builds SwimClubMeet MSSQL DataBase' +
-    lblDatabaseVersion.Caption + '.';
+  Caption := 'SwimClubMeet - BuildMeAClub.';
 
 end;
 
@@ -333,8 +327,7 @@ begin
   end;
   // * Populate the stringlist with matching filenames
   sl.Clear();
-  for fn in List do
-    sl.Add(fn);
+  for fn in List do sl.Add(fn);
 end;
 
 procedure TSCMBuildMeADataBase.GetSCM_DB_Version();
@@ -392,10 +385,8 @@ begin
   ASection := SectionName;
   AName := 'Server';
   SimpleLoadSettingString(ASection, AName, Server);
-  if Server.IsEmpty then
-    edtServerName.Text := 'localHost\SQLEXPRESS'
-  else
-    edtServerName.Text := Server;
+  if Server.IsEmpty then edtServerName.Text := 'localHost\SQLEXPRESS'
+  else edtServerName.Text := Server;
   AName := 'User';
   SimpleLoadSettingString(ASection, AName, User);
   edtUser.Text := User;
@@ -405,9 +396,8 @@ begin
   AName := 'OSAuthent';
   SimpleLoadSettingString(ASection, AName, AValue);
   if (Pos('y', AValue) <> 0) or (Pos('Y', AValue) <> 0) then
-    chkbUseOSAuthentication.Checked := true
-  else
-    chkbUseOSAuthentication.Checked := false;
+      chkbUseOSAuthentication.Checked := true
+  else chkbUseOSAuthentication.Checked := false;
 end;
 
 procedure TSCMBuildMeADataBase.SaveConfigData;
@@ -423,16 +413,15 @@ begin
     AName := 'Password';
     SimpleSaveSettingString(ASection, AName, edtPassword.Text);
     AName := 'OSAuthent';
-    if chkbUseOSAuthentication.Checked = true then
-      AValue := 'Yes'
-    else
-      AValue := 'No';
+    if chkbUseOSAuthentication.Checked = true then AValue := 'Yes'
+    else AValue := 'No';
     SimpleSaveSettingString(ASection, AName, AValue);
   end
 
 end;
 
-procedure TSCMBuildMeADataBase.SimpleLoadSettingString(ASection, AName: String; var AValue: String);
+procedure TSCMBuildMeADataBase.SimpleLoadSettingString(ASection, AName: String;
+  var AValue: String);
 var
   ini: TIniFile;
 begin
@@ -456,15 +445,12 @@ var
   Value: String;
 begin
 
-  if Server.IsEmpty then
-    exit;
+  if Server.IsEmpty then exit;
 
   if not OsAuthent then
-    if User.IsEmpty then
-      exit;
+    if User.IsEmpty then exit;
 
-  if (scmConnection.Connected) then
-    scmConnection.Connected := false;
+  if (scmConnection.Connected) then scmConnection.Connected := false;
 
   // REQUIRED for multi-login attempts
   scmConnection.Params.Clear();
@@ -475,10 +461,8 @@ begin
   scmConnection.Params.Add('Database=master');
   scmConnection.Params.Add('User_name=' + User);
   scmConnection.Params.Add('Password=' + Password);
-  if OsAuthent then
-    Value := 'Yes'
-  else
-    Value := 'No';
+  if OsAuthent then Value := 'Yes'
+  else Value := 'No';
   scmConnection.Params.Add('OSAuthent=' + Value);
   scmConnection.Params.Add('Mars=yes');
   scmConnection.Params.Add('MetaDefSchema=dbo');
@@ -489,11 +473,11 @@ begin
   scmConnection.Connected := true;
 
   // ON SUCCESS - Save connection details.
-  if scmConnection.Connected Then
-    SaveConfigData;
+  if scmConnection.Connected Then SaveConfigData;
 end;
 
-procedure TSCMBuildMeADataBase.SimpleSaveSettingString(ASection, AName, AValue: String);
+procedure TSCMBuildMeADataBase.SimpleSaveSettingString(ASection, AName,
+  AValue: String);
 var
   ini: TIniFile;
 begin
@@ -516,24 +500,11 @@ begin
   Close;
 end;
 
-function TSCMBuildMeADataBase.BuildBMACScriptSubPath: String;
-begin
-  Result := defUpdateScriptsRootPath;
-  (*
-  // BSA 23/06/03
-   + 'v' + IntToStr(OUT_Model) + '.' +
-    IntToStr(OUT_Version) + '.' + IntToStr(OUT_Major) + '.' +
-    IntToStr(OUT_Minor) + '\';
-  *)
-end;
-
 procedure TSCMBuildMeADataBase.actnConnectExecute(Sender: TObject);
 begin
-  if edtServerName.Text = '' then
-    exit;
+  if edtServerName.Text = '' then exit;
   if not chkbUseOSAuthentication.Checked then
-    if edtUser.Text = '' then
-      exit;
+    if edtUser.Text = '' then exit;
 
   // attempt a 'simple' connection to SQLEXPRESS
   SimpleMakeTemporyFDConnection(edtServerName.Text, edtUser.Text,
@@ -543,9 +514,8 @@ begin
     Memo1.Clear;
     Memo1.Lines.Add('Connected to master on MSSQL');
     if not BuildDone then
-      Memo1.Lines.Add('READY ... Press ''Build Me A Club'' to continue.')
-    else
-      Memo1.Lines.Add('READY ...');
+        Memo1.Lines.Add('READY ... Press ''Build Me A Club'' to continue.')
+    else Memo1.Lines.Add('READY ...');
   end;
   // REQUIRED: update button state.
   actnDisconnectUpdate(self);
@@ -564,7 +534,7 @@ begin
     btnConnect.Visible := true;
   end;
   if BuildDone then // only one build per application running
-    btnBMAC.Visible := false;
+      btnBMAC.Visible := false;
 end;
 
 procedure TSCMBuildMeADataBase.actnDisconnectExecute(Sender: TObject);
@@ -590,13 +560,13 @@ begin
     btnBMAC.Visible := false; // no connection ... no updating.
   end;
   if BuildDone then // only one build per application running
-    btnBMAC.Visible := false;
+      btnBMAC.Visible := false;
 end;
 
 procedure TSCMBuildMeADataBase.actnBMACUpdate(Sender: TObject);
 begin
   if BuildDone then // only one build per application running
-    btnBMAC.Visible := false;
+      btnBMAC.Visible := false;
 end;
 
 procedure TSCMBuildMeADataBase.actnBMACExecute(Sender: TObject);
@@ -606,7 +576,6 @@ var
   errCount, errCode: Integer;
   mr: TModalResult;
   success: Boolean;
-
 begin
   // UPDATE THE DATABASE...
   progressBar.Position := 0;
@@ -614,8 +583,7 @@ begin
   btnBMAC.Visible := false;
   Memo1.Clear;
 
-  if not scmConnection.Connected then
-    exit;
+  if not scmConnection.Connected then exit;
 
   // ---------------------------------------------------------------
   // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
@@ -659,22 +627,8 @@ begin
     exit;
   end;
 
-  // BUILD ME A CLUB USES ONLY THE FOLDER WITHIN IT'S EXE PATH
-  // INNO is responsible for creating this folder
-  // ---------------------------------------------------------------
-  // Does the DEFAULT BMAC_SCRIPTS\VERSION folder
-  //        (containing SQL files) exist?
-  // ---------------------------------------------------------------
-{$IFDEF DEBUG}
-    FSQLPath := TPath.GetDocumentsPath + '\GitHub\SCM_BuildMeAClub-R\' +
-      fBMACScriptSubPath;
-{$ELSE}
-    // up to and including the colon or backslash .... SAFE
-    FSQLPath := ExtractFilePath(Application.ExeName) + fBMACScriptSubPath;
-{$IFEND}
-
   // DOES PATH EXISTS?
-  if not System.SysUtils.DirectoryExists(FSQLPath, true) then
+  if not System.SysUtils.DirectoryExists(fScriptPath, true) then
   begin
     s := 'The folder containing the build scripts is missing!' + sLineBreak +
       'Cannot continue with building a swimming club.' + sLineBreak +
@@ -721,8 +675,7 @@ begin
     Memo1.Lines.Add('Sending log to ' + Str + sLineBreak);
 
     // clear the log file
-    if FileExists(Str) then
-      DeleteFile(Str);
+    if FileExists(Str) then DeleteFile(Str);
 
     for fp in sl do
     begin
@@ -750,7 +703,7 @@ begin
     if errCount = 0 then
     begin
       // green 'tick' checkbox
-      vimgPassed.Visible := True;
+      vimgPassed.Visible := true;
 
       Memo1.Lines.Add('ExecuteProcess completed without errors.' + sLineBreak);
       Memo1.Lines.Add
@@ -780,10 +733,67 @@ begin
   end
   else
     // we had scripts ... but user didn't do a build
-    btnBMAC.Visible := true;
+      btnBMAC.Visible := true;
 
   FreeAndNil(sl);
 
+end;
+
+procedure TSCMBuildMeADataBase.actnSelectDataBaseExecute(Sender: TObject);
+var
+  dlg: TSelectDataBaseToBuild;
+  rootDIR, s: string;
+begin
+  lblDatabaseVersion.Caption := 'version?';
+  fScriptPath := '';
+  // DEFAULT:
+  // BUILDMEACLUB USES THE SUB-FOLDER WITHIN IT'S EXE PATH
+  // ---------------------------------------------------------------
+{$IFDEF DEBUG}
+  rootDIR := TPath.GetDocumentsPath + '\GitHub\SCM_BuildMeAClub-R\' +
+    IncludeTrailingPathDelimiter(fBMACScriptSubPath);
+{$ELSE}
+  // up to and including the colon or backslash .... SAFE
+  rootDIR := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName))
+    + IncludeTrailingPathDelimiter(fBMACScriptSubPath);
+{$IFEND}
+
+  // DOES PATH EXISTS?
+  if not System.SysUtils.DirectoryExists(rootDIR, true) then
+  begin
+    s := 'The build scripts sub-folder is missing!' + sLineBreak +
+      '(Default name : ''#EXEPATH#\BMAC_SCRIPTS\''.)' + sLineBreak +
+      'Cannot continue. Missing BMAC system sub-folder.' + sLineBreak +
+      'Press EXIT when ready.';
+    MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
+    // only one shot at building granted
+    btnBMAC.Visible := false;
+    BuildDone := true;
+    Memo1.Lines.Add(s);
+    exit;
+  end;
+
+  dlg := TSelectDataBaseToBuild.Create(self);
+  dlg.BMACScriptsPath := rootDIR;
+  dlg.ShowModal;
+  if not dlg.RtnSubFolder.IsEmpty then
+  begin
+    s := rootDIR + IncludeTrailingPathDelimiter(dlg.RtnSubFolder);
+    if System.SysUtils.DirectoryExists(s) then
+    begin
+      fScriptPath := s;
+      lblDatabaseVersion.Caption := dlg.RtnSubFolder;
+    end;
+  end;
+  dlg.Free;
+end;
+
+procedure TSCMBuildMeADataBase.actnSelectDataBaseUpdate(Sender: TObject);
+begin
+  if fScriptPath.IsEmpty then
+    btnBMAC.Enabled := false
+    else
+    btnBMAC.Enabled := true;
 end;
 
 end.
