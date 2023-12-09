@@ -17,13 +17,9 @@ If you are interested in following a developer's blog and track my progress then
 
 ---
 
-#### 02.06.2023
+#### 09.12.2023
 
-Just some quick notes on the BMAC_SCRIPTS folder. In future builds there will be a single SQL script for each database version. (02/06/23 Keep a watch on the folder and look for some new release builds for SCM_BuildMeAClub.)
-
-I've done a little work on the repo's wiki. Here you'll find some info on the versions and other bits.
-
-It takes time to build a solid, well performing database 😋. I reach out to users - do you want to sponsor me?
+BMAC now is a universal SCM database builder. It checks for specific folders, installed upon installation of the application. An additional button has been added that lets you choose what version to build.
 
 ---
 
@@ -33,9 +29,23 @@ After install, by default an icon isn't placed on the desktop. Type **build** in
 
 ### ON START-UP
 
-The 'Build Me A Club' button will not be visible until a connection to the database server has been established. BMAC requires the SQL command utility, sqlcmd.exe. If you are using this application to create the database on a remote database server, then sqlcmd.exe must be correctly pathed.
+The 'Build Me A Club' button will not be visible until a connection to the database server has been established. BMAC uses the SQL command utility, sqlcmd.exe. (Installed by default when you install MS SQLEXPRESS.) If you are using this application to create the database on a remote database server, then sqlcmd.exe must be correctly pathed.
 
 > Typically sqlcmd.exe is installed by default when you install MS SQLEXPRESS.
+
+Use the `Select Database` button to pick the SwimClubMeet database to build.
+
+|DB version|SCM version|Notes, highlights|
+|----------|-----------|--------------|
+|1.0.0.0 | 1.0.0.0 | Birth of app 2019|
+|1.1.5.0 | 1.5.5.0 | GitHub release
+|1.1.5.1 | 1.5.5.1 | New heat navigation bar|
+|1.1.5.2 | 1.5.5.2 |
+|1.1.5.2 | 1.6 |Rename - FINA codes + scheduled events|
+|1.1.5.3 | 1.5.5.3 |
+|1.1.5.3 | 1.7 |Rename - team events|
+|1.1.5.4 | 1.8 |New reports builder|
+|1.1.5.5 | 1.9 |Pool timing pad integration|
 
 BMAC will not overwrite an existing SwimClubMeet database.
 
@@ -43,17 +53,18 @@ You would only ever need to run this application once. After a successful build 
 
 > Use Windows **Apps and Features** to remove the application.
 
+A utility call `SCM_UpdateDatabase` is available to progress to other versions as they become available.
+
 ### ERRORS?
 
 Any errors created by sqlcmd.exe are displayed in BMAC's text window.
 
-A server side log file is also produced. This will be located in your documents folder with the filename **SCM_BuildMeAClub.log**. View this file should an error occur.
+A server side log file is also produced. This will be located in your documents folder with the filename **SCM_BuildMeAClub.log**.
 
 > The log file is not removed on uninstall. This is intentional.
 
 ---
 
-![ScreenShot of BMAC after logging in.](ASSETS/Screenshot%20BMAC%20MainForm.JPG)
+![ScreenShot of BMAC pior to login.](ASSETS/Screenshot%20BMAC%20MainForm.JPG)
 
-
-
+![ScreenShot of Select Database DLG.](ASSETS/Screenshot%20BMAC%20Select%20DB.JPG)
