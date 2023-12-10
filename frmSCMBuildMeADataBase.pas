@@ -82,7 +82,6 @@ type
     FDBVersion: Integer;
     FDBMajor: Integer;
     FDBMinor: Integer;
-    FSQLPath: String;
 
     // Version Control Display Strings
     FDBVerCtrlStr: string;
@@ -643,7 +642,7 @@ begin
 
   // Look for SQL file to execute ...
   sl := TStringList.Create;
-  GetFileList(FSQLPath, '*.SQL', sl);
+  GetFileList(fScriptPath, '*.SQL', sl);
   sl.Sort; // Perform an ANSI sort
 
   // Are there SQL files in this directory?
