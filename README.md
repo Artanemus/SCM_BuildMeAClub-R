@@ -33,18 +33,7 @@ The 'Build Me A Club' button will not be **visible** until a connection to the d
 
 > sqlcmd.exe is installed by default when you install MS SQLEXPRESS.
 
-Use the `Select Database` button to pick the SwimClubMeet database to build. The 'Build Me A Club' button will not **enabled** until a database is chosen.
-
-|DB version|SCM version|Notes|
-|----------|-----------|--------------|
-|1.0.0.0 | 1.0 | Birth of app 2019|
-|1.1.5.0 | 1.4 | GitHub release (org. 1.5.5.0)|
-|1.1.5.1 | 1.5 | New heat navigation bar|
-|1.1.5.2 | 1.6 | FINA codes + scheduled events (org. 1.5.5.2)|
-|1.1.5.3 | 1.7 | Team events (org. 1.5.5.3)|
-|1.1.5.4 | 1.8 | Report builder|
-|1.1.5.5 | 1.9 | Pool timing pad integration|
-|
+Use the `Select Database` button to pick the SwimClubMeet database to build. See the Wiki for info on the match-up of SCM application with SCM database. [WIKI: Version Info](https://github.com/Artanemus/SCM_BuildMeAClub-R/wiki/Version-Info). The 'Build Me A Club' button will not **enabled** until a database is chosen.
 
 BMAC will not overwrite an existing SwimClubMeet database.
 
