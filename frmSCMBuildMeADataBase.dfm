@@ -25707,14 +25707,14 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Lines.Strings = (
         
           'SCM_BuildMeAClub.exe is an application that creates the SwimClub' +
-          'Meet database in MS SQL.'
+          'Meet database on MSSQL.'
         ''
         
           'The '#39'Build Me A Club'#39' button will not be visible until a connect' +
           'ion to the DB Server is '
         
-          'established. BMAC uses sqlcmd.exe (installed by default with MS ' +
-          'SQL).'
+          'established. BMAC uses sqlcmd.exe (installed by default with MSS' +
+          'QL).'
         ''
         
           'The '#39'Build Me A Club'#39' button will not be enabled until a databas' +
