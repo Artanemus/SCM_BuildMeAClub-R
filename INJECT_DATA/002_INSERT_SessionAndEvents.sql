@@ -37,46 +37,45 @@ INSERT INTO [SwimClubMeet].[dbo].[Event]
 		,[Caption]
 		,[ClosedDT]
 		,[SessionID]
-		,[EventTypeID]
 		,[StrokeID]
 		,[DistanceID]
 		,[EventStatusID]
 )
 VALUES
     -- Freestyle 
-    (1,'Seed-event for PB 25mFR',NULL,@SessionID,1,1,1,1),
-    (2,'Seed-event for PB 50mFR',NULL,@SessionID,1,1,2,1),
-    (3,'Seed-event for PB 100mFR',NULL,@SessionID,1,1,3,1),
-    (4,'Seed-event for PB 200mFR',NULL,@SessionID,1,1,4,1),
-    (5,'Seed-event for PB 400mFR',NULL,@SessionID,1,1,5,1),
-    (6,'Seed-event for PB 800mFR',NULL,@SessionID,1,1,6,1),
+    (1,'Seed-event for PB 25mFR',NULL,@SessionID,1,1,1),
+    (2,'Seed-event for PB 50mFR',NULL,@SessionID,1,2,1),
+    (3,'Seed-event for PB 100mFR',NULL,@SessionID,1,3,1),
+    (4,'Seed-event for PB 200mFR',NULL,@SessionID,1,4,1),
+    (5,'Seed-event for PB 400mFR',NULL,@SessionID,1,5,1),
+    (6,'Seed-event for PB 800mFR',NULL,@SessionID,1,6,1),
     -- Breaststroke
-    (7,'Seed-event for PB 25mBR',NULL,@SessionID,1,2,1,1),
-    (8,'Seed-event for PB 50mBR',NULL,@SessionID,1,2,2,1),
-    (9,'Seed-event for PB 100mBR',NULL,@SessionID,1,2,3,1),
-    (10,'Seed-event for PB 200mBR',NULL,@SessionID,1,2,4,1),
-    (11,'Seed-event for PB 400mBR',NULL,@SessionID,1,2,5,1),
-    (12,'Seed-event for PB 800mBR',NULL,@SessionID,1,2,6,1),
+    (7,'Seed-event for PB 25mBR',NULL,@SessionID,2,1,1),
+    (8,'Seed-event for PB 50mBR',NULL,@SessionID,2,2,1),
+    (9,'Seed-event for PB 100mBR',NULL,@SessionID,2,3,1),
+    (10,'Seed-event for PB 200mBR',NULL,@SessionID,2,4,1),
+    (11,'Seed-event for PB 400mBR',NULL,@SessionID,2,5,1),
+    (12,'Seed-event for PB 800mBR',NULL,@SessionID,2,6,1),
     -- Backstroke
-    (13,'Seed-event for PB 25mBA',NULL,@SessionID,1,3,1,1),
-    (14,'Seed-event for PB 50mBA',NULL,@SessionID,1,3,2,1),
-    (15,'Seed-event for PB 100mBA',NULL,@SessionID,1,3,3,1),
-    (16,'Seed-event for PB 200mBA',NULL,@SessionID,1,3,4,1),
-    (17,'Seed-event for PB 400mBA',NULL,@SessionID,1,3,5,1),
-    (18,'Seed-event for PB 800mBA',NULL,@SessionID,1,3,6,1),
+    (13,'Seed-event for PB 25mBA',NULL,@SessionID,3,1,1),
+    (14,'Seed-event for PB 50mBA',NULL,@SessionID,3,2,1),
+    (15,'Seed-event for PB 100mBA',NULL,@SessionID,3,3,1),
+    (16,'Seed-event for PB 200mBA',NULL,@SessionID,3,4,1),
+    (17,'Seed-event for PB 400mBA',NULL,@SessionID,3,5,1),
+    (18,'Seed-event for PB 800mBA',NULL,@SessionID,3,6,1),
     -- Butterfly
-    (19,'Seed-event for PB 25mBU',NULL,@SessionID,1,4,1,1),
-    (20,'Seed-event for PB 50mBU',NULL,@SessionID,1,4,2,1),
-    (21,'Seed-event for PB 100mBU',NULL,@SessionID,1,4,3,1),
-    (22,'Seed-event for PB 200mBU',NULL,@SessionID,1,4,4,1),
-    (23,'Seed-event for PB 400mBU',NULL,@SessionID,1,4,5,1),
-    (24,'Seed-event for PB 800mBU',NULL,@SessionID,1,4,6,1),
+    (19,'Seed-event for PB 25mBU',NULL,@SessionID,4,1,1),
+    (20,'Seed-event for PB 50mBU',NULL,@SessionID,4,2,1),
+    (21,'Seed-event for PB 100mBU',NULL,@SessionID,4,3,1),
+    (22,'Seed-event for PB 200mBU',NULL,@SessionID,4,4,1),
+    (23,'Seed-event for PB 400mBU',NULL,@SessionID,4,5,1),
+    (24,'Seed-event for PB 800mBU',NULL,@SessionID,4,6,1),
     -- Medley
-    (25,'Seed-event for PB 25mME',NULL,@SessionID,1,5,1,1), -- 25m Medley Nah!
-    (26,'Seed-event for PB 50mME',NULL,@SessionID,1,5,2,1), -- 50m Medley Nah!
-    (27,'Seed-event for PB 100mME',NULL,@SessionID,1,5,3,1),
-    (28,'Seed-event for PB 200mME',NULL,@SessionID,1,5,4,1),
-    (29,'Seed-event for PB 400mME',NULL,@SessionID,1,5,5,1),
-    (30,'Seed-event for PB 800mME',NULL,@SessionID,1,5,6,1)
+    (25,'Seed-event for PB 25mME',NULL,@SessionID,5,1,1), -- 25m Medley Nah!
+    (26,'Seed-event for PB 50mME',NULL,@SessionID,5,2,1), -- 50m Medley Nah!
+    (27,'Seed-event for PB 100mME',NULL,@SessionID,5,3,1),
+    (28,'Seed-event for PB 200mME',NULL,@SessionID,5,4,1),
+    (29,'Seed-event for PB 400mME',NULL,@SessionID,5,5,1),
+    (30,'Seed-event for PB 800mME',NULL,@SessionID,5,6,1)
     ;
 

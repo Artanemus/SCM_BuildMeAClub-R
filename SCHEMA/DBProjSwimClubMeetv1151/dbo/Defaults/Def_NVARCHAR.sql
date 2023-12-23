@@ -1,6 +1,0 @@
-CREATE DEFAULT [dbo].[Def_NVARCHAR]
-    AS NULL;
-
-
-GO
-
