@@ -15,7 +15,9 @@ uses
   FireDAC.Stan.Consts, System.IOUtils, System.Types, Registry, Vcl.ComCtrls,
   System.UITypes, FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase,
   FireDAC.Phys.MSSQL, System.Actions, Vcl.ActnList, Vcl.BaseImageCollection,
-  Vcl.ImageCollection, Vcl.VirtualImage;
+  Vcl.ImageCollection, Vcl.VirtualImage, scmBuildConfig,
+
+  System.Generics.Collections;
 
 type
   TSCMBuildMeADataBase = class(TForm)
@@ -52,6 +54,7 @@ type
     lblDatabaseVersion: TLabel;
     btnSelectDatabase: TButton;
     actnSelectDataBase: TAction;
+    lblPreRelease: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure actnConnectExecute(Sender: TObject);
@@ -86,12 +89,16 @@ type
     // Version Control Display Strings
     FDBVerCtrlStr: string;
     FDBVerCtrlStrVerbose: string;
-    fBMACScriptSubPath: String; // default 'BMAC_SCRIPTS'
+//    fBMACScriptSubPath: String; // default 'BMAC_SCRIPTS'
     fScriptPath: string; // full path to folder contain build scripts.
 
     // Flags that building is finalised or can't proceed.
     // Once set - btnBMAC is not long visible. User may only exit.
     BuildDone: Boolean;
+
+    SelectedBuild: TscmBuildConfig; // reference to selected build object
+    BuildConfigList: TObjectList<TscmBuildConfig>;
+
 
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
@@ -123,14 +130,14 @@ const
   logOutFn = '\Documents\SCM_BuildMeAClub.log';
   SectionName = 'SCM_BuildMeAClub';
   logOutFnTmp = '\Documents\SCM_BuildMeAClub.tmp';
-  dataBaseVersion = 'UNKNOWN';
+  defSubPath = 'BMAC_SCRIPTS\';
 
 implementation
 
 {$R *.dfm}
 
 uses utilVersion, System.IniFiles, System.Math, Vcl.FileCtrl,
-  dlgSelectDataBaseToBuild;
+  dlgSelectBuild;
 
 function TSCMBuildMeADataBase.ExecuteProcess(const FileName, Params: string;
   Folder: string; WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
@@ -294,7 +301,7 @@ begin
   FDBVerCtrlStr := '';
   FDBVerCtrlStrVerbose := '';
 
-  fBMACScriptSubPath := 'BMAC_SCRIPTS\';
+//  fBMACScriptSubPath := 'BMAC_SCRIPTS\';
   fScriptPath := '';
 
   // SwimClubMeet database version number
@@ -302,6 +309,13 @@ begin
 
   // App title bar
   Caption := 'SwimClubMeet - BuildMeAClub.';
+
+  // Object to hold all the info on each build variant.
+  // Info extracted from the file, SCM_Config.ini
+  // Object includes the SQL folder path
+  SelectedBuild := nil;
+  // A custom collection. Contains TUDBConfig objects
+  BuildConfigList := TObjectList<TscmBuildConfig>.Create(true); // owns object
 
 end;
 
@@ -564,8 +578,22 @@ end;
 
 procedure TSCMBuildMeADataBase.actnBMACUpdate(Sender: TObject);
 begin
-  if BuildDone then // only one build per application running
-      btnBMAC.Visible := false;
+
+  // stops UI flickering if enable state is tested before changing.
+    // NOTE: visibility of btnBMAC is handle bu actnConnectUpdate
+  if BuildDone then // re-run the application to build again
+  begin
+    if btnBMAC.Enabled then btnBMAC.Enabled := false;
+    exit;
+  end;
+
+  if not Assigned(SelectedBuild) then
+  begin
+    if btnBMAC.Enabled then btnBMAC.Enabled := false;
+    exit;
+  end;
+
+  if not btnBMAC.Enabled then  btnBMAC.Enabled := true;
 end;
 
 procedure TSCMBuildMeADataBase.actnBMACExecute(Sender: TObject);
@@ -583,6 +611,8 @@ begin
   Memo1.Clear;
 
   if not scmConnection.Connected then exit;
+  if not Assigned(SelectedBuild) then exit;
+
 
   // ---------------------------------------------------------------
   // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
@@ -625,6 +655,9 @@ begin
     Memo1.Lines.Add(s);
     exit;
   end;
+
+    fScriptPath := IncludeTrailingPathDelimiter
+    (ExtractFilePath(SelectedBuild.FileName));
 
   // DOES PATH EXISTS?
   if not System.SysUtils.DirectoryExists(fScriptPath, true) then
@@ -740,7 +773,7 @@ end;
 
 procedure TSCMBuildMeADataBase.actnSelectDataBaseExecute(Sender: TObject);
 var
-  dlg: TSelectDataBaseToBuild;
+  dlg: TSelectBuild;
   rootDIR, s: string;
 begin
   lblDatabaseVersion.Caption := 'version?';
@@ -749,12 +782,12 @@ begin
   // BUILDMEACLUB USES THE SUB-FOLDER WITHIN IT'S EXE PATH
   // ---------------------------------------------------------------
 {$IFDEF DEBUG}
-  rootDIR := TPath.GetDocumentsPath + '\GitHub\SCM_BuildMeAClub-R\' +
-    IncludeTrailingPathDelimiter(fBMACScriptSubPath);
+  rootDIR := TPath.GetDocumentsPath + '\GitHub\SCM_ERStudio\' +
+    IncludeTrailingPathDelimiter(defSubPath);
 {$ELSE}
   // up to and including the colon or backslash .... SAFE
   rootDIR := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName))
-    + IncludeTrailingPathDelimiter(fBMACScriptSubPath);
+    + IncludeTrailingPathDelimiter(defSubPath);
 {$IFEND}
 
   // DOES PATH EXISTS?
@@ -772,19 +805,44 @@ begin
     exit;
   end;
 
-  dlg := TSelectDataBaseToBuild.Create(self);
-  dlg.BMACScriptsPath := rootDIR;
-  dlg.ShowModal;
-  if not dlg.RtnSubFolder.IsEmpty then
+  // Let the user select a database update configuration.
+  dlg := TSelectBuild.Create(self);
+  dlg.RootPath := rootDIR;
+  dlg.ConfigList := BuildConfigList;
+  var mr: TModalResult;
+  mr := dlg.ShowModal;
+  if IsPositiveResult(mr) then
   begin
-    s := rootDIR + IncludeTrailingPathDelimiter(dlg.RtnSubFolder);
-    if System.SysUtils.DirectoryExists(s) then
-    begin
-      fScriptPath := s;
-      lblDatabaseVersion.Caption := dlg.RtnSubFolder;
-    end;
+    if Assigned(dlg.SelectedConfig) then
+        SelectedBuild := dlg.SelectedConfig;
   end;
   dlg.Free;
+
+  if Assigned(SelectedBuild) then
+  begin
+    lblDatabaseVersion.Caption := SelectedBuild.GetVersionStr(bvIN);
+    s := '';
+    if not SelectedBuild.IsRelease then
+      lblPreRelease.Caption := 'Pre-Release'
+    else
+      lblPreRelease.Caption := 'Release';
+
+    if SelectedBuild.IsPatch then
+    begin
+      s := 'Patch ' + IntToStr(SelectedBuild.PatchIn);
+      if length(lblPreRelease.Caption) > 0 then s := ' ' + s;
+      lblPreRelease.Caption := lblPreRelease.Caption + s;
+    end;
+
+
+  end
+  else
+  begin
+    lblDatabaseVersion.Caption := '';
+  end;
+
+  Memo1.Lines.Add('READY ...');
+
 end;
 
 procedure TSCMBuildMeADataBase.actnSelectDataBaseUpdate(Sender: TObject);
@@ -793,6 +851,29 @@ begin
     btnBMAC.Enabled := false
     else
     btnBMAC.Enabled := true;
+
+  if Assigned(SelectedBuild) then
+  begin
+    if scmConnection.Connected then
+    begin
+    ;
+    end
+    else
+    begin
+      ;
+    end;
+
+    lblDatabaseVersion.Visible := true;
+  end
+  else
+  begin
+    lblDatabaseVersion.Visible := false;
+  end;
+
+  if BuildDone then btnBMAC.Enabled := false
+  else btnBMAC.Enabled := true;
+
+
 end;
 
 end.

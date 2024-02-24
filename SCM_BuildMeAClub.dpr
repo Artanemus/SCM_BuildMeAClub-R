@@ -7,7 +7,9 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   dlgBMACMsgBox in 'dlgBMACMsgBox.pas' {BMACMsgBox},
-  dlgSelectDataBaseToBuild in 'dlgSelectDataBaseToBuild.pas' {SelectDataBaseToBuild};
+  dlgSelectDataBaseToBuild in 'dlgSelectDataBaseToBuild.pas' {SelectDataBaseToBuild},
+  dlgSelectBuild in 'dlgSelectBuild.pas' {SelectBuild},
+  scmBuildConfig in 'scmBuildConfig.pas';
 
 {$R *.res}
 
@@ -18,5 +20,6 @@ begin
   TStyleManager.TrySetStyle('Windows10 SlateGray');
   Application.CreateForm(TSCMBuildMeADataBase, SCMBuildMeADataBase);
   Application.CreateForm(TBMACMsgBox, BMACMsgBox);
+  Application.CreateForm(TSelectBuild, SelectBuild);
   Application.Run;
 end.

@@ -12778,6 +12778,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 706
     object VirtualImage1: TVirtualImage
       Left = 442
       Top = 72
@@ -12815,6 +12816,21 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Font.Style = [fsBold]
       ParentFont = False
       StyleElements = [seClient, seBorder]
+    end
+    object lblPreRelease: TLabel
+      Left = 441
+      Top = 332
+      Width = 247
+      Height = 25
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Pre-Release'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
     end
     object Panel1: TPanel
       Left = 0
