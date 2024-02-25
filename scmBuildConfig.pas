@@ -120,21 +120,21 @@ var
 begin
   ini := TIniFile.Create(aFileName);
   try
-    fDBName := ini.ReadString('BMAC', 'DatabaseName', '');
-    fIsRelease := ini.ReadBool('BMAC', 'IsRelease', False);
-    fIsPatch := ini.ReadBool('BMAC', 'IsPatch', False);
-    fDescription := ini.ReadString('BMAC', 'Description', '');
-    fNotes := ini.ReadString('BMAC', 'Notes', '');
-    fBaseIn := ini.ReadInteger('BMACIN', 'Base', 1);
-    fVersionIn := ini.ReadInteger('BMACIN', 'Version', 1);
-    fMajorIn := ini.ReadInteger('BMACIN', 'Major', 0);
-    fMinorIn := ini.ReadInteger('BMACIN', 'Minor', 0);
-    fPatchIn := ini.ReadInteger('BMACIN', 'PatchIn', 0);
-    fBaseOut := ini.ReadInteger('BMACOUT', 'Base', 1);
-    fVersionOut := ini.ReadInteger('BMACOUT', 'Version', 1);
-    fMajorOut := ini.ReadInteger('BMACOUT', 'Major', 0);
-    fMinorOut := ini.ReadInteger('BMACOUT', 'Minor', 0);
-    fPatchOut := ini.ReadInteger('BMACOUT', 'PatchOut', 0);
+    fDBName := ini.ReadString('BUILDCONFIG', 'DatabaseName', '');
+    fIsRelease := ini.ReadBool('BUILDCONFIG', 'IsRelease', False);
+    fIsPatch := ini.ReadBool('BUILDCONFIG', 'IsPatch', False);
+    fDescription := ini.ReadString('BUILDCONFIG', 'Description', '');
+    fNotes := ini.ReadString('BUILDCONFIG', 'Notes', '');
+    fBaseIn := ini.ReadInteger('BUILDIN', 'Base', 1);
+    fVersionIn := ini.ReadInteger('BUILDIN', 'Version', 1);
+    fMajorIn := ini.ReadInteger('BUILDIN', 'Major', 0);
+    fMinorIn := ini.ReadInteger('BUILDIN', 'Minor', 0);
+    fPatchIn := ini.ReadInteger('BUILDIN', 'PatchIn', 0);
+    fBaseOut := ini.ReadInteger('BUILDOUT', 'Base', 1);
+    fVersionOut := ini.ReadInteger('BUILDOUT', 'Version', 1);
+    fMajorOut := ini.ReadInteger('BUILDOUT', 'Major', 0);
+    fMinorOut := ini.ReadInteger('BUILDOUT', 'Minor', 0);
+    fPatchOut := ini.ReadInteger('BUILDOUT', 'PatchOut', 0);
   finally
     ini.Free;
   end;
@@ -146,21 +146,21 @@ var
 begin
   ini := TIniFile.Create(aFileName);
   try
-    ini.WriteString('BMAC', 'DatabaseName', fDBName);
-    ini.WriteBool('BMAC', 'IsRelease', fIsRelease);
-    ini.WriteBool('BMAC', 'IsPatch', fIsPatch);
-    ini.WriteString('BMAC', 'Description', fDescription);
-    ini.WriteString('BMAC', 'Notes', fNotes);
-    ini.WriteInteger('BMACIN', 'Base', fBaseIn);
-    ini.WriteInteger('BMACIN', 'Version', fVersionIn);
-    ini.WriteInteger('BMACIN', 'Major', fMajorIn);
-    ini.WriteInteger('BMACIN', 'Minor', fMinorIn);
-    ini.WriteInteger('BMACIN', 'Base', fPatchIn);
-    ini.WriteInteger('BMACOUT', 'Base', fBaseOut);
-    ini.WriteInteger('BMACOUT', 'Version', fVersionOut);
-    ini.WriteInteger('BMACOUT', 'Major', fMajorOut);
-    ini.WriteInteger('BMACOUT', 'Minor', fMinorOut);
-    ini.WriteInteger('BMACOUT', 'Base', fPatchOut);
+    ini.WriteString('BUILDCONFIG', 'DatabaseName', fDBName);
+    ini.WriteBool('BUILDCONFIG', 'IsRelease', fIsRelease);
+    ini.WriteBool('BUILDCONFIG', 'IsPatch', fIsPatch);
+    ini.WriteString('BUILDCONFIG', 'Description', fDescription);
+    ini.WriteString('BUILDCONFIG', 'Notes', fNotes);
+    ini.WriteInteger('BUILDIN', 'Base', fBaseIn);
+    ini.WriteInteger('BUILDIN', 'Version', fVersionIn);
+    ini.WriteInteger('BUILDIN', 'Major', fMajorIn);
+    ini.WriteInteger('BUILDIN', 'Minor', fMinorIn);
+    ini.WriteInteger('BUILDIN', 'Base', fPatchIn);
+    ini.WriteInteger('BUILDOUT', 'Base', fBaseOut);
+    ini.WriteInteger('BUILDOUT', 'Version', fVersionOut);
+    ini.WriteInteger('BUILDOUT', 'Major', fMajorOut);
+    ini.WriteInteger('BUILDOUT', 'Minor', fMinorOut);
+    ini.WriteInteger('BUILDOUT', 'Base', fPatchOut);
   finally
     ini.Free;
   end;

@@ -2,7 +2,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'SCM Build Me A Club'
+  Caption = 'SwimClubMeet -  Build Me A Club.'
   ClientHeight = 791
   ClientWidth = 714
   Color = clBtnFace
@@ -12769,6 +12769,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     0000000000000000000000000000}
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 21
   object Panel2: TPanel
     Left = 0
