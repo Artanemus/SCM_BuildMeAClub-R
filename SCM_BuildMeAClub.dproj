@@ -4,8 +4,8 @@
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Config Condition="'$(Config)'==''">Release</Config>
+        <Platform Condition="'$(Platform)'==''">Win64</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
         <MainSource>SCM_BuildMeAClub.dpr</MainSource>
@@ -141,7 +141,6 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <Icon_MainIcon>SCM_BuildMeAClub.ico</Icon_MainIcon>
         <VerInfo_Keys>CompanyName=Artanemus;FileDescription=$(MSBuildProjectName);FileVersion=2.0.1.4;InternalName=BMAC;LegalCopyright=Copyright (c) 2019-2023 Artanemus;LegalTrademarks=;OriginalFilename=BuildMeAClub;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=2.0;Comments=Build the SwimClubMeet database for MSSQL</VerInfo_Keys>
-        <VerInfo_PreRelease>true</VerInfo_PreRelease>
         <VerInfo_Build>4</VerInfo_Build>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
         <VerInfo_MinorVer>0</VerInfo_MinorVer>
