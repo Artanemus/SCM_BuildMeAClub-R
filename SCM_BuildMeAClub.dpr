@@ -7,9 +7,8 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   dlgBMACMsgBox in 'dlgBMACMsgBox.pas' {BMACMsgBox},
-  dlgSelectDataBaseToBuild in 'dlgSelectDataBaseToBuild.pas' {SelectDataBaseToBuild},
-  dlgSelectBuild in 'dlgSelectBuild.pas' {SelectBuild},
-  scmBuildConfig in 'scmBuildConfig.pas';
+  dlgSelectBuild in '..\SCM_SHARED\dlgSelectBuild.pas' {SelectBuild},
+  scmBuildConfig in '..\SCM_SHARED\scmBuildConfig.pas';
 
 {$R *.res}
 

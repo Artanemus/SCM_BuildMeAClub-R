@@ -4,8 +4,8 @@
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
-        <Platform Condition="'$(Platform)'==''">Win64</Platform>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
         <MainSource>SCM_BuildMeAClub.dpr</MainSource>
@@ -158,15 +158,11 @@
             <Form>BMACMsgBox</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="dlgSelectDataBaseToBuild.pas">
-            <Form>SelectDataBaseToBuild</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="dlgSelectBuild.pas">
+        <DCCReference Include="..\SCM_SHARED\dlgSelectBuild.pas">
             <Form>SelectBuild</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="scmBuildConfig.pas"/>
+        <DCCReference Include="..\SCM_SHARED\scmBuildConfig.pas"/>
         <None Include="README.md"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

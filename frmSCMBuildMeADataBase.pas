@@ -92,7 +92,7 @@ type
     FDBVerCtrlStr: string;
     FDBVerCtrlStrVerbose: string;
     FDBVersion: Integer;
-    SelectedBuild: TscmBuildConfig; // reference to selected build object
+    fSelectedBuildConfig: TscmBuildConfig; // reference to selected build object
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
       var ErrorCode: Integer): Boolean;
@@ -142,7 +142,7 @@ begin
   Memo1.Clear;
 
   if not scmConnection.Connected then exit;
-  if not Assigned(SelectedBuild) then exit;
+  if not Assigned(fSelectedBuildConfig) then exit;
 
 
   // ---------------------------------------------------------------
@@ -188,7 +188,7 @@ begin
   end;
 
     fScriptPath := IncludeTrailingPathDelimiter
-    (ExtractFilePath(SelectedBuild.FileName));
+    (ExtractFilePath(fSelectedBuildConfig.FileName));
 
   // DOES PATH EXISTS?
   if not System.SysUtils.DirectoryExists(fScriptPath, true) then
@@ -321,7 +321,7 @@ begin
     exit;
   end;
 
-  if not Assigned(SelectedBuild) then
+  if not Assigned(fSelectedBuildConfig) then
   begin
     if btnBMAC.Enabled then btnBMAC.Enabled := false;
     exit;
@@ -401,7 +401,7 @@ var
   rootDIR, s: string;
 begin
   lblDatabaseVersion.Caption := '';
-  SelectedBuild := nil;
+  fSelectedBuildConfig := nil;
 
   // DEFAULT:
   // BUILDMEACLUB USES THE SUB-FOLDER WITHIN IT'S EXE PATH
@@ -439,14 +439,14 @@ begin
   if IsPositiveResult(mr) then
   begin
     if Assigned(dlg.SelectedConfig) then
-        SelectedBuild := dlg.SelectedConfig;
+        fSelectedBuildConfig := dlg.SelectedConfig;
   end;
   dlg.Free;
 
-  if Assigned(SelectedBuild) then
+  if Assigned(fSelectedBuildConfig) then
   begin
-    lblDatabaseVersion.Caption := SelectedBuild.GetVersionStr(bvIN);
-    if not SelectedBuild.IsRelease then
+    lblDatabaseVersion.Caption := fSelectedBuildConfig.GetVersionStr(bvIN);
+    if not fSelectedBuildConfig.IsRelease then
       lblPreRelease.Caption := 'Pre-Release'
     else
       lblPreRelease.Caption := 'Release';
@@ -462,7 +462,7 @@ end;
 
 procedure TSCMBuildMeADataBase.actnSelectDataBaseUpdate(Sender: TObject);
 begin
-  if Assigned(SelectedBuild) then
+  if Assigned(fSelectedBuildConfig) then
   begin
     lblDatabaseVersion.Visible := true;
     lblPreRelease.Visible := true;
@@ -648,7 +648,7 @@ begin
   // Object to hold all the info on each build variant.
   // Info extracted from the file, SCM_Config.ini
   // Object includes the SQL folder path
-  SelectedBuild := nil;
+  fSelectedBuildConfig := nil;
   // A custom collection. Contains TUDBConfig objects
   BuildConfigList := TObjectList<TscmBuildConfig>.Create(true); // owns object
 
