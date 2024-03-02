@@ -17,9 +17,9 @@ If you are interested in following a developer's blog and track my progress then
 
 ---
 
-#### 09.12.2023
+#### 02.03.2024
 
-BMAC now is a universal SCM database builder. It looks for specific folders located in the `BMAC_SCRIPTS` sub-folder (located in the application's install directory). An additional button has been added that lets you choose what version to build.
+BMAC now is a universal SCM database builder. It looks for specific folders located in the `BMAC_SCRIPTS` sub-folder (located in the application's install directory). An additional button has been added that lets you choose what version to build. As of this date, version 1.1.5.3 is shown as pre-release. It's intended you use v1.1.5.2. If you are using the source code and wish to compile the application, the SCM_SHARED repository is required. 
 
 ---
 
