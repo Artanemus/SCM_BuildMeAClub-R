@@ -344,7 +344,11 @@ begin
     Memo1.Clear;
     Memo1.Lines.Add('Connected to master on MSSQL');
     if not BuildDone then
-        Memo1.Lines.Add('READY ... Press ''Build Me A Club'' to continue.')
+    begin
+      if not Assigned(fSelectedBuildConfig) then
+          Memo1.Lines.Add('READY ... Press ''Select Database'' to continue.')
+      else Memo1.Lines.Add('READY ... Press ''Build Me A Club'' to continue.');
+    end
     else Memo1.Lines.Add('READY ...');
   end;
   // REQUIRED: update button state.
@@ -403,6 +407,8 @@ begin
   lblDatabaseVersion.Caption := '';
   fSelectedBuildConfig := nil;
 
+  Memo1.Clear;
+
   // DEFAULT:
   // BUILDMEACLUB USES THE SUB-FOLDER WITHIN IT'S EXE PATH
   // ---------------------------------------------------------------
@@ -446,17 +452,29 @@ begin
   if Assigned(fSelectedBuildConfig) then
   begin
     lblDatabaseVersion.Caption := fSelectedBuildConfig.GetVersionStr(bvIN);
-    if not fSelectedBuildConfig.IsRelease then
-      lblPreRelease.Caption := 'Pre-Release'
+    s := '';
+    if fSelectedBuildConfig.IsRelease then
+      s := 'Release '
     else
-      lblPreRelease.Caption := 'Release';
+      s := 'Pre-Release ';
+    {
+      // create database ignores this switch
+      if fSelectedBuildConfig.IsPatch = true then
+            s := s + 'Patch ';
+    }
+    if fSelectedBuildConfig.IsDepreciated = true then
+      s := s + 'Depreciated ';
+
+    lblPreRelease.Caption := s;
+
   end
   else
   begin
     lblDatabaseVersion.Caption := '';
+    lblPreRelease.Caption := '';
   end;
 
-  Memo1.Lines.Add('Selected build. READY ...');
+  Memo1.Lines.Add('Selection done. READY ...');
 
 end;
 
