@@ -153,7 +153,6 @@
             <Form>SCMBuildMeADataBase</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="utilVersion.pas"/>
         <DCCReference Include="dlgBMACMsgBox.pas">
             <Form>BMACMsgBox</Form>
             <FormType>dfm</FormType>
@@ -163,6 +162,7 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\SCM_SHARED\scmBuildConfig.pas"/>
+        <DCCReference Include="..\SCM_SHARED\utilVersion.pas"/>
         <None Include="README.md"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
@@ -196,6 +196,12 @@
                 <Platform value="Win64">True</Platform>
             </Platforms>
             <Deployment Version="4">
+                <DeployFile LocalName="README.md" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="README.md" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win64">
                         <RemoteDir>.\</RemoteDir>
@@ -204,6 +210,12 @@
                 </DeployFile>
                 <DeployFile LocalName="ReadMe.txt" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="Win32\Debug\SCM_BuildMeAClub.exe" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="Win32\Debug\SCM_BuildMeAClub.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>SCM_BuildMeAClub.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Win64\Release\SCM_BuildMeAClub.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>SCM_BuildMeAClub.exe</RemoteName>

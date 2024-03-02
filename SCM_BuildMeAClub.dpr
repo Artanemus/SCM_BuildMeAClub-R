@@ -3,12 +3,12 @@ program SCM_BuildMeAClub;
 uses
   Vcl.Forms,
   frmSCMBuildMeADataBase in 'frmSCMBuildMeADataBase.pas' {SCMBuildMeADataBase},
-  utilVersion in 'utilVersion.pas',
   Vcl.Themes,
   Vcl.Styles,
   dlgBMACMsgBox in 'dlgBMACMsgBox.pas' {BMACMsgBox},
   dlgSelectBuild in '..\SCM_SHARED\dlgSelectBuild.pas' {SelectBuild},
-  scmBuildConfig in '..\SCM_SHARED\scmBuildConfig.pas';
+  scmBuildConfig in '..\SCM_SHARED\scmBuildConfig.pas',
+  utilVersion in '..\SCM_SHARED\utilVersion.pas';
 
 {$R *.res}
 
