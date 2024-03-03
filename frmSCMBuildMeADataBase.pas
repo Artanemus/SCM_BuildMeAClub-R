@@ -268,15 +268,16 @@ begin
       // green 'tick' checkbox
       vimgPassed.Visible := true;
 
+      // * Version number of SwimClubMeet DataBase *
+      // Only read this table if not errors reported.
+      GetSCM_DB_Version;
+      s := 'QUERY: SwimClubMeet database version ... ' + FDBVerCtrlStr;
+      Memo1.Lines.Add(s);
+
       Memo1.Lines.Add('ExecuteProcess completed without errors.' + sLineBreak);
       Memo1.Lines.Add
         ('You should check SCM_BuildMeAClub.log to ensure that sqlcmd.exe also reported no errors.'
         + sLineBreak);
-      // * Version number of SwimClubMeet DataBase *
-      // Only read this table if not errors reported.
-      GetSCM_DB_Version;
-      s := 'SwimClubMeet database version control ' + FDBVerCtrlStr;
-      Memo1.Lines.Add(s);
     end
     else
     begin
