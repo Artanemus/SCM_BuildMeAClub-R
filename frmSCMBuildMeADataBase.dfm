@@ -12779,7 +12779,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 706
     object VirtualImage1: TVirtualImage
       Left = 442
       Top = 72
@@ -12843,7 +12842,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       BevelKind = bkTile
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitWidth = 706
       object Image2: TImage
         Left = 16
         Top = 12
@@ -25708,8 +25706,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 706
-    ExplicitHeight = 357
     object Memo1: TMemo
       AlignWithMargins = True
       Left = 10
@@ -25741,8 +25737,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
         'Typically you would only ever need to run this application once.')
       ScrollBars = ssVertical
       TabOrder = 0
-      ExplicitWidth = 686
-      ExplicitHeight = 314
     end
     object progressBar: TProgressBar
       AlignWithMargins = True
@@ -25755,7 +25749,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Margins.Right = 10
       Align = alTop
       TabOrder = 1
-      ExplicitWidth = 686
     end
   end
   object Panel4: TPanel
@@ -25768,8 +25761,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     BevelKind = bkSoft
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 726
-    ExplicitWidth = 706
     object btnBMAC: TButton
       Left = 231
       Top = 9

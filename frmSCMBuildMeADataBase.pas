@@ -841,6 +841,9 @@ begin
   scmConnection.Params.Add('Mars=yes');
   scmConnection.Params.Add('MetaDefSchema=dbo');
   scmConnection.Params.Add('ExtendedMetadata=False');
+  scmConnection.Params.Add('Encrypt=No');
+  scmConnection.Params.Add('ODBCAdvanced=Encrypt=no;Trust Server');
+  scmConnection.Params.Add('Certificate =Yes');
   scmConnection.Params.Add('ApplicationName=SCM_BuildMeAClub');
 
   // FINALLY PERFORM THE CONNECTION
