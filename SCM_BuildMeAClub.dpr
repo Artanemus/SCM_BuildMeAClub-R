@@ -6,9 +6,10 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   dlgBMACMsgBox in 'dlgBMACMsgBox.pas' {BMACMsgBox},
-  dlgSelectBuild in '..\SCM_SHARED\dlgSelectBuild.pas' {SelectBuild},
-  scmBuildConfig in '..\SCM_SHARED\scmBuildConfig.pas',
-  utilVersion in '..\SCM_SHARED\utilVersion.pas';
+  utilVersion in '..\SCM_SHARED\utilVersion.pas',
+  dlgSelectBuild in 'dlgSelectBuild.pas' {SelectBuild},
+  uBMAC_Config in 'uBMAC_Config.pas',
+  uBMAC_Defines in 'uBMAC_Defines.pas';
 
 {$R *.res}
 
@@ -19,6 +20,5 @@ begin
   TStyleManager.TrySetStyle('Windows10 SlateGray');
   Application.CreateForm(TSCMBuildMeADataBase, SCMBuildMeADataBase);
   Application.CreateForm(TBMACMsgBox, BMACMsgBox);
-  Application.CreateForm(TSelectBuild, SelectBuild);
   Application.Run;
 end.

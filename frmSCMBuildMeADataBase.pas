@@ -3,21 +3,27 @@ unit frmSCMBuildMeADataBase;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages,
+
+  System.SysUtils, System.Variants, System.UITypes, System.Actions,
+  System.Classes, Vcl.Graphics, System.IOUtils, System.Types,
+  System.Win.Registry, System.Generics.Collections,
+
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.ComCtrls, Vcl.ActnList, Vcl.BaseImageCollection,
+  Vcl.ImageCollection, Vcl.VirtualImage,
+
+  Data.DB,
+
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Phys, FireDAC.Comp.Client,
   FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.Stan.Async,
-  FireDAC.DApt, FireDAC.Stan.Pool, FireDAC.VCLUI.Wait, Data.DB,
-  FireDAC.Comp.DataSet,
+  FireDAC.DApt, FireDAC.Stan.Pool, FireDAC.VCLUI.Wait,
+  FireDAC.Comp.DataSet, FireDAC.Stan.Consts,
+  FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase,
+  FireDAC.Phys.MSSQL,
 
-  FireDAC.Stan.Consts, System.IOUtils, System.Types, Registry, Vcl.ComCtrls,
-  System.UITypes, FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase,
-  FireDAC.Phys.MSSQL, System.Actions, Vcl.ActnList, Vcl.BaseImageCollection,
-  Vcl.ImageCollection, Vcl.VirtualImage, scmBuildConfig,
-
-  System.Generics.Collections;
+  uBMAC_Config, uBMAC_Defines;
 
 type
   TSCMBuildMeADataBase = class(TForm)
@@ -75,9 +81,9 @@ type
     // ---------------------------------------------------------
     OUT_Model = 1;
     OUT_Version = 1;
-    SCMCONFIGFILENAME = 'SCMConfig.ini';
+    SCMCONFIGFILENAME = 'scmBMAC_Config.ini';
   var
-    BuildConfigList: TObjectList<TscmBuildConfig>;
+    BuildConfigList: TObjectList<TBMAC_Config>;
 
     // Flags that building is finalised or can't proceed.
     // Once set - btnBMAC is not long visible. User may only exit.
@@ -92,7 +98,7 @@ type
     FDBVerCtrlStr: string;
     FDBVerCtrlStrVerbose: string;
     FDBVersion: Integer;
-    fSelectedBuildConfig: TscmBuildConfig; // reference to selected build object
+    fSelectedBuildConfig: TBMAC_Config; // reference to selected build object
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
       var ErrorCode: Integer): Boolean;
@@ -113,11 +119,6 @@ type
 var
   SCMBuildMeADataBase: TSCMBuildMeADataBase;
 
-const
-  logOutFn = '\Documents\SCM_BuildMeAClub.log';
-  SectionName = 'SCM_BuildMeAClub';
-  logOutFnTmp = '\Documents\SCM_BuildMeAClub.tmp';
-  defSubPath = 'BMAC_SCRIPTS\';
 
 implementation
 
@@ -669,7 +670,7 @@ begin
   // Object includes the SQL folder path
   fSelectedBuildConfig := nil;
   // A custom collection. Contains TUDBConfig objects
-  BuildConfigList := TObjectList<TscmBuildConfig>.Create(true); // owns object
+  BuildConfigList := TObjectList<TBMAC_Config>.Create(true); // owns object
 
 end;
 

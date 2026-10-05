@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{70981D3B-99D3-42ED-9DB1-613FC16A9096}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SCM_BuildMeAClub.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\SCM_UpdateDataBase-R\SCM_UpdateDataBase.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SCM_BuildMeAClub">
+        <MSBuild Projects="SCM_BuildMeAClub.dproj"/>
+    </Target>
+    <Target Name="SCM_BuildMeAClub:Clean">
+        <MSBuild Projects="SCM_BuildMeAClub.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SCM_BuildMeAClub:Make">
+        <MSBuild Projects="SCM_BuildMeAClub.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SCM_UpdateDataBase">
+        <MSBuild Projects="..\SCM_UpdateDataBase-R\SCM_UpdateDataBase.dproj"/>
+    </Target>
+    <Target Name="SCM_UpdateDataBase:Clean">
+        <MSBuild Projects="..\SCM_UpdateDataBase-R\SCM_UpdateDataBase.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SCM_UpdateDataBase:Make">
+        <MSBuild Projects="..\SCM_UpdateDataBase-R\SCM_UpdateDataBase.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SCM_BuildMeAClub;SCM_UpdateDataBase"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SCM_BuildMeAClub:Clean;SCM_UpdateDataBase:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SCM_BuildMeAClub:Make;SCM_UpdateDataBase:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
