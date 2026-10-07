@@ -25718,23 +25718,28 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       Align = alClient
       Lines.Strings = (
         
-          'SCM_BuildMeAClub.exe is an application that creates the SwimClub' +
-          'Meet database on MSSQL.'
+          'SCM_BuildMeAClub.exe (BMAC) is an application that creates the S' +
+          'wimClubMeet database on '
+        'MS SQLEXPRESS.'
+        ''
+        'How to update your database:'
+        ''
+        '    Step 1: Connect to the database.'
+        #9
+        
+          '    Step 2: Click '#39'Select Database Build'#39' and select the '#39'build'#39 +
+          '.'
         ''
         
-          'The '#39'Build Me A Club'#39' button will not be visible until a connect' +
-          'ion to the DB Server is '
-        
-          'established. BMAC uses sqlcmd.exe (installed by default with MSS' +
-          'QL).'
+          '    Step 3: Once connected and a '#39'Build'#39' is selected, the Update' +
+          ' Database button will appear.'
         ''
         
-          'The '#39'Build Me A Club'#39' button will not be enabled until a databas' +
-          'e version is selected.'
-        ''
-        'BMAC will not overwrite an existing SwimClubMeet DB.'
-        ''
-        'Typically you would only ever need to run this application once.')
+          'Notes: BMAC will not overwrite an existing SwimClubMeet database' +
+          '. Typically you only run this '
+        
+          'application once. To run the application again, the SCM database' +
+          ' must first be deleted. ')
       ScrollBars = ssVertical
       TabOrder = 0
     end
@@ -25781,11 +25786,12 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       OnClick = btnCancelClick
     end
     object btnSelectDatabase: TButton
-      Left = 87
+      Left = 10
       Top = 9
-      Width = 138
+      Width = 215
       Height = 36
       Action = actnSelectDataBase
+      Caption = 'Select Database Build'
       TabOrder = 2
     end
   end

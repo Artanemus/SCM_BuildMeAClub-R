@@ -82,6 +82,7 @@ type
     OUT_Model = 1;
     OUT_Version = 1;
     SCMCONFIGFILENAME = 'scmBMAC_Config.ini';
+
   var
     BuildConfigList: TObjectList<TBMAC_Config>;
 
@@ -99,6 +100,9 @@ type
     FDBVerCtrlStrVerbose: string;
     FDBVersion: Integer;
     fSelectedBuildConfig: TBMAC_Config; // reference to selected build object
+
+    function DoesSCMDataBaseExist: Boolean;
+
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
       var ErrorCode: Integer): Boolean;
@@ -127,6 +131,46 @@ implementation
 uses utilVersion, System.IniFiles, System.Math, Vcl.FileCtrl,
   dlgSelectBuild;
 
+function TSCMBuildMeADataBase.DoesSCMDataBaseExist: Boolean;
+var
+  s: string;
+  errCount: integer;
+begin
+  result := true;
+  btnBMAC.Visible := false;
+
+  if not scmConnection.Connected then exit;
+  if not Assigned(fSelectedBuildConfig) then exit;
+
+  if Assigned(uBMAC_Config) then
+  begin
+    btnBMAC.Visible := true;
+    btnBMAC.Enabled := false;
+  end;
+
+  // ---------------------------------------------------------------
+  // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
+  // ---------------------------------------------------------------
+  qryDBExists.Open;
+  if qryDBExists.Active then
+  begin
+    errCount := qryDBExists.FieldByName('Result').AsInteger;
+    qryDBExists.Close;
+    // non zero value indicates SwimClubMeet already exists.
+    if not(errCount = 0) then
+    begin
+      btnBMAC.Visible := false;
+      result := true;
+    end
+    else
+    begin
+      btnBMAC.Enabled := true;
+      result := false;
+    end;
+  end;
+end;
+
+
 procedure TSCMBuildMeADataBase.actnBMACExecute(Sender: TObject);
 var
   sl: TStringList;
@@ -149,14 +193,8 @@ begin
   // ---------------------------------------------------------------
   // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
   // ---------------------------------------------------------------
-  qryDBExists.Open;
-  if qryDBExists.Active then
+  if  DoesSCMDataBaseExist then
   begin
-    errCount := qryDBExists.FieldByName('Result').AsInteger;
-    qryDBExists.Close;
-    // non zero value indicates SwimClubMeet already exists.
-    if not(errCount = 0) then
-    begin
       // {$IFNDEF DEBUG}  // grant developer's permission
       // SwimClubMeet exists!
       s := 'A SwimClubMeet database already exists!' + sLineBreak +
@@ -169,7 +207,6 @@ begin
       Memo1.Lines.Add(s);
       exit;
       // {$ENDIF}
-    end;
 
   end;
 
@@ -343,13 +380,19 @@ begin
     edtPassword.Text, chkbUseOSAuthentication.Checked);
   if scmConnection.Connected then
   begin
-    Memo1.Clear;
     Memo1.Lines.Add('Connected to master on MSSQL');
     if not BuildDone then
     begin
       if not Assigned(fSelectedBuildConfig) then
-          Memo1.Lines.Add('READY ... Press ''Select Database'' to continue.')
-      else Memo1.Lines.Add('READY ... Press ''Build Me A Club'' to continue.');
+      begin
+          Memo1.Lines.Add('Click ''Select Database Build'' button to continue.');
+          Memo1.Lines.Add('READY ...');
+      end
+      else
+      begin
+        Memo1.Lines.Add('Click ''Build Me A Club'' button to continue.');
+        Memo1.Lines.Add('READY ... ');
+      end;
     end
     else Memo1.Lines.Add('READY ...');
   end;
@@ -375,7 +418,6 @@ procedure TSCMBuildMeADataBase.actnDisconnectExecute(Sender: TObject);
 begin
   // disconnect
   scmConnection.Close;
-  Memo1.Clear;
   Memo1.Lines.Add('Disconnected ...' + sLineBreak);
   // REQUIRED: update button state.
   actnConnect.Update;
@@ -408,8 +450,6 @@ var
 begin
   lblDatabaseVersion.Caption := '';
   fSelectedBuildConfig := nil;
-
-  Memo1.Clear;
 
   // DEFAULT:
   // BUILDMEACLUB USES THE SUB-FOLDER WITHIN IT'S EXE PATH
@@ -464,8 +504,8 @@ begin
       if fSelectedBuildConfig.IsPatch = true then
             s := s + 'Patch ';
     }
-    if fSelectedBuildConfig.IsDepreciated = true then
-      s := s + 'Depreciated ';
+    if fSelectedBuildConfig.IsRetired = true then
+      s := s + 'Retired ';
 
     lblPreRelease.Caption := s;
 
@@ -476,7 +516,8 @@ begin
     lblPreRelease.Caption := '';
   end;
 
-  Memo1.Lines.Add('Selection done. READY ...');
+  Memo1.Lines.Add('Selection done.');
+  Memo1.Lines.Add('READY ...');
 
 end;
 

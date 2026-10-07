@@ -18,8 +18,8 @@ type
     fNotes: string; // ="FINA disqualification codes."
 
     fBaseOut: integer;  // internal use only
-    fVersionOut: integer; // depreciated
-    fPatchOut: integer; // depreciated
+    fVersionOut: integer;  // not used.
+    fPatchOut: integer;   // not used.
 
     // RAD STUDIO VERSIONING
     fMajorOut: integer;
@@ -28,7 +28,7 @@ type
     fBuildOut: integer;
 
     fFileName: string;  // full path and filename to UDBConfig.ini
-    fIsDepreciated: Boolean;
+    fIsRetired: Boolean;
 
   protected
     { protected declarations }
@@ -43,10 +43,11 @@ type
 
     property IsRelease: boolean read fIsRelease;
     property IsPatch: boolean read fIsPatch;
-    property IsDepreciated: boolean read fIsDepreciated;
+    property IsRetired: boolean read fIsRetired;
     property FileName: string read fFileName write fFileName;
     property Description: string read fDescription;
     property Notes: string read fNotes;
+    property DatabaseName: string read fDBName;
 
     // Base MYSQL, MSSQL, ORACLE, etc
     // Version Used by SwimClubMeet database on MSSQL
@@ -134,9 +135,13 @@ begin
     fDBName := ini.ReadString('BUILDCONFIG', 'DatabaseName', '');
     fIsRelease := ini.ReadBool('BUILDCONFIG', 'IsRelease', False);
     fIsPatch := ini.ReadBool('BUILDCONFIG', 'IsPatch', False);
-    fIsDepreciated := ini.ReadBool('BUILDCONFIG', 'IsDepreciated', False);
+    fIsRetired := ini.ReadBool('BUILDCONFIG', 'IsRetired', False);
     fDescription := ini.ReadString('BUILDCONFIG', 'Description', '');
     fNotes := ini.ReadString('BUILDCONFIG', 'Notes', '');
+
+    // Convert literal \r\n back into actual line breaks
+    fNotes := fNotes.Replace('\r\n', sLineBreak);
+    fNotes := fNotes.Replace('\t', #9);
 
     // OUT --------------------------------------------------------
     fBaseOut := ini.ReadInteger('BUILDOUT', 'Base', 1); // internal use only
@@ -162,8 +167,13 @@ begin
     ini.WriteString('BUILDCONFIG', 'DatabaseName', fDBName);
     ini.WriteBool('BUILDCONFIG', 'IsRelease', fIsRelease);
     ini.WriteBool('BUILDCONFIG', 'IsPatch', fIsPatch);
-    ini.WriteBool('BUILDCONFIG', 'IsDepreciated', fIsDepreciated);
+    ini.WriteBool('BUILDCONFIG', 'IsRetired', fIsRetired);
     ini.WriteString('BUILDCONFIG', 'Description', fDescription);
+
+    // Convert actual line breaks to literal \r\n
+    fNotes := fNotes.Replace(sLineBreak, '\r\n');
+    fNotes := fNotes.Replace(#9, '\t');
+
     ini.WriteString('BUILDCONFIG', 'Notes', fNotes);
 
     // OUT --------------------------------------------------------

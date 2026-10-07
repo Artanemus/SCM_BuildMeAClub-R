@@ -6,10 +6,10 @@ uses
   Winapi.Windows, Winapi.Messages,
 
   System.SysUtils, System.Variants, System.Generics.Collections,
-  System.Classes, Vcl.Graphics,  System.Types,
+  System.Classes,  System.Types,
 
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.CheckLst,
-  Vcl.ExtCtrls,
+  Vcl.ExtCtrls, vcl.Graphics,
 
   uBMAC_Config, uBMAC_Defines;
 
@@ -17,12 +17,13 @@ type
   TSelectBuild = class(TForm)
     btnCancel: TButton;
     btnOk: TButton;
-    Panel1: TPanel;
-    Panel2: TPanel;
-    Panel3: TPanel;
+    pnlBody: TPanel;
+    pnlFooter: TPanel;
+    pnlHeader: TPanel;
     ListBox1: TListBox;
     pnlNotes: TPanel;
     lblNotes: TMemo;
+    pnlBorder: TPanel;
     procedure btnCancelClick(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -30,6 +31,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
+    procedure ListBox1DrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
+        State: TOwnerDrawState);
   private
     { Private declarations }
     fRootPath: string;
@@ -123,7 +126,17 @@ begin
     ModalResult := mrCancel;
     Close;
   end;
+
   InitCheckListBoxItems(fRootPath, fConfigList);
+
+  // Sync notes memopad to current selected item.
+  if ListBox1.Count > 0 then
+  begin
+    ListBox1.ItemIndex := ListBox1.Count -1;
+    lblNotes.Text := TBMAC_Config(ListBox1.Items.Objects[ListBox1.ItemIndex]).Notes;
+    lblNotes.Invalidate;
+  end;
+
 end;
 
 procedure TSelectBuild.InitCheckListBoxItems(const DIR: string;
@@ -131,7 +144,7 @@ procedure TSelectBuild.InitCheckListBoxItems(const DIR: string;
 var
   Folders: TStringDynArray;
   Files: TStringDynArray;
-  aFile, s: string;
+  aFile, fn, s1, s2: string;
   Folder: string;
   Masks: String;
   BuildConfig: TBMAC_Config;
@@ -147,8 +160,8 @@ begin
     for aFile in Files do
     begin
       // should only be one ini file in the each directory
-      s := ExtractFileName(aFile);
-      if (s = SCMCONFIGFILENAME) then
+      fn := ExtractFileName(aFile);
+      if (fn = SCMCONFIGFILENAME) then
       begin
         BuildConfig := TBMAC_Config.Create;
         BuildConfig.LoadIniFile(aFile);
@@ -157,20 +170,25 @@ begin
       end;
     end;
   end;
+
   for BuildConfig in ConfigList do
   begin
     // create checkbox caption
-    s := BuildConfig.Description;
+    s1 := BuildConfig.DatabaseName;
+    s1 := s1 + ' : ' + BuildConfig.Description;
+
     if BuildConfig.IsRelease then
-      s := s + ' Release '
+      s2 := ' Release '
     else
-      s := s + ' Pre-Release';
+      s2 := ' Pre-Release';
 
-    // depreciated supercedes release or pre-release
-    if BuildConfig.IsDepreciated = true then
-      s := BuildConfig.Description + ' Depreciated ';
+    // 'Retired' supercedes release or pre-release
+    if BuildConfig.IsRetired = true then
+      s2 := ' Retired ';
 
-    ListBox1.Items.AddObject(s, BuildConfig);
+    s1 := s1 + s2;
+
+    ListBox1.Items.AddObject(s1, BuildConfig);
   end;
 end;
 
@@ -178,14 +196,33 @@ procedure TSelectBuild.ListBox1Click(Sender: TObject);
 var
 aConfig: TBMAC_Config;
 begin
-    aConfig := TBMAC_Config(ListBox1.Items.Objects
-      [ListBox1.ItemIndex]);
-  lblNotes.Caption := aConfig.Notes;
+  aConfig := TBMAC_Config(ListBox1.Items.Objects[ListBox1.ItemIndex]);
+  lblNotes.Text := aConfig.Notes;
 end;
 
 procedure TSelectBuild.ListBox1DblClick(Sender: TObject);
 begin
   btnOkClick(Sender);
+end;
+
+procedure TSelectBuild.ListBox1DrawItem(Control: TWinControl; Index: Integer;
+    Rect: TRect; State: TOwnerDrawState);
+var
+ lb: TListBox;
+ aConfig: TBMAC_Config;
+ offsetx, offsety: integer;
+begin
+  OffsetX := 1;
+  OffsetY := 1;
+  lb := TListBox(Control);
+  aConfig := TBMAC_Config(lb.Items.Objects[Index]);
+  // release
+  if not aconfig.IsRetired then
+  begin
+    LB.Canvas.Font.Color := vcl.Graphics.clWebDarkGoldenRod;
+  end;
+  LB.Canvas.TextOut(Rect.Left + OffsetX, Rect.Top + OffsetY, lb.Items[Index]);
+
 end;
 
 end.
