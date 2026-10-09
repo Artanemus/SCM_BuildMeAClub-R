@@ -99,10 +99,10 @@ type
     FDBVerCtrlStr: string;
     FDBVerCtrlStrVerbose: string;
     FDBVersion: Integer;
+    fSCMDataBaseExist: Boolean;
     fSelectedBuildConfig: TBMAC_Config; // reference to selected build object
 
-    function DoesSCMDataBaseExist: Boolean;
-
+    function GetSCMDataBaseExistsState: Boolean;
     function ExecuteProcess(const FileName, Params: string; Folder: string;
       WaitUntilTerminated, WaitUntilIdle, RunMinimized: Boolean;
       var ErrorCode: Integer): Boolean;
@@ -129,9 +129,9 @@ implementation
 {$R *.dfm}
 
 uses utilVersion, System.IniFiles, System.Math, Vcl.FileCtrl,
-  dlgSelectBuild;
+  dlgSelectBuild, dlgBMACMsgBox, dlgMsgDBExists;
 
-function TSCMBuildMeADataBase.DoesSCMDataBaseExist: Boolean;
+function TSCMBuildMeADataBase.GetSCMDataBaseExistsState: Boolean;
 var
   s: string;
   errCount: integer;
@@ -142,7 +142,7 @@ begin
   if not scmConnection.Connected then exit;
   if not Assigned(fSelectedBuildConfig) then exit;
 
-  if Assigned(uBMAC_Config) then
+  if Assigned(fSelectedBuildConfig) then
   begin
     btnBMAC.Visible := true;
     btnBMAC.Enabled := false;
@@ -193,7 +193,7 @@ begin
   // ---------------------------------------------------------------
   // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
   // ---------------------------------------------------------------
-  if  DoesSCMDataBaseExist then
+  if  GetSCMDataBaseExistsState then
   begin
       // {$IFNDEF DEBUG}  // grant developer's permission
       // SwimClubMeet exists!
@@ -347,6 +347,18 @@ begin
   if scmConnection.Connected then
   begin
     if not btnBMAC.Visible then btnBMAC.Visible := true;
+    if Assigned(fSelectedBuildConfig)  then
+    begin
+      if fSCMDataBaseExist  then
+      begin
+        if btnBMAC.Enabled then btnBMAC.Enabled := false
+      end
+      else
+      begin
+        if not btnBMAC.Enabled then btnBMAC.Enabled := true;
+      end;
+    end
+    else if btnBMAC.Enabled then btnBMAC.Enabled := false;
   end
   else
   begin
@@ -357,19 +369,13 @@ begin
   if BuildDone then // re-run the application to build again
   begin
     if btnBMAC.Enabled then btnBMAC.Enabled := false;
-    exit;
   end;
 
-  if not Assigned(fSelectedBuildConfig) then
-  begin
-    if btnBMAC.Enabled then btnBMAC.Enabled := false;
-    exit;
-  end;
-
-  if not btnBMAC.Enabled then  btnBMAC.Enabled := true;
 end;
 
 procedure TSCMBuildMeADataBase.actnConnectExecute(Sender: TObject);
+var
+  dlg: TMsgDBExists;
 begin
   if edtServerName.Text = '' then exit;
   if not chkbUseOSAuthentication.Checked then
@@ -381,24 +387,25 @@ begin
   if scmConnection.Connected then
   begin
     Memo1.Lines.Add('Connected to master on MSSQL');
-    if not BuildDone then
+    Memo1.Lines.Add('READY ...');
+    fSCMDataBaseExist := GetSCMDataBaseExistsState; // assign value to fSCMDataBaseExists
+    if fSCMDataBaseExist then
     begin
-      if not Assigned(fSelectedBuildConfig) then
-      begin
-          Memo1.Lines.Add('Click ''Select Database Build'' button to continue.');
-          Memo1.Lines.Add('READY ...');
-      end
-      else
-      begin
-        Memo1.Lines.Add('Click ''Build Me A Club'' button to continue.');
-        Memo1.Lines.Add('READY ... ');
-      end;
-    end
-    else Memo1.Lines.Add('READY ...');
+      dlg := TMsgDBExists.Create(Self);
+      dlg.ShowModal;
+      dlg.Free;
+    end;
+  end
+  else
+  begin
+    fSCMDataBaseExist := false;
+    Memo1.Lines.Add('READY ...');
   end;
+
   // REQUIRED: update button state.
   actnDisconnect.Update;
   actnBMAC.Update;
+  actnConnect.Update;
 end;
 
 procedure TSCMBuildMeADataBase.actnConnectUpdate(Sender: TObject);
@@ -407,6 +414,7 @@ begin
   if scmConnection.Connected then
   begin
     if btnConnect.Visible then btnConnect.Visible := false;
+
   end
   else
   begin
@@ -419,6 +427,7 @@ begin
   // disconnect
   scmConnection.Close;
   Memo1.Lines.Add('Disconnected ...' + sLineBreak);
+  fSCMDataBaseExist := false;
   // REQUIRED: update button state.
   actnConnect.Update;
   actnBMAC.Update;
@@ -525,13 +534,13 @@ procedure TSCMBuildMeADataBase.actnSelectDataBaseUpdate(Sender: TObject);
 begin
   if Assigned(fSelectedBuildConfig) then
   begin
-    lblDatabaseVersion.Visible := true;
-    lblPreRelease.Visible := true;
+    if not lblDatabaseVersion.Visible then lblDatabaseVersion.Visible := true;
+    if not lblPreRelease.Visible then lblPreRelease.Visible := false;
   end
   else
   begin
-    lblDatabaseVersion.Visible := false;
-    lblPreRelease.Visible := false;
+    if lblDatabaseVersion.Visible then lblDatabaseVersion.Visible := false;
+    if lblPreRelease.Visible then lblPreRelease.Visible := false;
   end;
 end;
 
@@ -702,6 +711,8 @@ begin
   FDBMinor := 0;
   FDBVerCtrlStr := '';
   FDBVerCtrlStrVerbose := '';
+
+  fSCMDataBaseExist := false;
 
   // SwimClubMeet database version number
   lblDatabaseVersion.Caption := '';

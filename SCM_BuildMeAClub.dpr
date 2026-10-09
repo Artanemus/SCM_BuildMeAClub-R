@@ -9,7 +9,8 @@ uses
   utilVersion in '..\SCM_SHARED\utilVersion.pas',
   dlgSelectBuild in 'dlgSelectBuild.pas' {SelectBuild},
   uBMAC_Config in 'uBMAC_Config.pas',
-  uBMAC_Defines in 'uBMAC_Defines.pas';
+  uBMAC_Defines in 'uBMAC_Defines.pas',
+  dlgMsgDBExists in 'dlgMsgDBExists.pas' {MsgDBExists};
 
 {$R *.res}
 

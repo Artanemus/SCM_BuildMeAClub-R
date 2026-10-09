@@ -25737,9 +25737,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
         
           'Notes: BMAC will not overwrite an existing SwimClubMeet database' +
           '. Typically you only run this '
-        
-          'application once. To run the application again, the SCM database' +
-          ' must first be deleted. ')
+        'application once. ')
       ScrollBars = ssVertical
       TabOrder = 0
     end
