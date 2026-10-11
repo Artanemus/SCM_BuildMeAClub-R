@@ -12817,21 +12817,6 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
       ParentFont = False
       StyleElements = [seClient, seBorder]
     end
-    object lblPreRelease: TLabel
-      Left = 441
-      Top = 332
-      Width = 247
-      Height = 25
-      Alignment = taCenter
-      AutoSize = False
-      Caption = 'Pre-Release'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      ParentFont = False
-    end
     object Panel1: TPanel
       Left = 0
       Top = 0
@@ -25809,7 +25794,7 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
     Left = 568
     Top = 536
   end
-  object ActionList1: TActionList
+  object actnList: TActionList
     Left = 640
     Top = 664
     object actnConnect: TAction

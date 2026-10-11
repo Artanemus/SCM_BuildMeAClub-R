@@ -27,7 +27,7 @@ uses
 
 type
   TSCMBuildMeADataBase = class(TForm)
-    ActionList1: TActionList;
+    actnList: TActionList;
     actnBMAC: TAction;
     actnConnect: TAction;
     actnDisconnect: TAction;
@@ -49,7 +49,6 @@ type
     Label7: TLabel;
     Label8: TLabel;
     lblDatabaseVersion: TLabel;
-    lblPreRelease: TLabel;
     Memo1: TMemo;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -88,7 +87,7 @@ type
 
     // Flags that building is finalised or can't proceed.
     // Once set - btnBMAC is not long visible. User may only exit.
-    BuildDone: Boolean;
+    fBuildDone: Boolean;
     FDBMajor: Integer;
     FDBMinor: Integer;
     // ---------------------------------------------------------
@@ -111,8 +110,8 @@ type
       RunMinimized: Boolean = false; Log: Boolean = false): Boolean;
     procedure GetFileList(filePath, fileMask: String; var sl: TStringList);
     procedure GetSCM_DB_Version();
-    procedure LoadConfigData;
-    procedure SaveConfigData;
+    procedure LoadConnectionParams;
+    procedure SaveConnectionParams;
     procedure SimpleLoadSettingString(ASection, AName: String;
       var AValue: String);
     procedure SimpleMakeTemporyFDConnection(Server, User, Password: String;
@@ -137,14 +136,13 @@ var
   errCount: integer;
 begin
   result := true;
-  btnBMAC.Visible := false;
+  btnBMAC.Enabled := false;
 
   if not scmConnection.Connected then exit;
   if not Assigned(fSelectedBuildConfig) then exit;
 
   if Assigned(fSelectedBuildConfig) then
   begin
-    btnBMAC.Visible := true;
     btnBMAC.Enabled := false;
   end;
 
@@ -159,7 +157,7 @@ begin
     // non zero value indicates SwimClubMeet already exists.
     if not(errCount = 0) then
     begin
-      btnBMAC.Visible := false;
+      btnBMAC.Enabled := false;
       result := true;
     end
     else
@@ -183,7 +181,7 @@ begin
   // UPDATE THE DATABASE...
   progressBar.Position := 0;
   progressBar.Min := 0;
-  btnBMAC.Visible := false;
+  btnBMAC.Enabled := false;
   Memo1.Clear;
 
   if not scmConnection.Connected then exit;
@@ -202,8 +200,8 @@ begin
         'Press EXIT when ready.';
       MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
       // only one shot at building granted
-      btnBMAC.Visible := false;
-      BuildDone := true;
+      btnBMAC.Enabled := false;
+      fBuildDone := true;
       Memo1.Lines.Add(s);
       exit;
       // {$ENDIF}
@@ -219,8 +217,8 @@ begin
       'Press EXIT when ready.';
     MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
     // only one shot at building granted
-    btnBMAC.Visible := false;
-    BuildDone := true;
+    btnBMAC.Enabled := false;
+    fBuildDone := true;
     Memo1.Lines.Add(s);
     exit;
   end;
@@ -236,8 +234,8 @@ begin
       'Press EXIT when ready.';
     MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
     // only one shot at building granted
-    btnBMAC.Visible := false;
-    BuildDone := true;
+    btnBMAC.Enabled := false;
+    fBuildDone := true;
     Memo1.Lines.Add(s);
     exit;
   end;
@@ -254,8 +252,8 @@ begin
       'Unable to build a swimming club. Press EXIT when ready.';
     MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
     // only one shot at building granted
-    btnBMAC.Visible := false;
-    BuildDone := true;
+    btnBMAC.Enabled := false;
+    fBuildDone := true;
     FreeAndNil(sl);
     Memo1.Lines.Add(s);
     exit;
@@ -325,8 +323,8 @@ begin
         sLineBreak);
     end;
     // only one shot at building granted
-    btnBMAC.Visible := false;
-    BuildDone := true;
+    btnBMAC.Enabled := false;
+    fBuildDone := true;
     progressBar.Visible := false;
 
     // finished with database - do a disconnect? (But it hides the Memo1 cntrl)
@@ -335,7 +333,7 @@ begin
   end
   else
     // we had scripts ... but user didn't do a build
-      btnBMAC.Visible := true;
+      btnBMAC.Enabled := true;
 
   FreeAndNil(sl);
 
@@ -346,30 +344,22 @@ begin
 
   if scmConnection.Connected then
   begin
-    if not btnBMAC.Visible then btnBMAC.Visible := true;
-    if Assigned(fSelectedBuildConfig)  then
+    if fSCMDataBaseExist  then
     begin
-      if fSCMDataBaseExist  then
-      begin
-        if btnBMAC.Enabled then btnBMAC.Enabled := false
-      end
-      else
-      begin
-        if not btnBMAC.Enabled then btnBMAC.Enabled := true;
-      end;
+      if btnBMAC.Enabled then btnBMAC.Enabled := false;
     end
-    else if btnBMAC.Enabled then btnBMAC.Enabled := false;
+    else if Assigned(fSelectedBuildConfig)  then
+    begin
+      if fBuildDone then // re-run the application to build again
+        if btnBMAC.Enabled then btnBMAC.Enabled := false
+      else
+        if not btnBMAC.Enabled then btnBMAC.Enabled := true;
+    end
+    else
+      if btnBMAC.Enabled then btnBMAC.Enabled := false
   end
   else
-  begin
-    if btnBMAC.Visible then btnBMAC.Visible := false;
-  end;
-
-  // stops UI flickering if enable state is tested before changing.
-  if BuildDone then // re-run the application to build again
-  begin
     if btnBMAC.Enabled then btnBMAC.Enabled := false;
-  end;
 
 end;
 
@@ -377,6 +367,7 @@ procedure TSCMBuildMeADataBase.actnConnectExecute(Sender: TObject);
 var
   dlg: TMsgDBExists;
 begin
+
   if edtServerName.Text = '' then exit;
   if not chkbUseOSAuthentication.Checked then
     if edtUser.Text = '' then exit;
@@ -404,8 +395,8 @@ begin
 
   // REQUIRED: update button state.
   actnDisconnect.Update;
-  actnBMAC.Update;
   actnConnect.Update;
+  actnBMAC.Update;
 end;
 
 procedure TSCMBuildMeADataBase.actnConnectUpdate(Sender: TObject);
@@ -414,7 +405,6 @@ begin
   if scmConnection.Connected then
   begin
     if btnConnect.Visible then btnConnect.Visible := false;
-
   end
   else
   begin
@@ -481,8 +471,8 @@ begin
       'Press EXIT when ready.';
     MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
     // only one shot at building granted
-    btnBMAC.Visible := false;
-    BuildDone := true;
+    btnBMAC.Enabled := false;
+    fBuildDone := true;
     Memo1.Lines.Add(s);
     exit;
   end;
@@ -502,31 +492,20 @@ begin
 
   if Assigned(fSelectedBuildConfig) then
   begin
-    lblDatabaseVersion.Caption := fSelectedBuildConfig.GetVersionStr(bvIN);
-    s := '';
-    if fSelectedBuildConfig.IsRelease then
-      s := 'Release '
-    else
-      s := 'Pre-Release ';
-    {
-      // create database ignores this switch
-      if fSelectedBuildConfig.IsPatch = true then
-            s := s + 'Patch ';
-    }
-    if fSelectedBuildConfig.IsRetired = true then
-      s := s + 'Retired ';
-
-    lblPreRelease.Caption := s;
-
+//    lblDatabaseVersion.Visible := true;
+    lblDatabaseVersion.Caption := fSelectedBuildConfig.GetVersionStr(bvOUT);
   end
   else
   begin
+//    lblDatabaseVersion.Visible := false;
     lblDatabaseVersion.Caption := '';
-    lblPreRelease.Caption := '';
   end;
 
   Memo1.Lines.Add('Selection done.');
   Memo1.Lines.Add('READY ...');
+
+  actnSelectDataBase.Update;
+  actnBMAC.Update;
 
 end;
 
@@ -535,12 +514,10 @@ begin
   if Assigned(fSelectedBuildConfig) then
   begin
     if not lblDatabaseVersion.Visible then lblDatabaseVersion.Visible := true;
-    if not lblPreRelease.Visible then lblPreRelease.Visible := false;
   end
   else
   begin
     if lblDatabaseVersion.Visible then lblDatabaseVersion.Visible := false;
-    if lblPreRelease.Visible then lblPreRelease.Visible := false;
   end;
 end;
 
@@ -692,16 +669,20 @@ end;
 
 procedure TSCMBuildMeADataBase.FormCreate(Sender: TObject);
 begin
-  BuildDone := false; // clear BMAC critical error flag
+  fBuildDone := false; // clear BMAC critical error flag
+  fSCMDataBaseExist := false;
+  fSelectedBuildConfig := nil;
+
   // Prepare the display
   GroupBox1.Visible := true;
   btnConnect.Visible := true;
-  progressBar.Visible := false;
-  btnBMAC.Visible := false;
+  btnBMAC.Enabled := false;
   btnDisconnect.Visible := false;
-  LoadConfigData;
-  // green 'tick' checkbox
-  vimgPassed.Visible := false;
+  progressBar.Visible := false;
+  vimgPassed.Visible := false;  // green 'tick' checkbox
+  lblDatabaseVersion.Caption := ''; // SwimClubMeet database version number
+
+  LoadConnectionParams; // Loads 'last used' params in preparation for connection
 
   // Memo already populated with useful user info... indicate ready...
   Memo1.Lines.Add('READY ...');
@@ -712,15 +693,7 @@ begin
   FDBVerCtrlStr := '';
   FDBVerCtrlStrVerbose := '';
 
-  fSCMDataBaseExist := false;
 
-  // SwimClubMeet database version number
-  lblDatabaseVersion.Caption := '';
-
-  // Object to hold all the info on each build variant.
-  // Info extracted from the file, SCM_Config.ini
-  // Object includes the SQL folder path
-  fSelectedBuildConfig := nil;
   // A custom collection. Contains TUDBConfig objects
   BuildConfigList := TObjectList<TBMAC_Config>.Create(true); // owns object
 
@@ -799,7 +772,7 @@ end;
 
 {$REGION 'SIMPLE LOAD ROUTINES FOR TEMPORY FDAC CONNECTION'}
 
-procedure TSCMBuildMeADataBase.LoadConfigData;
+procedure TSCMBuildMeADataBase.LoadConnectionParams;
 var
   ASection: string;
   Server: string;
@@ -827,7 +800,7 @@ begin
   else chkbUseOSAuthentication.Checked := false;
 end;
 
-procedure TSCMBuildMeADataBase.SaveConfigData;
+procedure TSCMBuildMeADataBase.SaveConnectionParams;
 var
   ASection, AName, AValue: String;
 begin
@@ -903,7 +876,7 @@ begin
   scmConnection.Connected := true;
 
   // ON SUCCESS - Save connection details.
-  if scmConnection.Connected Then SaveConfigData;
+  if scmConnection.Connected Then SaveConnectionParams;
 end;
 
 procedure TSCMBuildMeADataBase.SimpleSaveSettingString(ASection, AName,
