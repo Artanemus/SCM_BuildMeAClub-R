@@ -81,6 +81,7 @@ type
     OUT_Model = 1;
     OUT_Version = 1;
     SCMCONFIGFILENAME = 'scmBMAC_Config.ini';
+    READYTEXT = '...READY...';
 
   var
     BuildConfigList: TObjectList<TBMAC_Config>;
@@ -135,36 +136,22 @@ var
   s: string;
   errCount: integer;
 begin
-  result := true;
-  btnBMAC.Enabled := false;
-
-  if not scmConnection.Connected then exit;
-  if not Assigned(fSelectedBuildConfig) then exit;
-
-  if Assigned(fSelectedBuildConfig) then
-  begin
-    btnBMAC.Enabled := false;
-  end;
-
   // ---------------------------------------------------------------
   // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
+  // NOTE: must be connected MS SQLEXPRESS
   // ---------------------------------------------------------------
+  result := false;
+
   qryDBExists.Open;
   if qryDBExists.Active then
   begin
     errCount := qryDBExists.FieldByName('Result').AsInteger;
     qryDBExists.Close;
     // non zero value indicates SwimClubMeet already exists.
-    if not(errCount = 0) then
+    if errCount <> 0 then
     begin
-      btnBMAC.Enabled := false;
       result := true;
     end
-    else
-    begin
-      btnBMAC.Enabled := true;
-      result := false;
-    end;
   end;
 end;
 
@@ -182,6 +169,7 @@ begin
   progressBar.Position := 0;
   progressBar.Min := 0;
   btnBMAC.Enabled := false;
+  fBuildDone := false;
   Memo1.Clear;
 
   if not scmConnection.Connected then exit;
@@ -191,7 +179,7 @@ begin
   // ---------------------------------------------------------------
   // Does the SwimClubMeet database already exists on MS SQLEXPRESS?
   // ---------------------------------------------------------------
-  if  GetSCMDataBaseExistsState then
+  if  fSCMDataBaseExist then
   begin
       // {$IFNDEF DEBUG}  // grant developer's permission
       // SwimClubMeet exists!
@@ -205,7 +193,6 @@ begin
       Memo1.Lines.Add(s);
       exit;
       // {$ENDIF}
-
   end;
 
   success := ExecuteProcess('sqlcmd.exe', '-?', '', true, true, true, errCode);
@@ -261,7 +248,7 @@ begin
 
   // Final message before running executing
   s := 'Found ' + IntToStr(sl.Count) + ' scripts to run.' + sLineBreak +
-    'Select yes to start building a swimming club.';
+    'Select yes to build the swimming club.';
   mr := MessageDlg(s, TMsgDlgType.mtConfirmation, [mbNo, mbYes], 0);
   if mr = mrYes then
   begin
@@ -298,7 +285,9 @@ begin
 
       progressBar.Position := progressBar.Position + 1;
     end;
-    Memo1.Lines.Add(sLineBreak + 'FINISHED');
+
+    Memo1.Lines.Add(sLineBreak + ',,.FINISHED BUILDING CLUB...');
+
     if errCount = 0 then
     begin
       // green 'tick' checkbox
@@ -322,10 +311,12 @@ begin
       Memo1.Lines.Add('View the SCM_BuildMeAClub.log for sqlcmd.exe errors.' +
         sLineBreak);
     end;
+
     // only one shot at building granted
     btnBMAC.Enabled := false;
     fBuildDone := true;
     progressBar.Visible := false;
+    fSCMDataBaseExist := true;
 
     // finished with database - do a disconnect? (But it hides the Memo1 cntrl)
     Memo1.Lines.Add(sLineBreak +
@@ -351,9 +342,13 @@ begin
     else if Assigned(fSelectedBuildConfig)  then
     begin
       if fBuildDone then // re-run the application to build again
-        if btnBMAC.Enabled then btnBMAC.Enabled := false
+      begin
+        if btnBMAC.Enabled then btnBMAC.Enabled := false;
+      end
       else
+      begin
         if not btnBMAC.Enabled then btnBMAC.Enabled := true;
+      end;
     end
     else
       if btnBMAC.Enabled then btnBMAC.Enabled := false
@@ -378,7 +373,7 @@ begin
   if scmConnection.Connected then
   begin
     Memo1.Lines.Add('Connected to master on MSSQL');
-    Memo1.Lines.Add('READY ...');
+    Memo1.Lines.Add(READYTEXT);
     fSCMDataBaseExist := GetSCMDataBaseExistsState; // assign value to fSCMDataBaseExists
     if fSCMDataBaseExist then
     begin
@@ -389,8 +384,8 @@ begin
   end
   else
   begin
-    fSCMDataBaseExist := false;
-    Memo1.Lines.Add('READY ...');
+    fSCMDataBaseExist := true;
+    Memo1.Lines.Add(READYTEXT);
   end;
 
   // REQUIRED: update button state.
@@ -417,7 +412,7 @@ begin
   // disconnect
   scmConnection.Close;
   Memo1.Lines.Add('Disconnected ...' + sLineBreak);
-  fSCMDataBaseExist := false;
+  fSCMDataBaseExist := true;
   // REQUIRED: update button state.
   actnConnect.Update;
   actnBMAC.Update;
@@ -449,6 +444,7 @@ var
 begin
   lblDatabaseVersion.Caption := '';
   fSelectedBuildConfig := nil;
+  fBuildDone := false;
 
   // DEFAULT:
   // BUILDMEACLUB USES THE SUB-FOLDER WITHIN IT'S EXE PATH
@@ -470,8 +466,6 @@ begin
       'Cannot continue. Missing BMAC system sub-folder.' + sLineBreak +
       'Press EXIT when ready.';
     MessageDlg(s, TMsgDlgType.mtError, [mbOk], 0);
-    // only one shot at building granted
-    btnBMAC.Enabled := false;
     fBuildDone := true;
     Memo1.Lines.Add(s);
     exit;
@@ -492,17 +486,15 @@ begin
 
   if Assigned(fSelectedBuildConfig) then
   begin
-//    lblDatabaseVersion.Visible := true;
     lblDatabaseVersion.Caption := fSelectedBuildConfig.GetVersionStr(bvOUT);
   end
   else
   begin
-//    lblDatabaseVersion.Visible := false;
     lblDatabaseVersion.Caption := '';
   end;
 
   Memo1.Lines.Add('Selection done.');
-  Memo1.Lines.Add('READY ...');
+  Memo1.Lines.Add(READYTEXT);
 
   actnSelectDataBase.Update;
   actnBMAC.Update;
@@ -685,7 +677,7 @@ begin
   LoadConnectionParams; // Loads 'last used' params in preparation for connection
 
   // Memo already populated with useful user info... indicate ready...
-  Memo1.Lines.Add('READY ...');
+  Memo1.Lines.Add(READYTEXT);
   // init DB version control
   FDBVersion := 0;
   FDBMajor := 0;

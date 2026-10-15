@@ -25716,8 +25716,9 @@ object SCMBuildMeADataBase: TSCMBuildMeADataBase
           '.'
         ''
         
-          '    Step 3: Once connected and a '#39'Build'#39' is selected, the Update' +
-          ' Database button will appear.'
+          '    Step 3: Once connected and a '#39'Build'#39' is selected, the '#39'Build' +
+          ' Me a Club'#39' button will be enabled. '
+        'Click the button to start the build.'
         ''
         
           'Notes: BMAC will not overwrite an existing SwimClubMeet database' +
